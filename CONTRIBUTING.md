@@ -11,9 +11,9 @@ Rastrata uses a split license:
 - **CLI, MCP server, and plugin SDK** (`apps/terminal`, `apps/mcp`, `plugins/rastrata`): **MIT**
   ([LICENSE-MIT](LICENSE-MIT)).
 
-Before a pull request can be merged, contributors sign our Contributor License Agreement via CLA Assistant on the pull
-request. You retain copyright to your contributions and grant Gant Street LLC permission to distribute them under the
-project's open-source licenses and commercial offerings.
+Before a pull request can be merged, please confirm agreement to our
+[Contributor License Agreement](CLA.md) in the pull request checklist. You retain copyright to your contributions and
+grant Gant Street LLC permission to distribute them under the project's open-source and commercial licenses.
 
 ## Local setup
 
