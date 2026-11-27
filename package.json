@@ -46,7 +46,7 @@
     "gate": "bun scripts/gate.ts",
     "typecheck": "bun run check:contracts && turbo run typecheck && tsc -p tsconfig.json",
     "test": "turbo run test --concurrency=1 && bun run test:tooling",
-    "test:tooling": "bun test --timeout 120000 scripts/repository.test.ts scripts/biome.test.ts scripts/astro-boundaries.test.ts scripts/gate-retry.test.ts",
+    "test:tooling": "bun test --timeout 120000 scripts/repository.test.ts scripts/biome.test.ts scripts/astro-boundaries.test.ts scripts/gate-retry.test.ts scripts/workflows.test.ts",
     "check": "bun run typecheck && bun run lint && bun run format:check && bun run test && bun run check:spec && bun run test:coverage && bun run coverage:check && bun run check:trace && bun run test:browser"
   },
   "devDependencies": {
