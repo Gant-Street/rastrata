@@ -1,4 +1,4 @@
-/** `@rastrata/plugin-sdk` — MIT-licensed SDK for Rastrata ingestion plugins.
+/** `@gantstreet/rastrata-plugin-sdk` — MIT-licensed SDK for Rastrata ingestion plugins.
  * Zero runtime dependencies; works in Bun, Node 22+, and Cloudflare Workers. */
 
 export { createEmit, definePlugin } from "./builders.ts";

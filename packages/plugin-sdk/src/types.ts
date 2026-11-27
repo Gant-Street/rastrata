@@ -1,4 +1,4 @@
-/** Core TypeScript types and manifest-driven type inference for `@rastrata/plugin-sdk`.
+/** Core TypeScript types and manifest-driven type inference for `@gantstreet/rastrata-plugin-sdk`.
  *
  * Line shapes (`BankLine`, `LedgerEvent`, `BalanceCheck`) are wire-compatible with Rastrata's
  * ingestion pipeline (`packages/application/src/ingest-types.ts`). */

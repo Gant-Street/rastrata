@@ -1,4 +1,4 @@
-name: Publish @rastrata/plugin-sdk
+name: Publish @gantstreet/rastrata-plugin-sdk
 
 on:
   push:

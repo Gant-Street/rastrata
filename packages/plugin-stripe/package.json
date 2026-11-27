@@ -9,7 +9,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@rastrata/plugin-sdk": "workspace:*"
+    "@gantstreet/rastrata-plugin-sdk": "workspace:*"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",

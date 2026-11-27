@@ -23,7 +23,7 @@ import {
   validateManifest,
 } from "./validate.ts";
 
-/** `@rastrata/plugin-sdk/runner` — Zero-dependency out-of-process runner for Rastrata plugins.
+/** `@gantstreet/rastrata-plugin-sdk/runner` — Zero-dependency out-of-process runner for Rastrata plugins.
  *
  * Pure Web Standards (Fetch, Crypto, TextEncoder) so the exact same runner works in:
  * - Local CLI (`rastrata plugin sync <id> [--dry-run]`)

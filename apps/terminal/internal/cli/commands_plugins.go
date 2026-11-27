@@ -18,7 +18,7 @@ import (
 )
 
 // Plugin commands: Stripe-level developer and operator workflow for out-of-process ingestion
-// plugins built on @rastrata/plugin-sdk (MIT).
+// plugins built on @gantstreet/rastrata-plugin-sdk (MIT).
 //
 //	rastrata plugin init <slug> [--kind bank|ledger|file] [--dir PATH]
 //	rastrata plugin test <dir>
@@ -495,13 +495,13 @@ func runPluginTest(r Runner, ctx context.Context, o Options, _ *api.Client) int 
 }
 
 // pluginSyncRunnerJS runs inside a stripped-environment Bun child process, imports the plugin
-// module and @rastrata/plugin-sdk/runner, and prints a single JSON result on stdout.
+// module and @gantstreet/rastrata-plugin-sdk/runner, and prints a single JSON result on stdout.
 const pluginSyncRunnerJS = `
 import { readFileSync } from "node:fs";
 import { basename, extname } from "node:path";
 import { pathToFileURL } from "node:url";
-import { isPluginError } from "@rastrata/plugin-sdk";
-import { runPluginSync } from "@rastrata/plugin-sdk/runner";
+import { isPluginError } from "@gantstreet/rastrata-plugin-sdk";
+import { runPluginSync } from "@gantstreet/rastrata-plugin-sdk/runner";
 
 try {
   const entry = process.env.RASTRATA_PLUGIN_ENTRY;
@@ -879,7 +879,7 @@ SOFTWARE.
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@rastrata/plugin-sdk": "^0.1.0"
+    "@gantstreet/rastrata-plugin-sdk": "^0.1.0"
   },
   "scripts": {
     "test": "bun test",
@@ -955,7 +955,7 @@ Offline CSV normalizer — zero network calls, zero API keys.
 }
 `, slug, title, title)
 
-		indexTS := fmt.Sprintf(`import { definePlugin, money, PluginError, sanitizeText } from "@rastrata/plugin-sdk";
+		indexTS := fmt.Sprintf(`import { definePlugin, money, PluginError, sanitizeText } from "@gantstreet/rastrata-plugin-sdk";
 
 function parseCsvLine(line: string): string[] {
   const fields: string[] = [];
@@ -1045,8 +1045,8 @@ export default definePlugin({
 		testTS := fmt.Sprintf(`import { expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { manifestToInstallPayload } from "@rastrata/plugin-sdk/runner";
-import { testPlugin } from "@rastrata/plugin-sdk/testing";
+import { manifestToInstallPayload } from "@gantstreet/rastrata-plugin-sdk/runner";
+import { testPlugin } from "@gantstreet/rastrata-plugin-sdk/testing";
 import plugin from "../src/index.ts";
 
 test("manifest.json matches plugin manifest", () => {
@@ -1097,7 +1097,7 @@ test("%s normalizes CSV fixture and passes all five invariants", async () => {
 }
 `, slug, title, title, domain, title, envVar)
 
-		indexTS := fmt.Sprintf(`import { definePlugin, money } from "@rastrata/plugin-sdk";
+		indexTS := fmt.Sprintf(`import { definePlugin, money } from "@gantstreet/rastrata-plugin-sdk";
 
 export default definePlugin({
   manifest: {
@@ -1159,7 +1159,7 @@ export default definePlugin({
 `, slug, title, title, domain, title, envVar, domain, slug, title, slug, slug)
 
 		testTS := fmt.Sprintf(`import { expect, test } from "bun:test";
-import { testPlugin } from "@rastrata/plugin-sdk/testing";
+import { testPlugin } from "@gantstreet/rastrata-plugin-sdk/testing";
 import plugin from "../src/index.ts";
 
 test("%s passes all five Rastrata plugin invariants", async () => {
@@ -1202,7 +1202,7 @@ test("%s passes all five Rastrata plugin invariants", async () => {
 }
 `, slug, title, title, domain, title, envVar)
 
-	indexTS := fmt.Sprintf(`import { definePlugin, money } from "@rastrata/plugin-sdk";
+	indexTS := fmt.Sprintf(`import { definePlugin, money } from "@gantstreet/rastrata-plugin-sdk";
 
 export default definePlugin({
   manifest: {
@@ -1256,7 +1256,7 @@ export default definePlugin({
 `, slug, title, title, domain, title, envVar, domain, slug, slug, slug)
 
 	testTS := fmt.Sprintf(`import { expect, test } from "bun:test";
-import { testPlugin } from "@rastrata/plugin-sdk/testing";
+import { testPlugin } from "@gantstreet/rastrata-plugin-sdk/testing";
 import plugin from "../src/index.ts";
 
 test("%s passes all five Rastrata plugin invariants", async () => {

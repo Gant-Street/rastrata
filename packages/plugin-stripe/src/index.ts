@@ -7,11 +7,11 @@ import {
   isPluginError,
   money,
   PluginError,
-} from "@rastrata/plugin-sdk";
+} from "@gantstreet/rastrata-plugin-sdk";
 
 /** Official MIT-licensed Stripe payout & clearing plugin for Rastrata.
  *
- * Proves the `LedgerEvent` + `coveredBy` + `clearing` side of `@rastrata/plugin-sdk`:
+ * Proves the `LedgerEvent` + `coveredBy` + `clearing` side of `@gantstreet/rastrata-plugin-sdk`:
  * - Books one balanced entry per automatic payout (A2X convention) dated on `arrival_date`
  * - Supports restricted read-only keys even when Account or Balance read is omitted
  * - Optional Stripe Tax split from Checkout Sessions (`total_details.amount_tax`) and

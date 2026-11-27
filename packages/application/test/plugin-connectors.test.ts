@@ -2,16 +2,16 @@ import { afterEach, describe, expect, test } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { definePlugin, money } from "@rastrata/plugin-sdk";
-import { manifestToInstallPayload, runPluginSync } from "@rastrata/plugin-sdk/runner";
-import { mockHttp } from "@rastrata/plugin-sdk/testing";
+import { definePlugin, money } from "@gantstreet/rastrata-plugin-sdk";
+import { manifestToInstallPayload, runPluginSync } from "@gantstreet/rastrata-plugin-sdk/runner";
+import { mockHttp } from "@gantstreet/rastrata-plugin-sdk/testing";
 import { stripePlugin } from "@rastrata/plugin-stripe";
 import { ApplicationHttp } from "../src/http.ts";
 import { LocalBookService } from "../src/local.ts";
 import { APPLICATION_API_VERSION, BUSINESS_PERMISSIONS } from "../src/schema.ts";
 
 /** End-to-end integration test proving `@rastrata/plugin-stripe` and a `BankLine` plugin drive
- * Rastrata's real `ApplicationHttp` through `@rastrata/plugin-sdk/runner` using least-privilege
+ * Rastrata's real `ApplicationHttp` through `@gantstreet/rastrata-plugin-sdk/runner` using least-privilege
  * `rsp_` plugin tokens — from raw provider JSON all the way to posted journals with
  * Payouts in Transit clearing to exact 0.00, plus streaming incremental commit on mid-sync error. */
 

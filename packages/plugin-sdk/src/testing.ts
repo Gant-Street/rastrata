@@ -15,7 +15,7 @@ import { validateBalanceCheck, validateLine, validateManifest } from "./validate
 
 export { formatPreviewTable };
 
-/** `@rastrata/plugin-sdk/testing` — Stripe-level test harness & preview tools for plugin authors.
+/** `@gantstreet/rastrata-plugin-sdk/testing` — Stripe-level test harness & preview tools for plugin authors.
  *
  * `testPlugin()` runs all five Rastrata plugin invariants in milliseconds with zero network:
  * 1. Manifest validity (id, version, domains, roles, clearing, fields)

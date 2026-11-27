@@ -1,6 +1,6 @@
 ---
 name: build-a-plugin
-description: Build, verify, preview, and install a custom Rastrata ingestion plugin (CSV/JSON file normalizer, bank/card API feed, or multi-leg payout connector) using @rastrata/plugin-sdk and the rastrata CLI.
+description: Build, verify, preview, and install a custom Rastrata ingestion plugin (CSV/JSON file normalizer, bank/card API feed, or multi-leg payout connector) using @gantstreet/rastrata-plugin-sdk and the rastrata CLI.
 ---
 
 Use this skill when the user wants to bring transactions into Rastrata from a bank, payment processor, commerce platform, payroll tool, or CSV/JSON export that does not already have an installed plugin.
@@ -27,7 +27,7 @@ The slug must be 3–32 lowercase letters, digits, or hyphens (for example `chas
 
 ### 2. Implement `src/index.ts` and `manifest.json`
 
-- Use `definePlugin(...)` from `@rastrata/plugin-sdk`.
+- Use `definePlugin(...)` from `@gantstreet/rastrata-plugin-sdk`.
 - Use integer cents and `money.fromCents(...)` / `money.fromMinorUnits(...)` for every amount. Never use floating-point addition or `.toFixed(2)` on unvalidated floats.
 - Keep `manifest.json` identical to `manifestToInstallPayload(plugin.manifest)` (verify this in `test/plugin.test.ts`).
 - Declare every external HTTPS host in `manifest.domains` (exact hostnames only — no wildcards, no IPs). For file plugins, keep `domains: []`.
@@ -38,7 +38,7 @@ The slug must be 3–32 lowercase letters, digits, or hyphens (for example `chas
 
 ### 3. Prove all five invariants offline
 
-Write fixture-based unit tests in `test/plugin.test.ts` using `testPlugin()` from `@rastrata/plugin-sdk/testing`, then run:
+Write fixture-based unit tests in `test/plugin.test.ts` using `testPlugin()` from `@gantstreet/rastrata-plugin-sdk/testing`, then run:
 
 ```sh
 rastrata plugin test ./plugin-<slug>

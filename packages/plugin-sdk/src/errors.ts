@@ -1,4 +1,4 @@
-/** Structured, actionable errors returned by `@rastrata/plugin-sdk`.
+/** Structured, actionable errors returned by `@gantstreet/rastrata-plugin-sdk`.
  * Every error carries a stable machine `code`, a plain-English `message`, and an optional `hint`
  * stating the exact fix so developers (and their agents) know what to change immediately. */
 

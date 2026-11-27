@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { money } from "@rastrata/plugin-sdk";
-import { manifestToInstallPayload } from "@rastrata/plugin-sdk/runner";
-import { testPlugin } from "@rastrata/plugin-sdk/testing";
+import { money } from "@gantstreet/rastrata-plugin-sdk";
+import { manifestToInstallPayload } from "@gantstreet/rastrata-plugin-sdk/runner";
+import { testPlugin } from "@gantstreet/rastrata-plugin-sdk/testing";
 import { stripePlugin } from "../src/index.ts";
 
 const ARRIVAL = Math.floor(Date.parse("2026-10-10T00:00:00Z") / 1000);

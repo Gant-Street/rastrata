@@ -1,11 +1,11 @@
-# `@rastrata/plugin-sdk`
+# `@gantstreet/rastrata-plugin-sdk`
 
 MIT-licensed SDK for building Rastrata ingestion plugins. Zero runtime dependencies; runs in Bun, Node 22+, and Cloudflare Workers.
 
 ## Quick start (40 lines)
 
 ```ts
-import { definePlugin, money } from "@rastrata/plugin-sdk";
+import { definePlugin, money } from "@gantstreet/rastrata-plugin-sdk";
 
 export default definePlugin({
   manifest: {
@@ -78,7 +78,7 @@ emit.event({
 
 ```ts
 import { expect, test } from "bun:test";
-import { testPlugin } from "@rastrata/plugin-sdk/testing";
+import { testPlugin } from "@gantstreet/rastrata-plugin-sdk/testing";
 import plugin from "./index.ts";
 
 test("passes Rastrata plugin invariants", async () => {
@@ -101,10 +101,10 @@ test("passes Rastrata plugin invariants", async () => {
 4. Zero secret leakage (injects a canary key and scans all batches, cursors, raw payloads, and errors).
 5. Strict domain egress containment via `GuardedHttp`.
 
-## Run & preview (`@rastrata/plugin-sdk/runner`)
+## Run & preview (`@gantstreet/rastrata-plugin-sdk/runner`)
 
 ```ts
-import { runPluginSync } from "@rastrata/plugin-sdk/runner";
+import { runPluginSync } from "@gantstreet/rastrata-plugin-sdk/runner";
 import plugin from "./index.ts";
 
 // Preview entries locally with zero writes to Rastrata:

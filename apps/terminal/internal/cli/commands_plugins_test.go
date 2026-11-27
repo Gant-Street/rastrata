@@ -214,7 +214,7 @@ func TestPluginTestRunsOfficialReferencePluginsWithStrippedEnv(t *testing.T) {
 
 func TestPluginInitFileAndSyncDryRunWithCSVFixture(t *testing.T) {
 	// Scaffold inside a temp dir inside the monorepo parent? Use t.TempDir() and symlink node_modules
-	// so bun resolves @rastrata/plugin-sdk cleanly without network access.
+	// so bun resolves @gantstreet/rastrata-plugin-sdk cleanly without network access.
 	dir := filepath.Join(t.TempDir(), "plugin-demo-csv")
 	var out, diag bytes.Buffer
 	r := Runner{Output: &out, Diagnostics: &diag}
@@ -226,11 +226,11 @@ func TestPluginInitFileAndSyncDryRunWithCSVFixture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	scopeDir := filepath.Join(dir, "node_modules", "@rastrata")
+	scopeDir := filepath.Join(dir, "node_modules", "@gantstreet")
 	if err := os.MkdirAll(scopeDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.Symlink(filepath.Join(repoRoot, "packages", "plugin-sdk"), filepath.Join(scopeDir, "plugin-sdk")); err != nil {
+	if err := os.Symlink(filepath.Join(repoRoot, "packages", "plugin-sdk"), filepath.Join(scopeDir, "rastrata-plugin-sdk")); err != nil {
 		t.Fatal(err)
 	}
 
