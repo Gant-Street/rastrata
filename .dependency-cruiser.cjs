@@ -160,6 +160,12 @@ module.exports = {
       to: { pathNot: ["^packages/kernel/src/", "^(node:)?crypto$"] },
     },
     {
+      name: "plugin-sdk-isolation",
+      severity: "error",
+      from: { path: "^packages/plugin-sdk/src/" },
+      to: { pathNot: ["^packages/plugin-sdk/src/"] },
+    },
+    {
       name: "native-accounting-storage-boundary",
       severity: "error",
       from: {

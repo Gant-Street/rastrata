@@ -14,6 +14,7 @@ import { ingestRuntime } from "./ingest/store.ts";
 import { intakeState } from "./intake/store.ts";
 import { memberState } from "./members/store.ts";
 import { payeesRuntime } from "./payees/store.ts";
+import { pluginState } from "./plugins/store.ts";
 import { reconcileState } from "./reconcile/state.ts";
 import { rulesState } from "./rules/store.ts";
 import { shadowStore } from "./shadow/store.ts";
@@ -34,6 +35,7 @@ export function prepareSlices(service: ApplicationService): void {
   shadowStore(service);
   taxRuntime(service);
   payeesRuntime(service);
+  pluginState(service);
   agentState(service);
   memberState(service);
   statementsState(service);

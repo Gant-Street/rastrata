@@ -12,6 +12,7 @@ import { historyHandlers } from "./history/handlers.ts";
 import { intakeHandlers } from "./intake/handlers.ts";
 import { membersHandlers } from "./members/handlers.ts";
 import { payeesHandlers } from "./payees/handlers.ts";
+import { pluginsHandlers } from "./plugins/handlers.ts";
 import { reconcileHandlers } from "./reconcile/handlers.ts";
 import { reportsHandlers } from "./reports/handlers.ts";
 import { rulesHandlers } from "./rules/handlers.ts";
@@ -34,6 +35,7 @@ const parts: readonly (readonly [string, SliceHandlers])[] = [
   ["intake", intakeHandlers],
   ["members", membersHandlers],
   ["payees", payeesHandlers],
+  ["plugins", pluginsHandlers],
   ["reconcile", reconcileHandlers],
   ["reports", reportsHandlers],
   ["rules", rulesHandlers],

@@ -36,6 +36,11 @@ func (c *Client) UploadStripeBundle(ctx context.Context, data []byte, name strin
 	return c.upload(ctx, data, "application/gzip", name, "stripe")
 }
 
+// UploadPluginPayload sends a raw plugin payload to POST /v1/uploads with X-Upload-For: plugin.
+func (c *Client) UploadPluginPayload(ctx context.Context, data []byte, mediaType, name string) (Receipt, error) {
+	return c.upload(ctx, data, mediaType, name, "plugin")
+}
+
 func (c *Client) upload(ctx context.Context, data []byte, mediaType, name, purpose string) (Receipt, error) {
 	if len(data) == 0 {
 		return Receipt{}, c.Failure("invalid_input", "The file is empty", "", false)

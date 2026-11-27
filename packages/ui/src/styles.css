@@ -20,6 +20,7 @@
 @import "./entries/entries.css";
 @import "./ingest/ingest.css";
 @import "./payees/payees.css";
+@import "./plugins/plugins.css";
 @import "./reconcile/reconcile.css";
 @import "./reports/reports.css";
 @import "./rules/rules.css";

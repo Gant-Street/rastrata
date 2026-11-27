@@ -55,6 +55,8 @@ export const helpPages: readonly HelpPage[] = [
   { path: "/settings/workspace", topic: "export-or-delete-your-workspace" },
   { path: "/settings/billing", topic: "manage-your-subscription" },
   { path: "/settings/agent", topic: "connect-your-agent" },
+  // Plugins does not have a dedicated Help how-to yet; opens the list of Help topics.
+  { path: "/settings/plugins", topic: null },
   // The three ways to bring books in each have their own; the page that lists them has the list.
   { path: "/settings/bring-in", topic: null },
   { path: "/settings/history", topic: "bring-in-history" },

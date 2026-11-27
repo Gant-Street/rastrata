@@ -10,6 +10,7 @@ import { ui as entries } from "./entries/index.ts";
 import { ui as help } from "./help/index.ts";
 import { ui as ingest } from "./ingest/index.ts";
 import { ui as payees } from "./payees/index.ts";
+import { ui as plugins } from "./plugins/index.ts";
 import { ui as reconcile } from "./reconcile/index.ts";
 import { ui as reports } from "./reports/index.ts";
 import { ui as rules } from "./rules/index.ts";
@@ -48,6 +49,7 @@ export const lanes: readonly LaneUi[] = [
   help,
   ingest,
   payees,
+  plugins,
   reconcile,
   reports,
   rules,

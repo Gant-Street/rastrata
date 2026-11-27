@@ -213,6 +213,7 @@ test("prepareSlices makes every slice's tables when the book is opened, and noth
     "intake",
     "members",
     "payees",
+    "plugins",
     "reconcile",
     "rules",
     "safety",

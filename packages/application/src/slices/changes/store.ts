@@ -115,6 +115,8 @@ export function labelOf(principal: AccessPrincipal | undefined): string {
       return principal.role;
     case "service":
       return principal.name;
+    case "plugin":
+      return principal.label;
     default:
       return "owner";
   }

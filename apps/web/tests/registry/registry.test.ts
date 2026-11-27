@@ -401,6 +401,7 @@ describe("the map is the plan's map", () => {
     ).toEqual([
       "Business /settings",
       "Agents /settings/agent",
+      "Plugins /settings/plugins",
       "Connections /settings/connections",
       "Backups and export /settings/backups",
       "Bring in your books /settings/bring-in",
@@ -420,6 +421,7 @@ describe("the map is the plan's map", () => {
     expect(tabRoutes(hosted, "settings").map((route) => route.nav.label)).toEqual([
       "Business",
       "Members",
+      "Plugins",
       "Bring in your books",
       "Close the books",
       "Changes",
@@ -440,6 +442,7 @@ describe("the map is the plan's map", () => {
       "Members",
       "Agents",
       "Billing",
+      "Plugins",
       "Bring in your books",
       "Close the books",
       "Changes",

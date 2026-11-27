@@ -3,6 +3,7 @@
  *
  * - no Authorization header: the owner, unless the runtime locks its owner access, then 401;
  * - `Bearer rst_<id>_<secret>`: that token's permissions, never `provision`, never the owner;
+ * - `Bearer rsp_<id>_<secret>`: plugin token scoped strictly to `plugins.status`, `plugins.push`, and plugin raw uploads for one installed plugin;
  * - `Bearer rso_...`: the owner, if it is the runtime's owner key;
  * - anything else that is present is 401. A bad credential never falls back to "no credential". */
 import { ApplicationError } from "../../errors.ts";
@@ -14,6 +15,8 @@ import {
   type GrantablePermission,
 } from "../../agent/token.ts";
 import type { ApplicationService } from "../../service.ts";
+import { memberState } from "../members/store.ts";
+import { pluginState, pluginTokenStatus } from "../plugins/store.ts";
 import { agentState, tokenStatus } from "./store.ts";
 
 /** What authentication learned that the audit trail needs, filled in as it goes. */
@@ -89,6 +92,56 @@ export async function authenticate(
           label: stored.label,
           expiresAt: stored.expiresAt,
         },
+        ownerAccess,
+      };
+    }
+    case "pluginToken": {
+      const state = pluginState(service);
+      const stored = state.getToken(credential.id);
+      // Hash and compare even for an unknown id, so timing does not reveal which ids exist.
+      const matches = constantTimeEqual(
+        await sha256Hex(credential.secret),
+        stored?.secretHash ?? NO_SUCH_HASH,
+      );
+      if (!stored || !matches) throw rejected();
+      const status = pluginTokenStatus(stored, state.now());
+      if (status === "revoked")
+        throw new ApplicationError(
+          "token_revoked",
+          "This plugin token was revoked. Create a new one or reconnect the plugin.",
+          401,
+        );
+      if (status === "expired")
+        throw new ApplicationError(
+          "token_expired",
+          "This plugin token has expired. Create a new one to resume syncing.",
+          401,
+        );
+      state.touchToken(stored.id);
+      const principal = {
+        kind: "plugin",
+        pluginId: stored.pluginId,
+        tokenId: stored.id,
+        label: stored.label,
+        expiresAt: stored.expiresAt,
+      } as const;
+      const held = base.permissions.filter((p) => p === "read" || p === "draft");
+      const readOnlySince = memberState(service).readOnlySince();
+      if (readOnlySince !== null) {
+        return {
+          ...base,
+          permissions: held.filter((p) => p === "read"),
+          operations: ["plugins.status"],
+          readOnly: { since: readOnlySince, held: held.filter((p) => p === "draft") },
+          principal,
+          ownerAccess,
+        };
+      }
+      return {
+        ...base,
+        permissions: held,
+        operations: ["plugins.status", "plugins.push"],
+        principal,
         ownerAccess,
       };
     }

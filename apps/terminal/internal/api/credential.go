@@ -116,8 +116,10 @@ func describeFileError(err error) string {
 	return "unreadable"
 }
 
-// LooksLikeToken reports whether text has the shape of an agent token or an owner key. Commands use
+// LooksLikeToken reports whether text has the shape of an agent token, a plugin token, or an owner key. Commands use
 // it to refuse a credential pasted where a name belongs, so it never lands in a file or a log.
 func LooksLikeToken(text string) bool {
-	return strings.Contains(text, "rst_") && len(text) >= 60 || strings.Contains(text, "rso_") && len(text) >= 47
+	return strings.Contains(text, "rst_") && len(text) >= 60 ||
+		strings.Contains(text, "rsp_") && len(text) >= 60 ||
+		strings.Contains(text, "rso_") && len(text) >= 47
 }

@@ -25,6 +25,7 @@ import { authenticate, type AuthenticationTrace } from "./slices/agent/access.ts
 import { agentState } from "./slices/agent/store.ts";
 import { changesState } from "./slices/changes/store.ts";
 import { memberState } from "./slices/members/store.ts";
+import { pluginState } from "./slices/plugins/store.ts";
 import { readBookSettings } from "./slices/entries/settings.ts";
 import { sliceHandlers } from "./slices/handlers.ts";
 import { receiveUpload } from "./slices/statements/uploads.ts";
@@ -162,6 +163,7 @@ export class ApplicationHttp {
     if (options.clock) {
       agentState(service).clock = options.clock;
       memberState(service).clock = options.clock;
+      pluginState(service).clock = options.clock;
     }
   }
 
@@ -313,7 +315,7 @@ export class ApplicationHttp {
           "token_scope_denied",
         );
       // These routes predate roles and have no permissions: only the owner is let through them.
-      if (kind === "member" || kind === "service")
+      if (kind === "member" || kind === "service" || kind === "plugin")
         return refusal(
           403,
           "Everyone but the owner uses the /v1 operations, not these browser routes",
@@ -351,6 +353,8 @@ export class ApplicationHttp {
       return refuse(401, "Credentials are required", "authentication_required");
     try {
       const access = await this.who(request, {}, authenticated);
+      if (access.principal?.kind === "plugin")
+        return refuse(403, "Plugin tokens cannot call this route", "permission_denied");
       if (!access.permissions.includes("read"))
         return refuse(403, "This credential may not read", "permission_denied");
       const principal = access.principal;
@@ -442,6 +446,18 @@ export class ApplicationHttp {
       if (request.method !== "POST")
         throw new ApplicationError("method_not_allowed", "Use POST with a versioned request", 405);
       writes = operation.writes;
+      // Plugin tokens may only ever call `plugins.status` and `plugins.push` — reject every other
+      // operation as permission_denied before read-only checks so no other route leaks workspace state.
+      if (
+        access.principal?.kind === "plugin" &&
+        name !== "plugins.status" &&
+        name !== "plugins.push"
+      )
+        throw new ApplicationError(
+          "permission_denied",
+          "Plugin tokens may only call plugins.status and plugins.push",
+          403,
+        );
       if (name !== "operations.commit") this.requirePermission(access, operation.permission);
       if (access.operations && !access.operations.includes(name)) {
         if (access.readOnly?.held.includes(operation.permission)) throw readOnlyRefusal();
@@ -694,6 +710,16 @@ export class ApplicationHttp {
       throw new ApplicationError("route_not_found", "Application operation not found", 404);
     if (request.method !== "POST")
       throw new ApplicationError("method_not_allowed", "Use POST with the file as the body", 405);
+    // Plugin tokens upload only raw plugin payloads (`X-Upload-For: plugin`).
+    if (
+      access.principal?.kind === "plugin" &&
+      request.headers.get("x-upload-for")?.trim().toLowerCase() !== "plugin"
+    )
+      throw new ApplicationError(
+        "permission_denied",
+        "Plugin tokens may upload raw plugin payloads only (send X-Upload-For: plugin)",
+        403,
+      );
     this.requirePermission(access, "draft");
     // The control plane's key drafts for one thing: the answers it read from the owner's Stripe account, delivered as a bundle. It uploads no statement.
     if (
@@ -731,10 +757,10 @@ export class ApplicationHttp {
           mode: "local-development",
           permissions: access.permissions,
           head: setup ? await service.ledgerHead() : null,
-          // A member and the control plane are not what `principal` names (a frozen choice of two): a member is told by `member`.
+          // A member, the control plane, and a plugin token are not what `principal` names (a frozen choice of two): a member is told by `member`.
           ...(access.principal?.kind === "member"
             ? { member: { userId: access.principal.userId, role: access.principal.role } }
-            : access.principal?.kind === "service"
+            : access.principal?.kind === "service" || access.principal?.kind === "plugin"
               ? {}
               : { principal: access.principal ?? { kind: "owner" as const } }),
           ownerAccess: access.ownerAccess ?? "open",

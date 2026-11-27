@@ -25,6 +25,14 @@ export type AccessPrincipal =
       /** The control plane acting for itself (adding and removing members): never a person. */
       readonly kind: "service";
       readonly name: string;
+    }
+  | {
+      /** A plugin ingestion token (`rsp_<id>_<secret>`), scoped strictly to one plugin's ingestion endpoints. */
+      readonly kind: "plugin";
+      readonly pluginId: string;
+      readonly tokenId: string;
+      readonly label: string;
+      readonly expiresAt: string;
     };
 
 /** How the runtime recognises its owner.
@@ -41,6 +49,8 @@ export function describePrincipal(principal: AccessPrincipal | undefined): strin
       return `member:${principal.userId}`;
     case "service":
       return `service:${principal.name}`;
+    case "plugin":
+      return `plugin:${principal.pluginId}:${principal.tokenId}`;
     default:
       return "owner";
   }

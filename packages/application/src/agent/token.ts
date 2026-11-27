@@ -11,6 +11,8 @@ import { ApplicationError } from "../errors.ts";
 import type { BusinessPermission } from "../schema-kit.ts";
 
 export const TOKEN_PREFIX = "rst_";
+/** Plugin ingestion tokens carry their own prefix so they can never be mistaken for an agent token. */
+export const PLUGIN_TOKEN_PREFIX = "rsp_";
 /** The owner key (opt-in lock) has its own prefix so it can never be mistaken for a token. */
 export const OWNER_KEY_PREFIX = "rso_";
 
@@ -38,6 +40,7 @@ export const MAX_TOKEN_DAYS = 365;
 export const MAX_LABEL_LENGTH = 80;
 
 const tokenPattern = /^rst_([0-9a-f]{16})_([A-Za-z0-9_-]{43})$/;
+const pluginTokenPattern = /^rsp_([0-9a-f]{16})_([A-Za-z0-9_-]{43})$/;
 const ownerKeyPattern = /^rso_[A-Za-z0-9_-]{43}$/;
 
 const random = (length: number): Uint8Array => crypto.getRandomValues(new Uint8Array(length));
@@ -75,6 +78,17 @@ export async function issueToken(): Promise<IssuedToken> {
   const id = hex(random(8));
   const secret = base64Url(random(32));
   return { id, token: `${TOKEN_PREFIX}${id}_${secret}`, secretHash: await sha256Hex(secret) };
+}
+
+/** Issue a plugin-scoped token (`rsp_<id>_<secret>`). Only the SHA-256 of `<secret>` is stored. */
+export async function issuePluginToken(): Promise<IssuedToken> {
+  const id = hex(random(8));
+  const secret = base64Url(random(32));
+  return {
+    id,
+    token: `${PLUGIN_TOKEN_PREFIX}${id}_${secret}`,
+    secretHash: await sha256Hex(secret),
+  };
 }
 
 /** The agent key of a hosted workspace (docs/reference/program/hosting/agents.md): `rsa_<id>_<secret>`. It is a person's credential for a program that acts for them, and unlike the
@@ -161,6 +175,7 @@ export function isOwnerKey(value: string): boolean {
 export type PresentedCredential =
   | { readonly kind: "none" }
   | { readonly kind: "token"; readonly id: string; readonly secret: string }
+  | { readonly kind: "pluginToken"; readonly id: string; readonly secret: string }
   | { readonly kind: "ownerKey"; readonly key: string }
   | { readonly kind: "invalid" };
 
@@ -171,6 +186,9 @@ export function parseAuthorization(header: string | null): PresentedCredential {
   if (!credential) return { kind: "invalid" };
   const token = tokenPattern.exec(credential);
   if (token) return { kind: "token", id: token[1] as string, secret: token[2] as string };
+  const pluginToken = pluginTokenPattern.exec(credential);
+  if (pluginToken)
+    return { kind: "pluginToken", id: pluginToken[1] as string, secret: pluginToken[2] as string };
   if (ownerKeyPattern.test(credential)) return { kind: "ownerKey", key: credential };
   return { kind: "invalid" };
 }

@@ -11,6 +11,8 @@ export const FAST_ROOTS = [
   "./packages/application/test",
   "./packages/kernel/test",
   "./packages/booklog/test",
+  "./packages/plugin-sdk/test",
+  "./packages/plugin-stripe/test",
   "./packages/telemetry/test",
   "./apps/api/test",
   "./apps/mcp/test",

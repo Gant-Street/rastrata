@@ -13868,6 +13868,1272 @@
       ],
       "additionalProperties": false
     },
+    "PluginRoleSpec": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9.-]{1,62}[a-z0-9]$"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "asset",
+            "liability",
+            "equity",
+            "income",
+            "expense"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "defaultRoleKey": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9.-]{1,62}[a-z0-9]$"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "kind",
+        "required"
+      ],
+      "additionalProperties": false
+    },
+    "PluginClearingSpec": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9.-]{1,62}[a-z0-9]$"
+        },
+        "windowDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        }
+      },
+      "required": [
+        "role"
+      ],
+      "additionalProperties": false
+    },
+    "PluginManifestInput": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 32,
+          "pattern": "^[a-z][a-z0-9-]{1,30}[a-z0-9]$"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 40,
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 253
+          },
+          "maxItems": 20
+        },
+        "authKind": {
+          "type": "string",
+          "enum": [
+            "api_key",
+            "oauth2",
+            "file",
+            "none"
+          ]
+        },
+        "authLabel": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "authEnvVar": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginRoleSpec"
+          },
+          "maxItems": 40
+        },
+        "clearing": {
+          "$ref": "#/$defs/PluginClearingSpec"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "name",
+        "description",
+        "domains",
+        "authKind"
+      ],
+      "additionalProperties": false
+    },
+    "PluginConfigEntry": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "value": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "required": [
+        "key",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "PluginRoleBinding": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9.-]{1,62}[a-z0-9]$"
+        },
+        "accountId": {
+          "type": "string",
+          "maxLength": 128
+        }
+      },
+      "required": [
+        "role",
+        "accountId"
+      ],
+      "additionalProperties": false
+    },
+    "PluginAccountBinding": {
+      "type": "object",
+      "properties": {
+        "accountKey": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "ledgerAccountId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "startOn": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        }
+      },
+      "required": [
+        "accountKey",
+        "ledgerAccountId"
+      ],
+      "additionalProperties": false
+    },
+    "PluginResolvedRole": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9.-]{1,62}[a-z0-9]$"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "asset",
+            "liability",
+            "equity",
+            "income",
+            "expense"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "accountId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "override",
+            "roleKey",
+            "unmapped"
+          ]
+        },
+        "problem": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 300
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "role",
+        "label",
+        "kind",
+        "required",
+        "accountId",
+        "source",
+        "problem"
+      ],
+      "additionalProperties": false
+    },
+    "PluginCursorView": {
+      "type": "object",
+      "properties": {
+        "sourceKey": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastSyncAt": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "lastError": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sourceKey",
+        "cursor",
+        "lastSyncAt",
+        "lastError"
+      ],
+      "additionalProperties": false
+    },
+    "PluginSummaryView": {
+      "type": "object",
+      "properties": {
+        "pluginId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 32,
+          "pattern": "^[a-z][a-z0-9-]{1,30}[a-z0-9]$"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 40,
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "ready": {
+          "type": "boolean"
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 253
+          },
+          "maxItems": 20
+        },
+        "authKind": {
+          "type": "string",
+          "enum": [
+            "api_key",
+            "oauth2",
+            "file",
+            "none"
+          ]
+        },
+        "missingRoles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9.-]{1,62}[a-z0-9]$"
+          },
+          "maxItems": 40
+        },
+        "lastSyncAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 40
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "installedAt": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "updatedAt": {
+          "type": "string",
+          "maxLength": 40
+        }
+      },
+      "required": [
+        "pluginId",
+        "version",
+        "name",
+        "description",
+        "enabled",
+        "ready",
+        "domains",
+        "authKind",
+        "missingRoles",
+        "lastSyncAt",
+        "installedAt",
+        "updatedAt"
+      ],
+      "additionalProperties": false
+    },
+    "PluginDetailView": {
+      "type": "object",
+      "properties": {
+        "pluginId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 32,
+          "pattern": "^[a-z][a-z0-9-]{1,30}[a-z0-9]$"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 40,
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 60
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "ready": {
+          "type": "boolean"
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 253
+          },
+          "maxItems": 20
+        },
+        "authKind": {
+          "type": "string",
+          "enum": [
+            "api_key",
+            "oauth2",
+            "file",
+            "none"
+          ]
+        },
+        "authLabel": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 80
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authEnvVar": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "config": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginConfigEntry"
+          },
+          "maxItems": 50
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginResolvedRole"
+          },
+          "maxItems": 40
+        },
+        "accountMap": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginAccountBinding"
+          },
+          "maxItems": 100
+        },
+        "clearing": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PluginClearingSpec"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cursors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginCursorView"
+          },
+          "maxItems": 100
+        },
+        "installedAt": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "updatedAt": {
+          "type": "string",
+          "maxLength": 40
+        }
+      },
+      "required": [
+        "pluginId",
+        "version",
+        "name",
+        "description",
+        "enabled",
+        "ready",
+        "domains",
+        "authKind",
+        "authLabel",
+        "authEnvVar",
+        "config",
+        "roles",
+        "accountMap",
+        "clearing",
+        "cursors",
+        "installedAt",
+        "updatedAt"
+      ],
+      "additionalProperties": false
+    },
+    "PluginEventLegInput": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9.-]{1,62}[a-z0-9]$"
+        },
+        "amount": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$"
+        },
+        "memo": {
+          "type": "string",
+          "maxLength": 300
+        }
+      },
+      "required": [
+        "role",
+        "amount"
+      ],
+      "additionalProperties": false
+    },
+    "PluginKeyValue": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "value": {
+          "type": "string",
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "key",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "PluginBankLineInput": {
+      "type": "object",
+      "properties": {
+        "accountKey": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "providerId": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "rawIndex": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "postedOn": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "amount": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "counterparty": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "reference": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "runningBalance": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$"
+        },
+        "excerpt": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "accountKey",
+        "rawIndex",
+        "postedOn",
+        "amount",
+        "currency",
+        "description"
+      ],
+      "additionalProperties": false
+    },
+    "PluginLedgerEventInput": {
+      "type": "object",
+      "properties": {
+        "accountKey": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "providerId": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "rawIndex": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "eventOn": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "amount": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$"
+        },
+        "legs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginEventLegInput"
+          },
+          "maxItems": 50,
+          "minItems": 2
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginKeyValue"
+          },
+          "maxItems": 20
+        },
+        "coveredBy": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "evidence": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "sourceId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "excerpt": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "accountKey",
+        "providerId",
+        "rawIndex",
+        "eventOn",
+        "summary",
+        "currency",
+        "legs"
+      ],
+      "additionalProperties": false
+    },
+    "PluginBalanceCheckInput": {
+      "type": "object",
+      "properties": {
+        "accountKey": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "asOf": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "balance": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$"
+        }
+      },
+      "required": [
+        "accountKey",
+        "asOf",
+        "balance"
+      ],
+      "additionalProperties": false
+    },
+    "PluginListInput": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "PluginListOutput": {
+      "type": "object",
+      "properties": {
+        "plugins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginSummaryView"
+          },
+          "maxItems": 200
+        }
+      },
+      "required": [
+        "plugins"
+      ],
+      "additionalProperties": false
+    },
+    "PluginInstallInput": {
+      "type": "object",
+      "properties": {
+        "manifest": {
+          "$ref": "#/$defs/PluginManifestInput"
+        },
+        "config": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginConfigEntry"
+          },
+          "maxItems": 50
+        },
+        "roleMap": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginRoleBinding"
+          },
+          "maxItems": 40
+        },
+        "accountMap": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginAccountBinding"
+          },
+          "maxItems": 100
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "manifest"
+      ],
+      "additionalProperties": false
+    },
+    "PluginConfigureInput": {
+      "type": "object",
+      "properties": {
+        "pluginId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 32,
+          "pattern": "^[a-z][a-z0-9-]{1,30}[a-z0-9]$"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "config": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginConfigEntry"
+          },
+          "maxItems": 50
+        },
+        "roleMap": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginRoleBinding"
+          },
+          "maxItems": 40
+        },
+        "accountMap": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginAccountBinding"
+          },
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "pluginId"
+      ],
+      "additionalProperties": false
+    },
+    "PluginStatusInput": {
+      "type": "object",
+      "properties": {
+        "pluginId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 32,
+          "pattern": "^[a-z][a-z0-9-]{1,30}[a-z0-9]$"
+        }
+      },
+      "required": [
+        "pluginId"
+      ],
+      "additionalProperties": false
+    },
+    "PluginPushInput": {
+      "type": "object",
+      "properties": {
+        "pluginId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 32,
+          "pattern": "^[a-z][a-z0-9-]{1,30}[a-z0-9]$"
+        },
+        "sourceKey": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "rawSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "fetchedAt": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "bankLines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginBankLineInput"
+          },
+          "maxItems": 500
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginLedgerEventInput"
+          },
+          "maxItems": 500
+        },
+        "balances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginBalanceCheckInput"
+          },
+          "maxItems": 50
+        },
+        "cursor": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "ledgerAccountId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "startOn": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "catchUp": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "pluginId",
+        "sourceKey",
+        "rawSha256"
+      ],
+      "additionalProperties": false
+    },
+    "PluginBalanceCheckResult": {
+      "type": "object",
+      "properties": {
+        "accountKey": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "asOf": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "reported": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$"
+        },
+        "ledger": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "waiting": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "excluded": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "difference": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "accountKey",
+        "asOf",
+        "reported",
+        "ledger",
+        "waiting",
+        "excluded",
+        "difference"
+      ],
+      "additionalProperties": false
+    },
+    "PluginPushOutput": {
+      "type": "object",
+      "properties": {
+        "pluginId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 32,
+          "pattern": "^[a-z][a-z0-9-]{1,30}[a-z0-9]$"
+        },
+        "sourceKey": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "batchId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "newCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "duplicateCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "overlapCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excludedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 500
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "balances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginBalanceCheckResult"
+          },
+          "maxItems": 50
+        }
+      },
+      "required": [
+        "pluginId",
+        "sourceKey",
+        "batchId",
+        "newCount",
+        "duplicateCount",
+        "overlapCount",
+        "excludedCount",
+        "cursor",
+        "balances"
+      ],
+      "additionalProperties": false
+    },
+    "PluginRemoveInput": {
+      "type": "object",
+      "properties": {
+        "pluginId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 32,
+          "pattern": "^[a-z][a-z0-9-]{1,30}[a-z0-9]$"
+        }
+      },
+      "required": [
+        "pluginId"
+      ],
+      "additionalProperties": false
+    },
+    "PluginRemoveOutput": {
+      "type": "object",
+      "properties": {
+        "pluginId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 32,
+          "pattern": "^[a-z][a-z0-9-]{1,30}[a-z0-9]$"
+        },
+        "removed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "pluginId",
+        "removed"
+      ],
+      "additionalProperties": false
+    },
+    "PluginTokenSummary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{16}$"
+        },
+        "pluginId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 32,
+          "pattern": "^[a-z][a-z0-9-]{1,30}[a-z0-9]$"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "revoked",
+            "expired"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "createdBy": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "expiresAt": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "revokedAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 40
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revokedReason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastUsedAt": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 40
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "pluginId",
+        "label",
+        "status",
+        "createdAt",
+        "createdBy",
+        "expiresAt",
+        "revokedAt",
+        "revokedReason",
+        "lastUsedAt"
+      ],
+      "additionalProperties": false
+    },
+    "PluginCreateTokenInput": {
+      "type": "object",
+      "properties": {
+        "pluginId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 32,
+          "pattern": "^[a-z][a-z0-9-]{1,30}[a-z0-9]$"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "expiresInDays": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 365
+        }
+      },
+      "required": [
+        "pluginId",
+        "label"
+      ],
+      "additionalProperties": false
+    },
+    "PluginCreateTokenOutput": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 120
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "record": {
+          "$ref": "#/$defs/PluginTokenSummary"
+        }
+      },
+      "required": [
+        "token",
+        "record"
+      ],
+      "additionalProperties": false
+    },
+    "PluginListTokensInput": {
+      "type": "object",
+      "properties": {
+        "pluginId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 32,
+          "pattern": "^[a-z][a-z0-9-]{1,30}[a-z0-9]$"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "PluginListTokensOutput": {
+      "type": "object",
+      "properties": {
+        "tokens": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PluginTokenSummary"
+          },
+          "maxItems": 200
+        }
+      },
+      "required": [
+        "tokens"
+      ],
+      "additionalProperties": false
+    },
+    "PluginRevokeTokenInput": {
+      "type": "object",
+      "properties": {
+        "tokenId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{16}$"
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "tokenId"
+      ],
+      "additionalProperties": false
+    },
+    "PluginRevokeTokenOutput": {
+      "type": "object",
+      "properties": {
+        "record": {
+          "$ref": "#/$defs/PluginTokenSummary"
+        }
+      },
+      "required": [
+        "record"
+      ],
+      "additionalProperties": false
+    },
     "ReconcileAccount": {
       "type": "object",
       "properties": {
@@ -30483,6 +31749,114 @@
       },
       "output": {
         "$ref": "#/$defs/PayeeExport"
+      }
+    },
+    {
+      "name": "plugins.list",
+      "description": "List installed ingestion plugins, their readiness, missing account roles, and last sync time.",
+      "permission": "read",
+      "writes": false,
+      "input": {
+        "$ref": "#/$defs/PluginListInput"
+      },
+      "output": {
+        "$ref": "#/$defs/PluginListOutput"
+      }
+    },
+    {
+      "name": "plugins.install",
+      "description": "Install or upgrade an ingestion plugin manifest in this book and auto-bind matching chart role keys.",
+      "permission": "configure",
+      "writes": true,
+      "input": {
+        "$ref": "#/$defs/PluginInstallInput"
+      },
+      "output": {
+        "$ref": "#/$defs/PluginDetailView"
+      }
+    },
+    {
+      "name": "plugins.configure",
+      "description": "Update non-secret plugin settings, role-to-account mappings, account cutover dates, or enabled state.",
+      "permission": "configure",
+      "writes": true,
+      "input": {
+        "$ref": "#/$defs/PluginConfigureInput"
+      },
+      "output": {
+        "$ref": "#/$defs/PluginDetailView"
+      }
+    },
+    {
+      "name": "plugins.status",
+      "description": "Inspect an installed plugin's resolved account roles, cursors, and readiness.",
+      "permission": "read",
+      "writes": false,
+      "input": {
+        "$ref": "#/$defs/PluginStatusInput"
+      },
+      "output": {
+        "$ref": "#/$defs/PluginDetailView"
+      }
+    },
+    {
+      "name": "plugins.push",
+      "description": "Submit a verified batch of BankLine and/or LedgerEvent items backed by an archived raw upload (POST /v1/uploads with X-Upload-For: plugin), advancing the plugin cursor atomically.",
+      "permission": "draft",
+      "writes": true,
+      "input": {
+        "$ref": "#/$defs/PluginPushInput"
+      },
+      "output": {
+        "$ref": "#/$defs/PluginPushOutput"
+      }
+    },
+    {
+      "name": "plugins.remove",
+      "description": "Remove an installed plugin and revoke its plugin tokens while keeping archived payloads and posted journals intact.",
+      "permission": "configure",
+      "writes": true,
+      "input": {
+        "$ref": "#/$defs/PluginRemoveInput"
+      },
+      "output": {
+        "$ref": "#/$defs/PluginRemoveOutput"
+      }
+    },
+    {
+      "name": "plugins.createToken",
+      "description": "Issue a least-privilege plugin token (rsp_...) scoped strictly to plugins.status, plugins.push, and plugin raw uploads for one installed plugin.",
+      "permission": "provision",
+      "writes": true,
+      "input": {
+        "$ref": "#/$defs/PluginCreateTokenInput"
+      },
+      "output": {
+        "$ref": "#/$defs/PluginCreateTokenOutput"
+      }
+    },
+    {
+      "name": "plugins.listTokens",
+      "description": "List plugin ingestion tokens and their active, revoked, or expired status without revealing secrets.",
+      "permission": "provision",
+      "writes": false,
+      "input": {
+        "$ref": "#/$defs/PluginListTokensInput"
+      },
+      "output": {
+        "$ref": "#/$defs/PluginListTokensOutput"
+      }
+    },
+    {
+      "name": "plugins.revokeToken",
+      "description": "Revoke a plugin ingestion token immediately.",
+      "permission": "provision",
+      "writes": true,
+      "input": {
+        "$ref": "#/$defs/PluginRevokeTokenInput"
+      },
+      "output": {
+        "$ref": "#/$defs/PluginRevokeTokenOutput"
       }
     },
     {

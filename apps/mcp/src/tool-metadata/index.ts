@@ -12,6 +12,7 @@ import { ingestTools } from "./ingest.ts";
 import { intakeTools } from "./intake.ts";
 import { membersTools } from "./members.ts";
 import { payeesTools } from "./payees.ts";
+import { pluginsTools } from "./plugins.ts";
 import { reconcileTools } from "./reconcile.ts";
 import { reportsTools } from "./reports.ts";
 import { rulesTools } from "./rules.ts";
@@ -34,6 +35,7 @@ const parts: readonly (readonly [string, Readonly<Record<string, OperationMetada
   ["intake", intakeTools],
   ["members", membersTools],
   ["payees", payeesTools],
+  ["plugins", pluginsTools],
   ["reconcile", reconcileTools],
   ["reports", reportsTools],
   ["rules", rulesTools],

@@ -12,6 +12,7 @@ import { ingestSchema } from "./ingest/schema.ts";
 import { intakeSchema } from "./intake/schema.ts";
 import { membersSchema } from "./members/schema.ts";
 import { payeesSchema } from "./payees/schema.ts";
+import { pluginsSchema } from "./plugins/schema.ts";
 import { reconcileSchema } from "./reconcile/schema.ts";
 import { reportsSchema } from "./reports/schema.ts";
 import { rulesSchema } from "./rules/schema.ts";
@@ -34,6 +35,7 @@ export const sliceSchemas: readonly SliceSchema[] = [
   intakeSchema,
   membersSchema,
   payeesSchema,
+  pluginsSchema,
   reconcileSchema,
   reportsSchema,
   rulesSchema,

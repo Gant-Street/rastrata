@@ -105,6 +105,7 @@ export * from "./entries/index";
 export * from "./ingest/index";
 export * from "./kit/index";
 export * from "./payees/index";
+export * from "./plugins/index";
 export * from "./reconcile/index";
 export * from "./reports/index";
 export * from "./rules/index";

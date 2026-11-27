@@ -50,6 +50,8 @@ bun run test
 | `packages/ledger/` | AGPL-3.0 | Durable append-only book storage and replay |
 | `packages/application/` | AGPL-3.0 | Bookkeeping workflows, ingestion, rules, reconciliation, tax, and reports |
 | `packages/booklog/` | AGPL-3.0 | Hash-chained book log and snapshotting |
+| `packages/plugin-sdk/` | MIT | Zero-dependency SDK, runner, and test harness for Rastrata ingestion plugins |
+| `packages/plugin-stripe/` | MIT | Official Stripe payout, evidence, and bank-clearing plugin |
 | `packages/telemetry/` | AGPL-3.0 | Static OpenTelemetry metric and span catalog |
 | `packages/ui/` | AGPL-3.0 | SolidJS + Ark UI ledger design system |
 | `apps/api/` | AGPL-3.0 | Application HTTP server and single-file `rastrata-service` binary |

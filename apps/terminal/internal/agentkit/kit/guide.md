@@ -1253,6 +1253,12 @@ Each tool is one operation of the application. From the command line, `rastrata 
 | `rastrata_test_payee_words` | `payees.test` | read | no |
 | `rastrata_get_money_by_payee` | `payees.totals` | read | no |
 | `rastrata_export_money_by_payee` | `payees.export` | read | no |
+| `rastrata_list_plugins` | `plugins.list` | read | no |
+| `rastrata_install_plugin` | `plugins.install` | configure | yes |
+| `rastrata_configure_plugin` | `plugins.configure` | configure | yes |
+| `rastrata_get_plugin_status` | `plugins.status` | read | no |
+| `rastrata_push_plugin_batch` | `plugins.push` | draft | yes |
+| `rastrata_remove_plugin` | `plugins.remove` | configure | yes |
 | `rastrata_start_reconciliation` | `reconcile.start` | draft | yes |
 | `rastrata_get_reconciliation` | `reconcile.get` | read | no |
 | `rastrata_set_reconciliation_lines` | `reconcile.setCleared` | draft | yes |

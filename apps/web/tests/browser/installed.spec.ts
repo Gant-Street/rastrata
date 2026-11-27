@@ -117,6 +117,7 @@ const ROUTES = [
   "/settings/move",
   "/settings/backups",
   "/settings/agent",
+  "/settings/plugins",
   "/settings/stripe",
   // Help: the list, a topic (read from the build's own files, under the content policy) and one that is not there.
   "/help",

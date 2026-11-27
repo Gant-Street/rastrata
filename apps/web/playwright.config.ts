@@ -294,6 +294,14 @@ const config = defineConfig({
       timeout: 120_000,
       use: { ...devices["Desktop Chrome"], baseURL: `http://127.0.0.1:${port(5010)}` },
     },
+    // Plugins lane (Settings -> Plugins): empty state, install dialog, role mapping, rsp_ tokens,
+    // and responsive light/dark layout check on one fresh book of its own.
+    {
+      name: "plugins-chromium",
+      testMatch: "plugins.spec.ts",
+      timeout: 120_000,
+      use: { ...devices["Desktop Chrome"], baseURL: `http://127.0.0.1:${port(5020)}` },
+    },
     // Accounts: the whole product on this computer (apps/control-worker/tooling/dev-stack.ts: the pod with accounts and many books, the control Worker
     // under workerd, the built web app, one address). The spec starts it itself on a port the system chooses, so it needs no entry in webServer below and no
     // port of its own. The address is https with a certificate made for the run (`--tls`), because the cookies are `Secure` and only Chromium keeps one from plain http on a
@@ -879,6 +887,28 @@ const config = defineConfig({
         RASTRATA_LOCAL_DEV: "1",
         RASTRATA_API_URL: `http://127.0.0.1:${port(5011)}`,
         RASTRATA_LOCAL_DB: join(localBrowserData, "catchall.sqlite"),
+      },
+      reuseExistingServer: false,
+    },
+    {
+      command: "bun ../api/src/main.ts",
+      url: `http://127.0.0.1:${port(5021)}/health`,
+      env: {
+        RASTRATA_LOCAL_DEV: "1",
+        RASTRATA_API_PORT: String(port(5021)),
+        RASTRATA_LOCAL_DB: join(localBrowserData, "plugins.sqlite"),
+      },
+      reuseExistingServer: false,
+    },
+    {
+      command: "bun tooling/dev.ts",
+      url: `http://127.0.0.1:${port(5020)}`,
+      env: {
+        RASTRATA_WEB_HMR: "0",
+        PORT: String(port(5020)),
+        RASTRATA_LOCAL_DEV: "1",
+        RASTRATA_API_URL: `http://127.0.0.1:${port(5021)}`,
+        RASTRATA_LOCAL_DB: join(localBrowserData, "plugins.sqlite"),
       },
       reuseExistingServer: false,
     },

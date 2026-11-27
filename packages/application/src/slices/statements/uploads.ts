@@ -33,19 +33,28 @@ const ACCEPTED = new Set([
   "application/octet-stream",
 ]);
 
+const PLUGIN_ACCEPTED = new Set([
+  ...ACCEPTED,
+  "application/json",
+  "application/gzip",
+  "application/x-gzip",
+]);
+
 /** What an upload is for. A statement file is the default. A Stripe pull delivers its answers in a
- * bundle: a gzip file of Stripe's answers, byte for byte, that `stripe.receive` unpacks (`X-Upload-For:
- * stripe`, content type `application/gzip`). */
-function purposeOf(header: string | null): "statement" | "stripe" {
+ * bundle (`X-Upload-For: stripe`, `application/gzip`). An ingestion plugin archives raw payloads
+ * with `X-Upload-For: plugin` (JSON, CSV, XML, gzip, or octet-stream). */
+function purposeOf(header: string | null): "statement" | "stripe" | "plugin" {
   if (header === null || header === "") return "statement";
-  if (header.trim().toLowerCase() === "stripe") return "stripe";
+  const value = header.trim().toLowerCase();
+  if (value === "stripe") return "stripe";
+  if (value === "plugin") return "plugin";
   throw new ApplicationError(
     "invalid_input",
-    "X-Upload-For is stripe, for an answer Stripe gave, or not sent at all, for a statement file.",
+    "X-Upload-For must be stripe, plugin, or omitted for a statement file.",
   );
 }
 
-function mediaTypeOf(header: string | null, purpose: "statement" | "stripe"): string {
+function mediaTypeOf(header: string | null, purpose: "statement" | "stripe" | "plugin"): string {
   const base = (header ?? "").split(";")[0]?.trim().toLowerCase() ?? "";
   if (purpose === "stripe") {
     if (base !== "application/gzip" && base !== "application/x-gzip")
@@ -55,6 +64,16 @@ function mediaTypeOf(header: string | null, purpose: "statement" | "stripe"): st
         415,
       );
     return "application/gzip";
+  }
+  if (purpose === "plugin") {
+    if (base === "") return "application/octet-stream";
+    if (!PLUGIN_ACCEPTED.has(base))
+      throw new ApplicationError(
+        "media_type_unsupported",
+        "Plugin raw payloads must use JSON, CSV, plain text, XML, gzip, or application/octet-stream.",
+        415,
+      );
+    return base;
   }
   if (base === "") return "application/octet-stream";
   if (!ACCEPTED.has(base))

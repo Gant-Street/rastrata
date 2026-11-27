@@ -2535,6 +2535,197 @@ export type PayeeExport = {
   readonly populationHash: string;
   readonly content: string;
 };
+export type PluginRoleSpec = {
+  readonly key: string;
+  readonly label: string;
+  readonly kind: "asset" | "liability" | "equity" | "income" | "expense";
+  readonly required: boolean;
+  readonly defaultRoleKey?: string;
+};
+export type PluginClearingSpec = { readonly role: string; readonly windowDays?: number };
+export type PluginManifestInput = {
+  readonly id: string;
+  readonly version: string;
+  readonly name: string;
+  readonly description: string;
+  readonly domains: readonly string[];
+  readonly authKind: "api_key" | "oauth2" | "file" | "none";
+  readonly authLabel?: string;
+  readonly authEnvVar?: string;
+  readonly roles?: readonly PluginRoleSpec[];
+  readonly clearing?: PluginClearingSpec;
+};
+export type PluginConfigEntry = { readonly key: string; readonly value: string };
+export type PluginRoleBinding = { readonly role: string; readonly accountId: string };
+export type PluginAccountBinding = {
+  readonly accountKey: string;
+  readonly ledgerAccountId: string;
+  readonly startOn?: string;
+};
+export type PluginResolvedRole = {
+  readonly role: string;
+  readonly label: string;
+  readonly kind: "asset" | "liability" | "equity" | "income" | "expense";
+  readonly required: boolean;
+  readonly accountId: string | null;
+  readonly source: "override" | "roleKey" | "unmapped";
+  readonly problem: string | null;
+};
+export type PluginCursorView = {
+  readonly sourceKey: string;
+  readonly cursor: string | null;
+  readonly lastSyncAt: string;
+  readonly lastError: string | null;
+};
+export type PluginSummaryView = {
+  readonly pluginId: string;
+  readonly version: string;
+  readonly name: string;
+  readonly description: string;
+  readonly enabled: boolean;
+  readonly ready: boolean;
+  readonly domains: readonly string[];
+  readonly authKind: "api_key" | "oauth2" | "file" | "none";
+  readonly missingRoles: readonly string[];
+  readonly lastSyncAt: string | null;
+  readonly installedAt: string;
+  readonly updatedAt: string;
+};
+export type PluginDetailView = {
+  readonly pluginId: string;
+  readonly version: string;
+  readonly name: string;
+  readonly description: string;
+  readonly enabled: boolean;
+  readonly ready: boolean;
+  readonly domains: readonly string[];
+  readonly authKind: "api_key" | "oauth2" | "file" | "none";
+  readonly authLabel: string | null;
+  readonly authEnvVar: string | null;
+  readonly config: readonly PluginConfigEntry[];
+  readonly roles: readonly PluginResolvedRole[];
+  readonly accountMap: readonly PluginAccountBinding[];
+  readonly clearing: PluginClearingSpec | null;
+  readonly cursors: readonly PluginCursorView[];
+  readonly installedAt: string;
+  readonly updatedAt: string;
+};
+export type PluginEventLegInput = {
+  readonly role: string;
+  readonly amount: string;
+  readonly memo?: string;
+};
+export type PluginKeyValue = { readonly key: string; readonly value: string };
+export type PluginBankLineInput = {
+  readonly accountKey: string;
+  readonly providerId?: string;
+  readonly rawIndex: number;
+  readonly postedOn: string;
+  readonly amount: string;
+  readonly currency: string;
+  readonly description: string;
+  readonly counterparty?: string;
+  readonly reference?: string;
+  readonly runningBalance?: string;
+  readonly excerpt?: string;
+};
+export type PluginLedgerEventInput = {
+  readonly accountKey: string;
+  readonly providerId: string;
+  readonly rawIndex: number;
+  readonly eventOn: string;
+  readonly summary: string;
+  readonly currency: string;
+  readonly amount?: string;
+  readonly legs: readonly PluginEventLegInput[];
+  readonly links?: readonly PluginKeyValue[];
+  readonly coveredBy?: string;
+  readonly evidence?: string;
+  readonly sourceId?: string;
+  readonly excerpt?: string;
+};
+export type PluginBalanceCheckInput = {
+  readonly accountKey: string;
+  readonly asOf: string;
+  readonly balance: string;
+};
+export type PluginListInput = Readonly<Record<string, never>>;
+export type PluginListOutput = { readonly plugins: readonly PluginSummaryView[] };
+export type PluginInstallInput = {
+  readonly manifest: PluginManifestInput;
+  readonly config?: readonly PluginConfigEntry[];
+  readonly roleMap?: readonly PluginRoleBinding[];
+  readonly accountMap?: readonly PluginAccountBinding[];
+  readonly enabled?: boolean;
+};
+export type PluginConfigureInput = {
+  readonly pluginId: string;
+  readonly enabled?: boolean;
+  readonly config?: readonly PluginConfigEntry[];
+  readonly roleMap?: readonly PluginRoleBinding[];
+  readonly accountMap?: readonly PluginAccountBinding[];
+};
+export type PluginStatusInput = { readonly pluginId: string };
+export type PluginPushInput = {
+  readonly pluginId: string;
+  readonly sourceKey: string;
+  readonly rawSha256: string;
+  readonly fetchedAt?: string;
+  readonly bankLines?: readonly PluginBankLineInput[];
+  readonly events?: readonly PluginLedgerEventInput[];
+  readonly balances?: readonly PluginBalanceCheckInput[];
+  readonly cursor?: string;
+  readonly ledgerAccountId?: string;
+  readonly startOn?: string;
+  readonly catchUp?: boolean;
+};
+export type PluginBalanceCheckResult = {
+  readonly accountKey: string;
+  readonly asOf: string;
+  readonly reported: string;
+  readonly ledger: string | null;
+  readonly waiting: string | null;
+  readonly excluded: string | null;
+  readonly difference: string | null;
+};
+export type PluginPushOutput = {
+  readonly pluginId: string;
+  readonly sourceKey: string;
+  readonly batchId: string;
+  readonly newCount: number;
+  readonly duplicateCount: number;
+  readonly overlapCount: number;
+  readonly excludedCount: number;
+  readonly cursor: string | null;
+  readonly balances: readonly PluginBalanceCheckResult[];
+};
+export type PluginRemoveInput = { readonly pluginId: string };
+export type PluginRemoveOutput = { readonly pluginId: string; readonly removed: boolean };
+export type PluginTokenSummary = {
+  readonly id: string;
+  readonly pluginId: string;
+  readonly label: string;
+  readonly status: "active" | "revoked" | "expired";
+  readonly createdAt: string;
+  readonly createdBy: string;
+  readonly expiresAt: string;
+  readonly revokedAt: string | null;
+  readonly revokedReason: string | null;
+  readonly lastUsedAt: string | null;
+};
+export type PluginCreateTokenInput = {
+  readonly pluginId: string;
+  readonly label: string;
+  readonly expiresInDays?: number;
+};
+export type PluginCreateTokenOutput = {
+  readonly token: string | null;
+  readonly record: PluginTokenSummary;
+};
+export type PluginListTokensInput = { readonly pluginId?: string };
+export type PluginListTokensOutput = { readonly tokens: readonly PluginTokenSummary[] };
+export type PluginRevokeTokenInput = { readonly tokenId: string; readonly reason?: string };
+export type PluginRevokeTokenOutput = { readonly record: PluginTokenSummary };
 export type ReconcileAccount = {
   readonly id: string;
   readonly code: string;
@@ -5383,6 +5574,15 @@ export interface ApplicationInputs {
   readonly "payees.test": PayeeTestInput;
   readonly "payees.totals": PayeeTotalsInput;
   readonly "payees.export": PayeeExportInput;
+  readonly "plugins.list": PluginListInput;
+  readonly "plugins.install": PluginInstallInput;
+  readonly "plugins.configure": PluginConfigureInput;
+  readonly "plugins.status": PluginStatusInput;
+  readonly "plugins.push": PluginPushInput;
+  readonly "plugins.remove": PluginRemoveInput;
+  readonly "plugins.createToken": PluginCreateTokenInput;
+  readonly "plugins.listTokens": PluginListTokensInput;
+  readonly "plugins.revokeToken": PluginRevokeTokenInput;
   readonly "reconcile.start": ReconcileStartInput;
   readonly "reconcile.get": ReconcileIdInput;
   readonly "reconcile.setCleared": ReconcileSetClearedInput;
@@ -5563,6 +5763,15 @@ export interface ApplicationOutputs {
   readonly "payees.test": PayeeTest;
   readonly "payees.totals": PayeeTotals;
   readonly "payees.export": PayeeExport;
+  readonly "plugins.list": PluginListOutput;
+  readonly "plugins.install": PluginDetailView;
+  readonly "plugins.configure": PluginDetailView;
+  readonly "plugins.status": PluginDetailView;
+  readonly "plugins.push": PluginPushOutput;
+  readonly "plugins.remove": PluginRemoveOutput;
+  readonly "plugins.createToken": PluginCreateTokenOutput;
+  readonly "plugins.listTokens": PluginListTokensOutput;
+  readonly "plugins.revokeToken": PluginRevokeTokenOutput;
   readonly "reconcile.start": Reconciliation;
   readonly "reconcile.get": Reconciliation;
   readonly "reconcile.setCleared": ReconcileProgress;
@@ -5701,6 +5910,12 @@ export const WRITE_OPERATIONS = [
   "book.unretire",
   "book.access",
   "payees.save",
+  "plugins.install",
+  "plugins.configure",
+  "plugins.push",
+  "plugins.remove",
+  "plugins.createToken",
+  "plugins.revokeToken",
   "reconcile.start",
   "reconcile.setCleared",
   "reconcile.setStatement",

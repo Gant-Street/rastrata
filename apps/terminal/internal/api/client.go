@@ -70,7 +70,11 @@ type Client struct {
 // because it carries a secret that is shown once. The request is still retained, so a lost reply
 // can be resumed with the same identity; the service then confirms the token exists and does not
 // show the secret again. (bankfeed.connect keeps neither: see retainsNoRequest.)
-var retainsNoResponse = map[string]bool{"tokens.create": true, "bankfeed.connect": true}
+var retainsNoResponse = map[string]bool{
+	"tokens.create":       true,
+	"plugins.createToken": true,
+	"bankfeed.connect":    true,
+}
 
 // retainsNoRequest lists operations whose request carries a secret that must not be written to the
 // request journal, not even briefly. The SimpleFIN setup token is a credential that works once: the

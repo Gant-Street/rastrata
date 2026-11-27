@@ -2765,6 +2765,260 @@ type PayeeExport struct {
 	Content        string `json:"content"`
 }
 
+type PluginRoleSpec struct {
+	Key            string  `json:"key"`
+	Label          string  `json:"label"`
+	Kind           string  `json:"kind"`
+	Required       bool    `json:"required"`
+	DefaultRoleKey *string `json:"defaultRoleKey,omitempty"`
+}
+
+type PluginClearingSpec struct {
+	Role       string `json:"role"`
+	WindowDays *int   `json:"windowDays,omitempty"`
+}
+
+type PluginManifestInput struct {
+	ID          string              `json:"id"`
+	Version     string              `json:"version"`
+	Name        string              `json:"name"`
+	Description string              `json:"description"`
+	Domains     []string            `json:"domains"`
+	AuthKind    string              `json:"authKind"`
+	AuthLabel   *string             `json:"authLabel,omitempty"`
+	AuthEnvVar  *string             `json:"authEnvVar,omitempty"`
+	Roles       *[]PluginRoleSpec   `json:"roles,omitempty"`
+	Clearing    *PluginClearingSpec `json:"clearing,omitempty"`
+}
+
+type PluginConfigEntry struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+type PluginRoleBinding struct {
+	Role      string `json:"role"`
+	AccountID string `json:"accountId"`
+}
+
+type PluginAccountBinding struct {
+	AccountKey      string  `json:"accountKey"`
+	LedgerAccountID string  `json:"ledgerAccountId"`
+	StartOn         *string `json:"startOn,omitempty"`
+}
+
+type PluginResolvedRole struct {
+	Role      string  `json:"role"`
+	Label     string  `json:"label"`
+	Kind      string  `json:"kind"`
+	Required  bool    `json:"required"`
+	AccountID *string `json:"accountId"`
+	Source    string  `json:"source"`
+	Problem   *string `json:"problem"`
+}
+
+type PluginCursorView struct {
+	SourceKey  string  `json:"sourceKey"`
+	Cursor     *string `json:"cursor"`
+	LastSyncAt string  `json:"lastSyncAt"`
+	LastError  *string `json:"lastError"`
+}
+
+type PluginSummaryView struct {
+	PluginID     string   `json:"pluginId"`
+	Version      string   `json:"version"`
+	Name         string   `json:"name"`
+	Description  string   `json:"description"`
+	Enabled      bool     `json:"enabled"`
+	Ready        bool     `json:"ready"`
+	Domains      []string `json:"domains"`
+	AuthKind     string   `json:"authKind"`
+	MissingRoles []string `json:"missingRoles"`
+	LastSyncAt   *string  `json:"lastSyncAt"`
+	InstalledAt  string   `json:"installedAt"`
+	UpdatedAt    string   `json:"updatedAt"`
+}
+
+type PluginDetailView struct {
+	PluginID    string                 `json:"pluginId"`
+	Version     string                 `json:"version"`
+	Name        string                 `json:"name"`
+	Description string                 `json:"description"`
+	Enabled     bool                   `json:"enabled"`
+	Ready       bool                   `json:"ready"`
+	Domains     []string               `json:"domains"`
+	AuthKind    string                 `json:"authKind"`
+	AuthLabel   *string                `json:"authLabel"`
+	AuthEnvVar  *string                `json:"authEnvVar"`
+	Config      []PluginConfigEntry    `json:"config"`
+	Roles       []PluginResolvedRole   `json:"roles"`
+	AccountMap  []PluginAccountBinding `json:"accountMap"`
+	Clearing    *PluginClearingSpec    `json:"clearing"`
+	Cursors     []PluginCursorView     `json:"cursors"`
+	InstalledAt string                 `json:"installedAt"`
+	UpdatedAt   string                 `json:"updatedAt"`
+}
+
+type PluginEventLegInput struct {
+	Role   string  `json:"role"`
+	Amount string  `json:"amount"`
+	Memo   *string `json:"memo,omitempty"`
+}
+
+type PluginKeyValue struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+type PluginBankLineInput struct {
+	AccountKey     string  `json:"accountKey"`
+	ProviderID     *string `json:"providerId,omitempty"`
+	RawIndex       int     `json:"rawIndex"`
+	PostedOn       string  `json:"postedOn"`
+	Amount         string  `json:"amount"`
+	Currency       string  `json:"currency"`
+	Description    string  `json:"description"`
+	Counterparty   *string `json:"counterparty,omitempty"`
+	Reference      *string `json:"reference,omitempty"`
+	RunningBalance *string `json:"runningBalance,omitempty"`
+	Excerpt        *string `json:"excerpt,omitempty"`
+}
+
+type PluginLedgerEventInput struct {
+	AccountKey string                `json:"accountKey"`
+	ProviderID string                `json:"providerId"`
+	RawIndex   int                   `json:"rawIndex"`
+	EventOn    string                `json:"eventOn"`
+	Summary    string                `json:"summary"`
+	Currency   string                `json:"currency"`
+	Amount     *string               `json:"amount,omitempty"`
+	Legs       []PluginEventLegInput `json:"legs"`
+	Links      *[]PluginKeyValue     `json:"links,omitempty"`
+	CoveredBy  *string               `json:"coveredBy,omitempty"`
+	Evidence   *string               `json:"evidence,omitempty"`
+	SourceID   *string               `json:"sourceId,omitempty"`
+	Excerpt    *string               `json:"excerpt,omitempty"`
+}
+
+type PluginBalanceCheckInput struct {
+	AccountKey string `json:"accountKey"`
+	AsOf       string `json:"asOf"`
+	Balance    string `json:"balance"`
+}
+
+type PluginListInput struct {
+}
+
+type PluginListOutput struct {
+	Plugins []PluginSummaryView `json:"plugins"`
+}
+
+type PluginInstallInput struct {
+	Manifest   PluginManifestInput     `json:"manifest"`
+	Config     *[]PluginConfigEntry    `json:"config,omitempty"`
+	RoleMap    *[]PluginRoleBinding    `json:"roleMap,omitempty"`
+	AccountMap *[]PluginAccountBinding `json:"accountMap,omitempty"`
+	Enabled    *bool                   `json:"enabled,omitempty"`
+}
+
+type PluginConfigureInput struct {
+	PluginID   string                  `json:"pluginId"`
+	Enabled    *bool                   `json:"enabled,omitempty"`
+	Config     *[]PluginConfigEntry    `json:"config,omitempty"`
+	RoleMap    *[]PluginRoleBinding    `json:"roleMap,omitempty"`
+	AccountMap *[]PluginAccountBinding `json:"accountMap,omitempty"`
+}
+
+type PluginStatusInput struct {
+	PluginID string `json:"pluginId"`
+}
+
+type PluginPushInput struct {
+	PluginID        string                     `json:"pluginId"`
+	SourceKey       string                     `json:"sourceKey"`
+	RawSha256       string                     `json:"rawSha256"`
+	FetchedAt       *string                    `json:"fetchedAt,omitempty"`
+	BankLines       *[]PluginBankLineInput     `json:"bankLines,omitempty"`
+	Events          *[]PluginLedgerEventInput  `json:"events,omitempty"`
+	Balances        *[]PluginBalanceCheckInput `json:"balances,omitempty"`
+	Cursor          *string                    `json:"cursor,omitempty"`
+	LedgerAccountID *string                    `json:"ledgerAccountId,omitempty"`
+	StartOn         *string                    `json:"startOn,omitempty"`
+	CatchUp         *bool                      `json:"catchUp,omitempty"`
+}
+
+type PluginBalanceCheckResult struct {
+	AccountKey string  `json:"accountKey"`
+	AsOf       string  `json:"asOf"`
+	Reported   string  `json:"reported"`
+	Ledger     *string `json:"ledger"`
+	Waiting    *string `json:"waiting"`
+	Excluded   *string `json:"excluded"`
+	Difference *string `json:"difference"`
+}
+
+type PluginPushOutput struct {
+	PluginID       string                     `json:"pluginId"`
+	SourceKey      string                     `json:"sourceKey"`
+	BatchID        string                     `json:"batchId"`
+	NewCount       int                        `json:"newCount"`
+	DuplicateCount int                        `json:"duplicateCount"`
+	OverlapCount   int                        `json:"overlapCount"`
+	ExcludedCount  int                        `json:"excludedCount"`
+	Cursor         *string                    `json:"cursor"`
+	Balances       []PluginBalanceCheckResult `json:"balances"`
+}
+
+type PluginRemoveInput struct {
+	PluginID string `json:"pluginId"`
+}
+
+type PluginRemoveOutput struct {
+	PluginID string `json:"pluginId"`
+	Removed  bool   `json:"removed"`
+}
+
+type PluginTokenSummary struct {
+	ID            string  `json:"id"`
+	PluginID      string  `json:"pluginId"`
+	Label         string  `json:"label"`
+	Status        string  `json:"status"`
+	CreatedAt     string  `json:"createdAt"`
+	CreatedBy     string  `json:"createdBy"`
+	ExpiresAt     string  `json:"expiresAt"`
+	RevokedAt     *string `json:"revokedAt"`
+	RevokedReason *string `json:"revokedReason"`
+	LastUsedAt    *string `json:"lastUsedAt"`
+}
+
+type PluginCreateTokenInput struct {
+	PluginID      string `json:"pluginId"`
+	Label         string `json:"label"`
+	ExpiresInDays *int   `json:"expiresInDays,omitempty"`
+}
+
+type PluginCreateTokenOutput struct {
+	Token  *string            `json:"token"`
+	Record PluginTokenSummary `json:"record"`
+}
+
+type PluginListTokensInput struct {
+	PluginID *string `json:"pluginId,omitempty"`
+}
+
+type PluginListTokensOutput struct {
+	Tokens []PluginTokenSummary `json:"tokens"`
+}
+
+type PluginRevokeTokenInput struct {
+	TokenID string  `json:"tokenId"`
+	Reason  *string `json:"reason,omitempty"`
+}
+
+type PluginRevokeTokenOutput struct {
+	Record PluginTokenSummary `json:"record"`
+}
+
 type ReconcileAccount struct {
 	ID         string `json:"id"`
 	Code       string `json:"code"`
@@ -6236,6 +6490,42 @@ func (c *Client) PayeesTotals(ctx context.Context, input PayeeTotalsInput, opera
 
 func (c *Client) PayeesExport(ctx context.Context, input PayeeExportInput, operationID string) (PayeeExport, error) {
 	return typedCall[PayeeExport](ctx, c, "payees.export", input, operationID)
+}
+
+func (c *Client) PluginsList(ctx context.Context, input PluginListInput, operationID string) (PluginListOutput, error) {
+	return typedCall[PluginListOutput](ctx, c, "plugins.list", input, operationID)
+}
+
+func (c *Client) PluginsInstall(ctx context.Context, input PluginInstallInput, operationID string) (PluginDetailView, error) {
+	return typedCall[PluginDetailView](ctx, c, "plugins.install", input, operationID)
+}
+
+func (c *Client) PluginsConfigure(ctx context.Context, input PluginConfigureInput, operationID string) (PluginDetailView, error) {
+	return typedCall[PluginDetailView](ctx, c, "plugins.configure", input, operationID)
+}
+
+func (c *Client) PluginsStatus(ctx context.Context, input PluginStatusInput, operationID string) (PluginDetailView, error) {
+	return typedCall[PluginDetailView](ctx, c, "plugins.status", input, operationID)
+}
+
+func (c *Client) PluginsPush(ctx context.Context, input PluginPushInput, operationID string) (PluginPushOutput, error) {
+	return typedCall[PluginPushOutput](ctx, c, "plugins.push", input, operationID)
+}
+
+func (c *Client) PluginsRemove(ctx context.Context, input PluginRemoveInput, operationID string) (PluginRemoveOutput, error) {
+	return typedCall[PluginRemoveOutput](ctx, c, "plugins.remove", input, operationID)
+}
+
+func (c *Client) PluginsCreateToken(ctx context.Context, input PluginCreateTokenInput, operationID string) (PluginCreateTokenOutput, error) {
+	return typedCall[PluginCreateTokenOutput](ctx, c, "plugins.createToken", input, operationID)
+}
+
+func (c *Client) PluginsListTokens(ctx context.Context, input PluginListTokensInput, operationID string) (PluginListTokensOutput, error) {
+	return typedCall[PluginListTokensOutput](ctx, c, "plugins.listTokens", input, operationID)
+}
+
+func (c *Client) PluginsRevokeToken(ctx context.Context, input PluginRevokeTokenInput, operationID string) (PluginRevokeTokenOutput, error) {
+	return typedCall[PluginRevokeTokenOutput](ctx, c, "plugins.revokeToken", input, operationID)
 }
 
 func (c *Client) ReconcileStart(ctx context.Context, input ReconcileStartInput, operationID string) (Reconciliation, error) {
