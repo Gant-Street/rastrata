@@ -1,0 +1,681 @@
+/* Styles for the chart lane's components: the setup wizard and the chart editor. Tokens from base.css only; no one-off colors, sizes or fonts. Structure comes from rules and
+   space, and color keeps its jobs: blue is "where you are" (focus, selection), orange is "needs a
+   human" (the Notice that says a choice cannot be changed), red is an error. */
+
+/* ---- The wizard shell ------------------------------------------------------------------- */
+
+.rt-wizard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-4);
+  box-sizing: border-box;
+  max-width: 68rem;
+  /* The setup is the page's only content: it stands in the middle of it, under one rule, in no box. */
+  margin-inline: auto;
+  padding: clamp(1.25rem, 3vw, 2rem) 0;
+  border-top: var(--rt-rule);
+  background: var(--rt-paper);
+  color: var(--rt-text);
+}
+
+.rt-wizard .rt-wizard-title {
+  margin: 0;
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+}
+
+.rt-wizard-steps-nav {
+  margin-top: var(--rt-space-2);
+}
+
+.rt-wizard-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2) var(--rt-space-6);
+  margin: 0;
+  padding: var(--rt-space-3) 0 0;
+  border-top: 1px solid var(--rt-divider);
+  list-style: none;
+}
+
+.rt-wizard-steps li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rt-space-2);
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+}
+
+.rt-wizard-step-number {
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1.5px solid currentColor;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-wizard-steps li[data-state="done"] {
+  color: var(--rt-text);
+}
+
+.rt-wizard-steps li[data-state="current"] {
+  color: var(--rt-text);
+  font-weight: 700;
+}
+
+.rt-wizard-steps li[data-state="current"] .rt-wizard-step-number {
+  border-color: var(--rt-ink);
+  background: var(--rt-ink);
+  color: var(--rt-paper);
+}
+
+/* The current step's name, on its own line; only a phone shows it (see below). */
+.rt-wizard-step-now {
+  display: none;
+  margin: 0;
+}
+
+@media (max-width: 40rem) {
+  /* The five numbers stay in one row and the current step's name goes under them, so a long name never
+     pushes a number onto a second line. The names stay in the list for assistive technology. */
+  .rt-wizard-steps li .rt-wizard-step-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .rt-wizard-steps {
+    flex-wrap: nowrap;
+    gap: var(--rt-space-2);
+  }
+  .rt-wizard-step-now {
+    display: block;
+    padding-top: var(--rt-space-3);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+}
+
+.rt-wizard-form,
+.rt-wizard .rt-stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-6);
+}
+
+.rt-wizard .rt-stack {
+  gap: var(--rt-space-4);
+}
+
+.rt-wizard-subheading {
+  margin: 0;
+  font-size: 1.125rem;
+  letter-spacing: -0.03em;
+}
+
+.rt-wizard-lead {
+  margin: 0;
+  max-width: 60ch;
+}
+
+.rt-wizard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-3);
+  padding-top: var(--rt-space-2);
+}
+
+.rt-wizard-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--rt-space-4);
+  align-items: start;
+}
+
+.rt-wizard .rt-field {
+  max-width: 34rem;
+}
+
+/* ---- Choices: one from a short list, each explained ------------------------------------- */
+
+.rt-choice-cards {
+  display: grid;
+  gap: var(--rt-space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.rt-choice-cards-legend {
+  display: block;
+  padding: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.rt-choice-card-list {
+  display: grid;
+  border-top: var(--rt-rule);
+}
+
+.rt-choice-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--rt-space-3);
+  align-items: start;
+  padding: var(--rt-space-3);
+  border-bottom: 1px solid var(--rt-divider);
+  cursor: pointer;
+  transition: background-color var(--rt-motion);
+}
+
+.rt-choice-check {
+  border-top: var(--rt-rule);
+}
+
+.rt-choice-card:hover {
+  background: var(--rt-hover);
+}
+
+.rt-choice-card[data-state="checked"] {
+  background: var(--rt-selection);
+}
+
+.rt-choice-card-title {
+  font-weight: 700;
+}
+
+.rt-choice-card-text {
+  display: block;
+  max-width: 62ch;
+  margin-top: var(--rt-space-1);
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.rt-radio,
+.rt-checkbox {
+  appearance: none;
+  display: grid;
+  flex: none;
+  place-content: center;
+  box-sizing: border-box;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0.125rem 0 0;
+  border: 1px solid var(--rt-ink);
+  background: var(--rt-surface);
+  cursor: pointer;
+}
+
+.rt-radio {
+  border-radius: 50%;
+}
+
+/* Checked is a heavier ring, not a color: it reads the same in forced colors and in print. */
+.rt-radio[data-state="checked"] {
+  border-width: 5px;
+}
+
+.rt-checkbox[data-state="checked"] {
+  background: var(--rt-ink);
+}
+
+.rt-checkbox[data-state="checked"]::after {
+  content: "";
+  width: 0.5rem;
+  height: 0.25rem;
+  margin-top: -0.0625rem;
+  border-inline-start: 2px solid var(--rt-paper);
+  border-bottom: 2px solid var(--rt-paper);
+  transform: rotate(-45deg);
+}
+
+.rt-radio[data-focus-visible],
+.rt-checkbox[data-focus-visible] {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 3px;
+}
+
+.rt-radio[data-disabled],
+.rt-checkbox[data-disabled] {
+  border-color: var(--rt-divider);
+  cursor: not-allowed;
+}
+
+@media (forced-colors: active) {
+  .rt-checkbox[data-state="checked"]::after {
+    border-color: Canvas;
+  }
+  .rt-checkbox[data-state="checked"] {
+    background: Highlight;
+  }
+}
+
+/* ---- Review ----------------------------------------------------------------------------- */
+
+.rt-wizard-summary {
+  display: grid;
+  margin: var(--rt-space-2) 0;
+  border-top: var(--rt-rule);
+}
+
+.rt-wizard-summary > div {
+  display: grid;
+  grid-template-columns: minmax(8rem, 13rem) minmax(0, 1fr);
+  gap: var(--rt-space-3);
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-wizard-summary dt {
+  font-family: var(--rt-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--rt-label-tracking);
+  line-height: 1.7;
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-wizard-summary dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-1) var(--rt-space-3);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 30rem) {
+  .rt-wizard-summary > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
+
+/* ---- The chart as it is read before the books are made ---------------------------------- */
+
+.rt-chart-preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-6);
+}
+
+.rt-chart-preview-heading {
+  margin: 0;
+  padding-bottom: var(--rt-space-1);
+  border-bottom: 1px solid var(--rt-ink);
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.rt-chart-count {
+  color: var(--rt-muted);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-chart-preview-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-chart-preview-row {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: 0 var(--rt-space-3);
+  padding: var(--rt-space-2) 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-chart-preview-row:last-child {
+  border-bottom: 0;
+}
+
+.rt-chart-code {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-chart-preview-line {
+  grid-column: 2;
+  color: var(--rt-muted);
+  font-size: 0.8125rem;
+}
+
+/* Room enough: the tax line sits in a column of its own, in line with the others. */
+@media (min-width: 40rem) {
+  .rt-chart-preview-row[data-line] {
+    grid-template-columns: 4rem minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .rt-chart-preview-line {
+    grid-column: 3;
+  }
+}
+
+/* ---- The Accounts page: bank and card rows, then the chart folded by kind --------------------- */
+
+.rt-accounts-section {
+  display: grid;
+  gap: 0;
+  border-top: var(--rt-rule);
+  padding-top: 0.625rem;
+}
+
+.rt-accounts-section + .rt-accounts-section {
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.rt-accounts-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  min-height: 2.25rem;
+  padding-bottom: 0.625rem;
+  border-bottom: 1px solid var(--rt-ink);
+}
+
+/* A section is named in the small mono capitals the design uses for labels: the page has one title. */
+.rt-accounts-section-title {
+  margin: 0;
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-accounts-section-head .rt-list-search {
+  flex: 0 1 15rem;
+}
+
+/* Bank and card rows: the name, what the bank says, the balance, the one thing to do. The rows ask
+   their own width, not the screen's. */
+.rt-bank-rows {
+  container-type: inline-size;
+}
+
+.rt-bank-row-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-bank-row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1.2fr) minmax(0, 2fr) minmax(5rem, auto) minmax(8.5rem, auto);
+  align-items: center;
+  gap: 0.25rem 1rem;
+  min-height: 3.25rem;
+  padding: 0.5rem 0.25rem;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-bank-row-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.rt-bank-row-line {
+  font-size: 0.875rem;
+  color: var(--rt-muted);
+  overflow-wrap: anywhere;
+}
+
+.rt-bank-row-line[data-problem] {
+  color: var(--rt-text);
+  font-weight: 600;
+}
+
+.rt-bank-row-said,
+.rt-bank-row-waiting {
+  white-space: nowrap;
+}
+
+.rt-bank-row-balance {
+  font-weight: 600;
+  text-align: end;
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+
+.rt-bank-row-action {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.rt-bank-rows a.rt-button {
+  text-decoration: none;
+}
+
+.rt-bank-rows a.rt-button[data-variant="secondary"],
+.rt-bank-rows a.rt-button[data-variant="secondary"]:hover {
+  color: var(--rt-text);
+}
+
+/* On a narrow screen a row is two lines: the name and the balance, then what the bank says and the
+   thing to do. */
+@container (max-width: 40rem) {
+  .rt-bank-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .rt-bank-row-name {
+    grid-area: 1 / 1;
+  }
+
+  .rt-bank-row-balance {
+    grid-area: 1 / 2;
+  }
+
+  .rt-bank-row-line {
+    grid-area: 2 / 1;
+  }
+
+  .rt-bank-row-action {
+    grid-area: 2 / 2;
+  }
+
+  .rt-bank-row-said,
+  .rt-bank-row-waiting {
+    white-space: normal;
+  }
+}
+
+/* The chart: one line a kind, which opens to its accounts. */
+.rt-chart-group {
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-chart-group-head {
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.5rem 0.25rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.rt-chart-group-head:hover {
+  background: var(--rt-hover);
+}
+
+.rt-chart-group-head[disabled] {
+  cursor: default;
+}
+
+.rt-chart-group-head[disabled]:hover {
+  background: none;
+}
+
+.rt-chart-group-chevron {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 120ms ease;
+}
+
+.rt-chart-group-head[data-state="open"] .rt-chart-group-chevron {
+  transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rt-chart-group-chevron {
+    transition: none;
+  }
+}
+
+.rt-chart-group-name {
+  font-weight: 700;
+}
+
+.rt-chart-group-count {
+  font-weight: 400;
+  color: var(--rt-muted);
+}
+
+.rt-chart-group-total {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+
+.rt-chart-group-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rt-chart-group-table th,
+.rt-chart-group-table td {
+  padding: 0.5rem 0.25rem;
+  border-top: 1px solid var(--rt-divider);
+  vertical-align: middle;
+}
+
+.rt-chart-group-account {
+  padding-inline-start: 1.875rem;
+  font-weight: 400;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+
+.rt-chart-group-table th.rt-chart-group-account {
+  padding-inline-start: 1.875rem;
+}
+
+.rt-chart-group-account a {
+  font-weight: 600;
+}
+
+.rt-chart-group-table td.amount {
+  text-align: end;
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+
+.rt-chart-group-table td.rt-chart-actions {
+  width: 2.5rem;
+  padding-block: 0.125rem;
+  text-align: end;
+}
+
+.rt-chart-group-table tr[data-closed] {
+  color: var(--rt-muted);
+}
+
+.rt-chart-group-rest {
+  max-width: none;
+  margin: 0;
+  padding: 0.625rem 0.25rem 0.75rem 1.875rem;
+  border-top: 1px solid var(--rt-divider);
+  font-size: 0.875rem;
+  color: var(--rt-muted);
+}
+
+/* The way to show the rest is a small quiet button after the sentence, not a link inside it. */
+.rt-chart-group-rest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.rt-tag-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-4);
+}
+
+.rt-tag-editor-account {
+  margin: 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.rt-tag-editor-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2);
+  margin-top: calc(var(--rt-space-2) * -1);
+}
+
+.rt-tag-editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-3);
+  padding-top: var(--rt-space-3);
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-tag-history {
+  display: grid;
+  gap: var(--rt-space-2);
+  padding-top: var(--rt-space-3);
+  border-top: var(--rt-rule);
+}
+
+.rt-tag-history h3 {
+  margin: 0;
+  font-size: 1.0625rem;
+  letter-spacing: -0.03em;
+}
+
+.rt-tag-history ol {
+  display: grid;
+  gap: var(--rt-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-tag-event {
+  overflow-wrap: anywhere;
+}
+
+/* What is not the normal state of an account, said under its name: closed, or watched at month end. */
+.rt-chart-group-account .rt-chart-note {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--rt-muted);
+}

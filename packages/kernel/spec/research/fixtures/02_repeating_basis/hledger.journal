@@ -1,0 +1,4 @@
+commodity UNIT  ; lots:
+2025-01-02 Acquire three for ten
+    assets:stock       3 UNIT @@ 10 USD
+    assets:cash      -10 USD

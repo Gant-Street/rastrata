@@ -1,0 +1,140 @@
+{
+  "about": "The rule of thumb for reading a book back, as numbers, shared by the two programs that hold it: packages/application/src/replay-cost.ts (the service, which says it in GET /api/capacity and the warm-up) and apps/terminal/internal/service/capacity.go (rastrata doctor, which says it when the service does not, and scales the replay a verified backup timed). Both are held to these numbers, so a constant cannot be changed in one and forgotten in the other. A snapshot is {bytes, sequence}: its size and the ledger entry it was saved at. Seconds are the expected results to six places. See docs/reference/program/scale/scaleestimates.md for where each constant came from.",
+  "cases": [
+    {
+      "name": "a new book, the founder's size",
+      "growth": "linear",
+      "journals": 750,
+      "entries": 800,
+      "snapshot": null,
+      "fromStartSeconds": 1,
+      "restartSeconds": 1
+    },
+    {
+      "name": "a tiny book with a snapshot of itself",
+      "growth": "linear",
+      "journals": 5,
+      "entries": 6,
+      "snapshot": { "bytes": 60000, "sequence": 6 },
+      "fromStartSeconds": 1,
+      "restartSeconds": 0.101431
+    },
+    {
+      "name": "1,000 journals, snapshot current",
+      "growth": "linear",
+      "journals": 1000,
+      "entries": 1001,
+      "snapshot": { "bytes": 10485760, "sequence": 1001 },
+      "fromStartSeconds": 1.001,
+      "restartSeconds": 0.35
+    },
+    {
+      "name": "5,000 journals, the snapshot stopped at 1,500",
+      "growth": "linear",
+      "journals": 5000,
+      "entries": 5001,
+      "snapshot": { "bytes": 14000000, "sequence": 1500 },
+      "fromStartSeconds": 5.001,
+      "restartSeconds": 3.934786
+    },
+    {
+      "name": "20,000 journals, no snapshot",
+      "growth": "linear",
+      "journals": 20000,
+      "entries": 20001,
+      "snapshot": null,
+      "fromStartSeconds": 20.001,
+      "restartSeconds": 20.001
+    },
+    {
+      "name": "80,000 journals, the snapshot stopped at 1,500",
+      "growth": "linear",
+      "journals": 80000,
+      "entries": 80010,
+      "snapshot": { "bytes": 15000000, "sequence": 1500 },
+      "fromStartSeconds": 80.01,
+      "restartSeconds": 78.967628
+    },
+    {
+      "name": "more entries than journals",
+      "growth": "linear",
+      "journals": 1000,
+      "entries": 4000,
+      "snapshot": null,
+      "fromStartSeconds": 4,
+      "restartSeconds": 4
+    },
+    {
+      "name": "an older book of 1,000 journals",
+      "growth": "quadratic",
+      "journals": 1000,
+      "entries": 1000,
+      "snapshot": null,
+      "fromStartSeconds": 22,
+      "restartSeconds": 22
+    },
+    {
+      "name": "an older book of 2,000 journals",
+      "growth": "quadratic",
+      "journals": 2000,
+      "entries": 2000,
+      "snapshot": null,
+      "fromStartSeconds": 88,
+      "restartSeconds": 88
+    },
+    {
+      "name": "an older book, snapshot current",
+      "growth": "quadratic",
+      "journals": 1000,
+      "entries": 1100,
+      "snapshot": { "bytes": 10485760, "sequence": 1100 },
+      "fromStartSeconds": 24.2,
+      "restartSeconds": 0.35
+    },
+    {
+      "name": "an older book, 100 entries behind its snapshot",
+      "growth": "quadratic",
+      "journals": 1000,
+      "entries": 1100,
+      "snapshot": { "bytes": 10485760, "sequence": 1000 },
+      "fromStartSeconds": 24.2,
+      "restartSeconds": 4.75
+    },
+    {
+      "name": "an older book, far behind its snapshot",
+      "growth": "quadratic",
+      "journals": 1600,
+      "entries": 2000,
+      "snapshot": { "bytes": 8388608, "sequence": 1000 },
+      "fromStartSeconds": 70.4,
+      "restartSeconds": 70.4
+    },
+    {
+      "name": "an older book, tiny",
+      "growth": "quadratic",
+      "journals": 37,
+      "entries": 40,
+      "snapshot": null,
+      "fromStartSeconds": 1,
+      "restartSeconds": 1
+    },
+    {
+      "name": "a tiny book, ten entries behind its snapshot: the floor on a start is not an entry's cost",
+      "growth": "linear",
+      "journals": 20,
+      "entries": 21,
+      "snapshot": { "bytes": 200000, "sequence": 11 },
+      "fromStartSeconds": 1,
+      "restartSeconds": 0.114768
+    },
+    {
+      "name": "an older tiny book, ten entries behind its snapshot",
+      "growth": "quadratic",
+      "journals": 37,
+      "entries": 40,
+      "snapshot": { "bytes": 300000, "sequence": 30 },
+      "fromStartSeconds": 1,
+      "restartSeconds": 0.607153
+    }
+  ]
+}

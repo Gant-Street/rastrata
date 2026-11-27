@@ -1,0 +1,71 @@
+/* ==========================================================================
+   The application's header: the wordmark and the name of the book on the left, the navigation (app-nav.css)
+   filling the rest, and one heavy rule under all of it. The page's first control sits within 220 px of
+   that rule, so the header is as short as it can be.
+   ========================================================================== */
+
+.app-header {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0 2rem;
+  padding-top: 1.25rem;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+/* The wordmark, and beside it the name of the book, so you always know which one this is. */
+.app-header .app-brand {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: baseline;
+  gap: 0 0.875rem;
+  min-width: 0;
+  padding-bottom: 0.625rem;
+}
+
+.app-header a.wordmark {
+  display: block;
+  flex: none;
+  color: var(--rt-ink);
+}
+
+/* Links go to the accent on hover (.rt-theme a:hover); the logo stays ink. */
+.app-header a.wordmark:hover {
+  color: var(--rt-ink);
+}
+
+.app-header .app-book-name {
+  min-width: 0;
+  max-width: 15rem;
+  padding-inline-start: 0.875rem;
+  border-inline-start: 1px solid var(--rt-border-subtle);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+/* On a small laptop window the name gives way (an ellipsis) before the sections have to wrap. */
+@media (max-width: 78rem) {
+  .app-header {
+    gap: 0 1.25rem;
+  }
+
+  .app-header .app-book-name {
+    max-width: 9rem;
+  }
+}
+
+/* On a phone the wordmark, the name and the Menu button share one line; the name gives way (an ellipsis)
+   before the button does. */
+@media (max-width: 56rem) {
+  .app-header {
+    flex-wrap: nowrap;
+    gap: 0 1rem;
+  }
+}

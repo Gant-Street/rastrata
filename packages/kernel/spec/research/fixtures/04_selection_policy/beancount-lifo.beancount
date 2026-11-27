@@ -1,0 +1,17 @@
+option "booking_method" "LIFO"
+2025-01-01 open Assets:Stock UNIT
+2025-01-01 open Assets:Cash USD
+2025-01-01 open Income:Gain USD
+2025-01-02 * "Oldest"
+  Assets:Stock       2 UNIT {10 USD}
+  Assets:Cash      -20 USD
+2025-02-02 * "Highest"
+  Assets:Stock       2 UNIT {30 USD}
+  Assets:Cash      -60 USD
+2025-03-02 * "Newest"
+  Assets:Stock       2 UNIT {20 USD}
+  Assets:Cash      -40 USD
+2025-04-02 * "Sell"
+  Assets:Stock      -3 UNIT {} @ 40 USD
+  Assets:Cash      120 USD
+  Income:Gain

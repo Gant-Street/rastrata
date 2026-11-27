@@ -1,0 +1,30 @@
+{
+  "name": "@rastrata/kernel",
+  "private": true,
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json",
+    "test": "bun test --cwd ../.. ./packages/kernel/test && bun run test:tooling",
+    "test:lean": "bun test --cwd ../.. ./packages/kernel/test-lean",
+    "test:tooling": "bun test scripts/mutation-runner.test.ts scripts/model-validation.test.ts",
+    "test:slow": "bun test --cwd ../.. ./packages/kernel/slow",
+    "test:coverage": "bun test --timeout 60000 --cwd ../.. ./packages/kernel/test --coverage --coverage-reporter=lcov --coverage-dir=coverage",
+    "coverage:check": "bun run --cwd ../.. packages/kernel/scripts/check-kernel-coverage.ts",
+    "check:spec": "python3 scripts/validate-spec.py",
+    "check:trace": "bun run --cwd ../.. packages/kernel/scripts/check-trace-manifest.ts",
+    "check:syside": "python3 scripts/check-syside-diagnostics.py",
+    "mutation:check": "bun scripts/mutation-check.ts",
+    "mutation:self-test": "bun scripts/mutation-self-test.ts",
+    "check:release": "bun run check:trace --require-complete && bun run check:syside && bun run test:slow && bun run mutation:self-test && bun run mutation:check"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.4",
+    "fast-check": "^4.11.0",
+    "typescript": "7.0.2"
+  }
+}

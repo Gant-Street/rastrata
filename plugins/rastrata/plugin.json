@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "rastrata",
+  "version": "0.1.0",
+  "description": "Draft and post manual journals, trace accounting reports, and correct and close books with Rastrata.",
+  "author": { "name": "Rastrata" },
+  "repository": "https://github.com/Gant-Street/rastrata",
+  "keywords": ["accounting", "bookkeeping", "journals", "ledger"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Rastrata",
+        "shortDescription": "Bookkeeping with a rigorous ledger",
+        "longDescription": "Prepare manual journals, review their accounting effects, post authorized changes, and trace trial balance, profit and loss, and balance sheet reports.",
+        "developerName": "Rastrata",
+        "category": "Finance",
+        "capabilities": ["Read", "Write"],
+        "defaultPrompt": [
+          "Draft a journal for this receipt and show me its accounting effect.",
+          "Explain my latest profit and loss report.",
+          "Review my journal entries for possible duplicate sources."
+        ]
+      }
+    }
+  }
+}

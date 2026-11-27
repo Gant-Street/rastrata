@@ -1,0 +1,6 @@
+2025-01-02 Buy
+    Assets:BrokerA       2 UNIT {$10} [2025-01-02]
+    Assets:Cash          -$20
+2025-02-02 Transfer
+    Assets:BrokerA      -1 UNIT {$10} [2025-01-02]
+    Assets:BrokerB       1 UNIT {$10} [2025-01-02]

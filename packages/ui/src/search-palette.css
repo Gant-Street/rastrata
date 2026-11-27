@@ -1,0 +1,180 @@
+/* ==========================================================================
+   Search and jump: one box and the results of every source under their own headings, in a dialog that
+   sits near the top of the window. Ink on paper, a heavy rule and a hard shadow, like the other
+   overlays; the highlighted result is the one thing that turns black.
+   ========================================================================== */
+
+.rt-search-positioner {
+  align-items: start;
+  padding: 12vh 1rem 1rem;
+}
+
+.rt-search {
+  display: flex;
+  flex-direction: column;
+  width: min(40rem, 100%);
+  max-height: min(34rem, calc(100vh - 8rem));
+  background: var(--rt-surface);
+  color: var(--rt-text);
+  border: 1px solid var(--rt-border-subtle);
+  border-radius: calc(var(--rt-radius-overlay) * 1.2);
+  overflow: hidden;
+  font: var(--rt-font-size) / 1.5 var(--rt-font);
+  box-shadow: var(--rt-shadow-xl);
+}
+
+.rt-search .rt-search-field {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem 0.25rem 1rem;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-search .rt-search-field > svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.rt-search .rt-search-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 3rem;
+  padding: 0.5rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--rt-text);
+  font: inherit;
+  font-size: 1.0625rem;
+  font-weight: 500;
+}
+
+.rt-search .rt-search-input::placeholder {
+  color: var(--rt-muted);
+  font-weight: 400;
+}
+
+/* The box is the whole of the field's focus: the ring would only draw a second frame inside the dialog. */
+.rt-search .rt-search-input:focus-visible {
+  outline: none;
+}
+
+.rt-search .rt-search-field:focus-within {
+  box-shadow: inset 0 -2px 0 var(--rt-ink);
+}
+
+/* Ark's listbox holds the box and the list; the dialog lays them out as before. */
+.rt-search .rt-search-list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.rt-search .rt-search-results[hidden] {
+  display: none;
+}
+
+.rt-search .rt-search-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* The list is what scrolls. It is the combobox's popup, whose items are reached with the arrow keys from the
+   box (focus never leaves it), so the list needs no tab stop of its own; a wrapper around it that scrolled
+   would be a scrollable region the keyboard cannot reach. */
+.rt-search .rt-search-results {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: 0.25rem;
+}
+
+.rt-search .rt-search-group + .rt-search-group {
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-search .rt-search-group-label {
+  padding: 0.625rem 1rem 0.25rem;
+  color: var(--rt-muted);
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+}
+
+.rt-search .rt-search-option {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.75rem;
+  padding: 0.5rem 1rem;
+  border-inline-start: 4px solid transparent;
+  cursor: pointer;
+}
+
+.rt-search .rt-search-option-label {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.rt-search .rt-search-option-detail {
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.rt-search .rt-search-option[aria-selected="true"] {
+  background: var(--rt-pressed);
+  border-inline-start-color: var(--rt-ink);
+}
+
+.rt-search .rt-search-empty,
+.rt-search .rt-search-failed {
+  margin: 0;
+  padding: 1rem;
+  color: var(--rt-muted);
+}
+
+.rt-search .rt-search-failed {
+  border-top: 1px solid var(--rt-divider);
+  color: var(--rt-error);
+  font-size: 0.875rem;
+}
+
+.rt-search .rt-search-legend {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid var(--rt-divider);
+  color: var(--rt-muted);
+  font-size: 0.75rem;
+}
+
+.rt-search .rt-search-legend kbd {
+  padding: 0.0625rem 0.3125rem;
+  border: 1px solid var(--rt-border-subtle);
+  color: var(--rt-text);
+  font: 600 0.6875rem / 1.2 var(--rt-mono);
+}
+
+@media (max-width: 40rem) {
+  .rt-search-positioner {
+    padding-top: 1rem;
+  }
+
+  .rt-search {
+    max-height: calc(100vh - 2rem);
+  }
+
+  .rt-search .rt-search-legend {
+    display: none;
+  }
+}

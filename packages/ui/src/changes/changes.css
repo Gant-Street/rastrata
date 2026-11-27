@@ -1,0 +1,273 @@
+/* Styles for the changes lane's components. Use the tokens in base.css; no one-off colors.
+   Structure comes from rules and space, not boxes: a heavy rule over each day's changes, a light one
+   between them. A change whose maker the books did not record is set apart by its shape (dashed, italic)
+   as well as its words, never by color alone. */
+
+.rt-changes,
+.rt-changes-body {
+  display: grid;
+  gap: var(--rt-space-4);
+  min-width: 0;
+}
+
+/* ---- Choices --------------------------------------------------------------------------------- */
+
+.rt-changes-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--rt-space-3) var(--rt-space-4);
+  align-items: start;
+  min-width: 0;
+}
+
+.rt-changes-filters > * {
+  min-width: 0;
+}
+
+@media (max-width: 56rem) {
+  .rt-changes-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 36rem) {
+  .rt-changes-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---- Summary --------------------------------------------------------------------------------- */
+
+.rt-changes-summary {
+  display: grid;
+  gap: var(--rt-space-2);
+  padding-top: var(--rt-space-4);
+  border-top: 1px solid var(--rt-ink);
+  min-width: 0;
+}
+
+.rt-changes-headline {
+  display: grid;
+  gap: var(--rt-space-2);
+  min-width: 0;
+}
+
+.rt-changes-count {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.rt-changes-since {
+  margin: 0;
+  color: var(--rt-muted);
+  overflow-wrap: anywhere;
+}
+
+.rt-changes-makers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-changes-maker {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.125rem 0.625rem;
+  border: 1px solid var(--rt-border);
+  border-radius: var(--rt-radius-full);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.rt-changes-maker[data-maker="unknown"] {
+  border-style: dashed;
+  font-style: italic;
+}
+
+.rt-changes-maker-count {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.rt-changes-read {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  margin: 0;
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+}
+
+/* ---- "I have looked at these" ---------------------------------------------------------------- */
+
+.rt-changes-look {
+  display: grid;
+  gap: var(--rt-space-2);
+  justify-items: start;
+  padding: var(--rt-space-3) 0;
+  border-top: 1px solid var(--rt-divider);
+  border-bottom: 1px solid var(--rt-divider);
+  min-width: 0;
+}
+
+.rt-changes-lastlook {
+  margin: 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.rt-changes-look .rt-description {
+  margin: 0;
+  max-width: 46rem;
+}
+
+.rt-changes-look .rt-notice {
+  max-width: 46rem;
+}
+
+/* ---- The list -------------------------------------------------------------------------------- */
+
+.rt-changes-days {
+  display: grid;
+  gap: var(--rt-space-2);
+  min-width: 0;
+}
+
+.rt-changes-day {
+  display: grid;
+  min-width: 0;
+}
+
+.rt-changes-day-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: var(--rt-space-4) 0 var(--rt-space-2);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.rt-changes-day-date {
+  color: var(--rt-muted);
+  font-weight: 400;
+}
+
+.rt-changes-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rt-ink);
+}
+
+.rt-change {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+  gap: 0.25rem var(--rt-space-4);
+  align-items: baseline;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-change-time {
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rt-change-main {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+/* The sentence. Text from outside (a bank's words, a name) can be long and unbroken. */
+.rt-change-summary {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.rt-change-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.75rem;
+  margin: 0;
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.rt-change-kind {
+  color: var(--rt-muted);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+}
+
+.rt-change[data-maker="unknown"] .rt-change-by {
+  font-style: italic;
+}
+
+.rt-change-link {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 40rem) {
+  .rt-change {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rt-change-link {
+    justify-self: start;
+  }
+}
+
+/* ---- What the list leaves out ---------------------------------------------------------------- */
+
+.rt-changes-notes {
+  display: grid;
+  gap: var(--rt-space-3);
+  padding-top: var(--rt-space-4);
+  border-top: 1px solid var(--rt-divider);
+  min-width: 0;
+}
+
+.rt-changes-notes .rt-description {
+  margin: 0;
+  max-width: 46rem;
+}
+
+.rt-changes-notes-head {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.rt-changes-notcovered,
+.rt-changes-unread {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+  list-style: disc;
+}
+
+@media (forced-colors: active) {
+  .rt-changes-maker {
+    border-color: CanvasText;
+  }
+}

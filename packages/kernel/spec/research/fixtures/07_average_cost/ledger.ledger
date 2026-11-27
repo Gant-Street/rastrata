@@ -1,0 +1,10 @@
+2025-01-02 Buy first
+    Assets:Stock       2 UNIT {$10} [2025-01-02]
+    Assets:Cash        -$20
+2025-02-02 Buy second
+    Assets:Stock       1 UNIT {$16} [2025-02-02]
+    Assets:Cash        -$16
+2025-03-02 Sell
+    Assets:Stock      -1 UNIT @ $20
+    Assets:Cash        $20
+    Income:Gain

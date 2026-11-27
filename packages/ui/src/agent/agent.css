@@ -1,0 +1,222 @@
+/* Styles for Settings, Agents. Use the tokens in base.css; no one-off colors. Structure comes from rules
+   and space, not boxes: three numbered steps, then the list of what is connected under a heavy rule. */
+
+.rt-agent-page {
+  max-width: 46rem;
+}
+
+/* ---- The three steps ------------------------------------------------------------------------- */
+
+.rt-agent-steps {
+  display: grid;
+  gap: var(--rt-space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: rt-agent-step;
+}
+
+/* The number is the step's own, drawn large beside its title; a screen reader hears the list's order. */
+.rt-agent-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-2);
+  min-width: 0;
+  padding-inline-start: 2.75rem;
+  counter-increment: rt-agent-step;
+}
+
+.rt-agent-step::before {
+  content: counter(rt-agent-step);
+  position: absolute;
+  inset-inline-start: 0;
+  top: -0.125rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  font-variant-numeric: lining-nums;
+}
+
+.rt-agent-step-title {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+/* ---- 1. The choice ---------------------------------------------------------------------------- */
+
+.rt-agent-choices {
+  display: grid;
+  gap: var(--rt-space-2);
+  min-width: 0;
+}
+
+.rt-agent-choice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--rt-space-3);
+  align-items: start;
+  padding: 0.625rem var(--rt-space-3);
+  border: 1px solid var(--rt-border-subtle);
+  cursor: pointer;
+  transition: background-color var(--rt-motion);
+}
+
+.rt-agent-choice:hover:not([data-state="checked"]) {
+  background: var(--rt-hover);
+}
+
+/* Chosen is a heavier frame and a filled mark, not a color: it reads the same in forced colors and in print. */
+.rt-agent-choice[data-state="checked"] {
+  border-color: var(--rt-ink);
+  box-shadow: inset 0 0 0 1px var(--rt-ink);
+}
+
+.rt-agent-choice[data-focus-visible] {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 3px;
+}
+
+.rt-agent-choice[data-disabled] {
+  cursor: default;
+}
+
+.rt-agent-choice-mark {
+  box-sizing: border-box;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0.1875rem;
+  border: 1px solid var(--rt-ink);
+  border-radius: 50%;
+  background: var(--rt-surface);
+}
+
+.rt-agent-choice-mark[data-state="checked"] {
+  border-width: 5px;
+}
+
+.rt-agent-choice-text {
+  line-height: 1.5;
+}
+
+/* ---- 2. The command --------------------------------------------------------------------------- */
+
+.rt-agent-command-row {
+  display: flex;
+  align-items: stretch;
+  gap: var(--rt-space-2);
+}
+
+.rt-agent-code {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.625rem var(--rt-space-3);
+  border: 1px solid var(--rt-border-subtle);
+  background: var(--rt-surface-subtle);
+  font: 500 0.9375rem / 1.5 var(--rt-mono);
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.rt-agent-get {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
+.rt-agent-connected-now {
+  margin: 0;
+  font-weight: 700;
+}
+
+/* ---- 3. What to say --------------------------------------------------------------------------- */
+
+.rt-agent-ask {
+  margin: 0;
+  padding: 0.625rem var(--rt-space-3);
+  border-top: 2px solid var(--rt-ink);
+  background: var(--rt-surface-subtle);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* ---- Connected -------------------------------------------------------------------------------- */
+
+.rt-agent-connected {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin-top: var(--rt-space-4);
+  border-top: var(--rt-rule);
+}
+
+.rt-agent-connected-title {
+  margin: 0;
+  padding: var(--rt-space-3) 0;
+  border-bottom: 1px solid var(--rt-ink);
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-agent-connected-empty {
+  max-width: none;
+  margin: 0;
+  padding: var(--rt-space-3) var(--rt-space-1);
+  border-bottom: 1px solid var(--rt-divider);
+  color: var(--rt-muted);
+}
+
+.rt-agent-connected-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-agent-connected-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rt-space-3);
+  padding: var(--rt-space-3) var(--rt-space-1);
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-agent-connected-text {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.rt-agent-connected-name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.rt-agent-connected-line {
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.rt-agent-connected-row .rt-button {
+  flex: none;
+}
+
+.rt-agent-connected-more {
+  margin: 0;
+  padding: var(--rt-space-3) var(--rt-space-1) 0;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 40rem) {
+  .rt-agent-step {
+    padding-inline-start: 2rem;
+  }
+}

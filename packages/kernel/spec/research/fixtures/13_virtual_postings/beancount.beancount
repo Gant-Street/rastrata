@@ -1,0 +1,7 @@
+2025-01-01 open Assets:Cash USD
+2025-01-01 open Expenses:Food USD
+2025-01-01 open Expenses:Memo USD
+2025-01-02 * "Lunch"
+  Expenses:Food       10 USD
+  Assets:Cash        -10 USD
+  (Expenses:Memo)     10 USD

@@ -1,0 +1,12 @@
+/* The logo takes the text color, so it is ink on paper and paper on ink with the theme and never needs
+   a variant. Its height is the caller's (the default is the application header's); the width follows
+   the shape. The wordmark's baseline is the bottom of the picture, so it sits on the line of the
+   text beside it. The second selector out-ranks the icon rule (".rt-theme svg"), which would
+   otherwise make the logo an eighteen-pixel icon wherever it sits in the application. */
+.rt-logo,
+:is(.rt-theme, .rt-popup, .rt-dialog) .rt-logo {
+  display: block;
+  flex: none;
+  width: auto;
+  height: 1.5rem;
+}

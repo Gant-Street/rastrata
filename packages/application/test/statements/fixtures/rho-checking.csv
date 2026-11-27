@@ -1,0 +1,18 @@
+Date,Amount,Sender,Recipient,Type,Status,Memo,User,Department
+2026-01-02,2500.00,STRIPE TRANSFER ST-8KD3P1,Statements Co Checking,ACH-US,Settled,STRIPE TRANSFER ST-8KD3P1,Eric,General
+2026-01-02,-44.00,Statements Co Checking,GITHUB INC SAN,ACH-US,Settled,GITHUB INC SAN FRANCISCO CA,Eric,General
+2026-01-05,-1200.00,Statements Co Checking,CHECK 1041,ACH-US,Settled,CHECK 1041,Eric,General
+2026-01-06,-89.99,Statements Co Checking,AMAZON WEB SERVICES,ACH-US,Settled,AMAZON WEB SERVICES AWS.AMAZON.CO WA,Eric,General
+2026-01-09,850.00,ZELLE PAYMENT FROM,Statements Co Checking,ACH-US,Settled,ZELLE PAYMENT FROM ACME DESIGN LLC,Eric,General
+2026-01-12,-15.00,Statements Co Checking,MONTHLY SERVICE FEE,ACH-US,Settled,MONTHLY SERVICE FEE,Eric,General
+2026-01-15,-2100.00,Statements Co Checking,ONLINE TRANSFER TO,ACH-US,Settled,ONLINE TRANSFER TO SAV XXXXXX4321,Eric,General
+2026-01-20,-62.18,Statements Co Checking,SHELL OIL 57444,ACH-US,Settled,SHELL OIL 57444 HOUSTON TX,Eric,General
+2026-01-20,-62.18,Statements Co Checking,SHELL OIL 57444,ACH-US,Settled,SHELL OIL 57444 HOUSTON TX,Eric,General
+2026-01-28,3100.00,STRIPE TRANSFER ST-9MQ2L7,Statements Co Checking,ACH-US,Settled,STRIPE TRANSFER ST-9MQ2L7,Eric,General
+2026-02-03,-44.00,Statements Co Checking,GITHUB INC SAN,ACH-US,Settled,GITHUB INC SAN FRANCISCO CA,Eric,General
+2026-02-10,-318.40,Statements Co Checking,STAPLES 00123 AUSTIN,ACH-US,Settled,STAPLES 00123 AUSTIN TX,Eric,General
+2026-02-14,1200.00,ACH CREDIT NORTHWIND,Statements Co Checking,ACH-US,Settled,ACH CREDIT NORTHWIND LLC INV 2217,Eric,General
+2026-02-27,-750.00,Statements Co Checking,RENT PAYMENT ACH,ACH-US,Settled,RENT PAYMENT ACH WEWORK,Eric,General
+2026-02-28,-120.00,Statements Co Checking,Notion Labs,ACH-US,Pending,NOTION LABS,Eric,General
+2026-02-27,-300.00,Statements Co Checking,Hosting Inc,WIRE-DOM,Canceled,HOSTING INC,Eric,General
+2026-02-26,-75.00,Statements Co Checking,Design Co,ACH-US,Awaiting Approval,DESIGN CO,Eric,General

@@ -1,0 +1,33 @@
+{
+  "name": "@rastrata/booklog",
+  "private": true,
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./testing": "./src/testing.ts",
+    "./testing/tier-conformance": "./test/support/tier-conformance.ts",
+    "./tier": "./src/tier.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "bun test --timeout 120000 ./test",
+    "experiment:e1": "bun experiments/e1-atomicity.ts",
+    "experiment:e2": "bun experiments/e2-capture.ts",
+    "experiment:e3": "bun experiments/e3-activation.ts",
+    "experiment:e4": "bun experiments/e4-contention.ts",
+    "experiment:e4-takeover": "bun experiments/e4-takeover.ts",
+    "experiment:e4-drain": "bun experiments/e4-drain.ts",
+    "experiment:e5": "bun experiments/e5-durability.ts"
+  },
+  "dependencies": {
+    "@rastrata/kernel": "workspace:*",
+    "@rastrata/telemetry": "workspace:*"
+  },
+  "devDependencies": {
+    "@rastrata/application": "workspace:*",
+    "@types/bun": "1.4.4",
+    "typescript": "7.0.2"
+  }
+}

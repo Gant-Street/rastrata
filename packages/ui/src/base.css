@@ -1,0 +1,1679 @@
+/* ==========================================================================
+   Rastrata Design System — Core Stylesheet
+   Color code 02: Source-defined master palette + mathematical sRGB mixtures.
+   ========================================================================== */
+
+:root {
+  /* Master colors (source-defined). These never change between themes. */
+  --rt-white: #ffffff;
+  --rt-black: #000000;
+  --rt-penguin-orange: #ff6600;
+  --rt-nasa-blue: #0b3d91;
+  --rt-railway-red: #eb0000;
+
+  /* Themes. Light is the default; apps opt in with data-theme="dark" or "system" and the
+     dark values follow this block. They are written out rather than expressed with
+     light-dark(): Lightning CSS (inside Tailwind, which the web app builds with) collapses
+     light-dark(color-mix(...)) to a bare black or white, which silently breaks every tint. */
+  color-scheme: light;
+
+  /* Ink and paper: the two neutrals that swap. Use these for text, rules and surfaces.
+     Use --rt-black / --rt-white only when a color sits on a fixed master field
+     (for example, black text on orange). */
+  --rt-ink: var(--rt-black);
+  --rt-paper: var(--rt-white);
+
+  /* Blue and red are too dark for text on a dark page, so they lighten as mixtures of
+     the masters in the dark theme (still the same five colors, never a sixth). */
+  --rt-blue-ink: var(--rt-nasa-blue);
+  --rt-red-ink: var(--rt-railway-red);
+
+  /* Surfaces & Canvas */
+  --rt-workspace: var(--rt-paper);
+  --rt-surface: var(--rt-paper);
+  --rt-surface-subtle: color-mix(in srgb, #000 2%, #fff);
+  --rt-backdrop: color-mix(in srgb, #000 40%, transparent);
+
+  /* Typography */
+  --rt-text: var(--rt-ink);
+  --rt-muted: color-mix(in srgb, #000 64%, #fff);
+  --rt-font:
+    "Inter Variable", Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  --rt-font-size: 15px;
+  --rt-label-tracking: 0.06em;
+
+  /* Borders & Dividers */
+  --rt-border: color-mix(in srgb, #000 88%, #fff);
+  --rt-border-subtle: color-mix(in srgb, #000 20%, #fff);
+  --rt-divider: color-mix(in srgb, #000 11%, #fff);
+  /* The line round a field: pale beside ink, and still 3:1 on paper, which the edge of a control needs. */
+  --rt-field-border: color-mix(in srgb, #000 46%, #fff);
+
+  /* Interactive & Accent: blue means "where you are" (focus, selection, links). */
+  --rt-accent: var(--rt-blue-ink);
+  --rt-accent-hover: color-mix(in srgb, #0b3d91 80%, #000);
+  --rt-on-accent: var(--rt-white);
+  --rt-selection: color-mix(in srgb, #000 8%, #fff);
+
+  /* Action Buttons */
+  --rt-action: var(--rt-ink);
+  --rt-action-hover: color-mix(in srgb, #000 80%, #fff);
+  --rt-action-active: color-mix(in srgb, #000 90%, #fff);
+  --rt-on-action: var(--rt-paper);
+
+  /* States & Tones. Orange is rationed to "needs a human": review, pending, a decision.
+     Text on the orange field is always literal black. */
+  --rt-success: var(--rt-ink);
+  --rt-warning: var(--rt-black);
+  --rt-warning-surface: var(--rt-penguin-orange);
+  --rt-error: var(--rt-red-ink);
+  --rt-error-surface: var(--rt-paper);
+
+  /* The four tones (kit/tones.ts), one colour and one meaning each: calm (grey) a fact, info (ink) good
+     to know, attention (orange) a person must decide or the figures would change, problem (red) something
+     failed. Blue is for links and focus and is not a tone; red lightens in the dark theme because it is the
+     lightened ink there. */
+  --rt-tone-calm: var(--rt-muted);
+  --rt-tone-info: var(--rt-ink);
+  --rt-tone-attention: var(--rt-penguin-orange);
+  --rt-tone-problem: var(--rt-error);
+  --rt-on-tone-attention: var(--rt-black);
+
+  /* Interaction Tints */
+  --rt-hover: color-mix(in srgb, #000 4%, #fff);
+  --rt-pressed: color-mix(in srgb, #000 8%, #fff);
+  --rt-disabled-surface: color-mix(in srgb, #000 6%, #fff);
+  --rt-danger-hover: color-mix(in srgb, #eb0000 6%, #fff);
+  --rt-danger-active: color-mix(in srgb, #eb0000 12%, #fff);
+  /* The red of the text of a danger button while it is on its pale red tint (pointed at, pressed): the red ink is 4.63:1 on white and falls to 4.18:1 on the hover tint and 3.7:1 on the pressed one, under
+     the 4.5:1 that text needs, so the text goes darker while the tint is under it. */
+  --rt-danger-on-tint: #b80000;
+
+  /* Geometry & Spacing */
+  --rt-radius: 0;
+  --rt-radius-sm: 0;
+  --rt-radius-md: 0;
+  --rt-radius-lg: 0;
+  --rt-radius-full: 0;
+  /* What is pressed is rounded (buttons, fields, menus, dialogs); what is read stays square (design-language.md). */
+  --rt-radius-control: 0.5rem;
+  --rt-radius-overlay: 0.625rem;
+  --rt-rule: 2px solid var(--rt-ink);
+  --rt-hard: 4px 4px 0 var(--rt-ink);
+  --rt-hard-sm: 3px 3px 0 var(--rt-ink);
+  --rt-control-padding: 0.5625rem 0.875rem;
+  --rt-row-padding: 0.875rem;
+  --rt-space-1: 0.25rem;
+  --rt-space-2: 0.5rem;
+  --rt-space-3: 0.75rem;
+  --rt-space-4: 1rem;
+  --rt-space-6: 1.5rem;
+  --rt-space-8: 2rem;
+
+  /* Page titles: 32 px, and Home's "Today" 56 px (the UX program's D6). A phone gets a step less. */
+  --rt-title-size: 2rem;
+  --rt-title-size-phone: 1.75rem;
+  --rt-title-size-home: 3.5rem;
+  --rt-title-size-home-phone: 2.5rem;
+
+  /* Elevations & Layers */
+  --rt-overlay: 1000;
+  --rt-motion: 140ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* Nothing on the page has depth. What floats over it (a menu, a tooltip, a dialog) has a pale line and a soft shadow. */
+  --rt-shadow-xs: none;
+  --rt-shadow-sm: none;
+  --rt-shadow-md: 0 2px 8px color-mix(in srgb, #000 12%, transparent);
+  --rt-shadow-lg: 0 8px 24px color-mix(in srgb, #000 14%, transparent);
+  --rt-shadow-xl: 0 24px 64px color-mix(in srgb, #000 22%, transparent);
+  --rt-shadow-popup:
+    0 8px 24px color-mix(in srgb, #000 14%, transparent),
+    0 1px 2px color-mix(in srgb, #000 8%, transparent);
+  /* Figures, labels and the endings of accounts: one bundled face, so a ledger reads the same on every computer. */
+  --rt-mono:
+    "JetBrains Mono Variable", ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* Dark theme: data-theme="dark" always; data-theme="system" follows the operating system. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --rt-paper: color-mix(in srgb, #fff 6%, #000);
+  --rt-ink: var(--rt-white);
+  --rt-blue-ink: color-mix(in srgb, #0b3d91 50%, #fff);
+  --rt-red-ink: color-mix(in srgb, #eb0000 70%, #fff);
+  --rt-surface-subtle: color-mix(in srgb, #fff 10%, #000);
+  --rt-backdrop: color-mix(in srgb, #000 70%, transparent);
+  --rt-muted: color-mix(in srgb, #fff 66%, #000);
+  --rt-border: color-mix(in srgb, #fff 88%, #000);
+  --rt-border-subtle: color-mix(in srgb, #fff 24%, #000);
+  --rt-divider: color-mix(in srgb, #fff 16%, #000);
+  --rt-field-border: color-mix(in srgb, #fff 46%, #000);
+  --rt-accent-hover: color-mix(in srgb, #0b3d91 30%, #fff);
+  --rt-on-accent: var(--rt-black);
+  --rt-selection: color-mix(in srgb, #fff 14%, #0f0f0f);
+  --rt-action-hover: color-mix(in srgb, #fff 80%, #000);
+  --rt-action-active: color-mix(in srgb, #fff 90%, #000);
+  --rt-hover: color-mix(in srgb, #fff 8%, #000);
+  --rt-pressed: color-mix(in srgb, #fff 14%, #000);
+  --rt-disabled-surface: color-mix(in srgb, #fff 11%, #000);
+  --rt-danger-hover: color-mix(in srgb, #eb0000 16%, #0f0f0f);
+  --rt-danger-active: color-mix(in srgb, #eb0000 26%, #0f0f0f);
+  --rt-danger-on-tint: color-mix(in srgb, #eb0000 60%, #fff);
+}
+
+:root[data-theme="system"] {
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="system"] {
+    --rt-paper: color-mix(in srgb, #fff 6%, #000);
+    --rt-ink: var(--rt-white);
+    --rt-blue-ink: color-mix(in srgb, #0b3d91 50%, #fff);
+    --rt-red-ink: color-mix(in srgb, #eb0000 70%, #fff);
+    --rt-surface-subtle: color-mix(in srgb, #fff 10%, #000);
+    --rt-backdrop: color-mix(in srgb, #000 70%, transparent);
+    --rt-muted: color-mix(in srgb, #fff 66%, #000);
+    --rt-border: color-mix(in srgb, #fff 88%, #000);
+    --rt-border-subtle: color-mix(in srgb, #fff 24%, #000);
+    --rt-divider: color-mix(in srgb, #fff 16%, #000);
+    --rt-field-border: color-mix(in srgb, #fff 46%, #000);
+    --rt-accent-hover: color-mix(in srgb, #0b3d91 30%, #fff);
+    --rt-on-accent: var(--rt-black);
+    --rt-selection: color-mix(in srgb, #fff 14%, #0f0f0f);
+    --rt-action-hover: color-mix(in srgb, #fff 80%, #000);
+    --rt-action-active: color-mix(in srgb, #fff 90%, #000);
+    --rt-hover: color-mix(in srgb, #fff 8%, #000);
+    --rt-pressed: color-mix(in srgb, #fff 14%, #000);
+    --rt-disabled-surface: color-mix(in srgb, #fff 11%, #000);
+    --rt-danger-hover: color-mix(in srgb, #eb0000 16%, #0f0f0f);
+    --rt-danger-active: color-mix(in srgb, #eb0000 26%, #0f0f0f);
+    --rt-danger-on-tint: color-mix(in srgb, #eb0000 60%, #fff);
+  }
+}
+
+/* Base Form & Control Typography */
+.rt-button,
+.rt-input,
+.rt-field {
+  font-family: var(--rt-font);
+  font-size: var(--rt-font-size);
+  font-optical-sizing: auto;
+  color: var(--rt-text);
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Button Component
+   ========================================================================== */
+
+.rt-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.375rem;
+  padding: var(--rt-control-padding);
+  border: 1px solid transparent;
+  border-radius: var(--rt-radius-control);
+  background: var(--rt-action);
+  color: var(--rt-on-action);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  box-shadow: 0 0 0 0 transparent;
+  transition:
+    border-color var(--rt-motion),
+    box-shadow var(--rt-motion),
+    transform var(--rt-motion);
+  user-select: none;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.rt-button:hover:not(:disabled),
+.rt-button:active:not(:disabled) {
+  transition:
+    background-color var(--rt-motion),
+    border-color var(--rt-motion),
+    box-shadow var(--rt-motion);
+}
+
+.rt-button:hover:not(:disabled) {
+  background: var(--rt-action-hover);
+}
+
+.rt-button:active:not(:disabled) {
+  background: var(--rt-action-active);
+  box-shadow: 0 0 0 0 transparent;
+  transform: translate(0, 0);
+}
+
+/* Button Variants */
+.rt-button[data-variant="secondary"] {
+  background: var(--rt-surface);
+  color: var(--rt-text);
+  border-color: var(--rt-ink);
+}
+
+.rt-button[data-variant="secondary"]:hover:not(:disabled) {
+  background: var(--rt-hover);
+  border-color: var(--rt-ink);
+}
+
+.rt-button[data-variant="secondary"]:active:not(:disabled) {
+  background: var(--rt-pressed);
+}
+
+.rt-button[data-variant="quiet"] {
+  background: transparent;
+  color: var(--rt-text);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.rt-button[data-variant="quiet"]:hover:not(:disabled) {
+  background: var(--rt-hover);
+  box-shadow: none;
+  transform: none;
+}
+
+.rt-button[data-variant="quiet"]:active:not(:disabled) {
+  background: var(--rt-pressed);
+}
+
+.rt-button[data-variant="danger"] {
+  background: var(--rt-surface);
+  color: var(--rt-error);
+  border-color: var(--rt-error);
+}
+
+.rt-button[data-variant="danger"]:hover:not(:disabled) {
+  background: var(--rt-danger-hover);
+  border-color: var(--rt-error);
+  color: var(--rt-danger-on-tint);
+}
+
+.rt-button[data-variant="danger"]:active:not(:disabled) {
+  background: var(--rt-danger-active);
+  color: var(--rt-danger-on-tint);
+}
+
+/* A link that looks like a button keeps the button's colours: the themed shell colours every link blue, and
+   a button is not underlined. */
+.rt-theme a.rt-button {
+  text-decoration: none;
+}
+
+.rt-theme a.rt-button,
+.rt-theme a.rt-button:hover {
+  color: var(--rt-on-action);
+}
+
+.rt-theme a.rt-button[data-variant="secondary"],
+.rt-theme a.rt-button[data-variant="secondary"]:hover,
+.rt-theme a.rt-button[data-variant="quiet"],
+.rt-theme a.rt-button[data-variant="quiet"]:hover {
+  color: var(--rt-text);
+}
+
+.rt-theme a.rt-button[data-variant="danger"] {
+  color: var(--rt-error);
+}
+
+.rt-theme a.rt-button[data-variant="danger"]:hover,
+.rt-theme a.rt-button[data-variant="danger"]:active {
+  color: var(--rt-danger-on-tint);
+}
+
+.rt-button:disabled,
+.rt-button[data-variant]:disabled {
+  background: var(--rt-disabled-surface);
+  color: var(--rt-muted);
+  border-color: var(--rt-divider);
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+.rt-button-icon {
+  display: inline-flex;
+}
+
+/* Pending: the work is happening and the button says so without moving. */
+.rt-button[data-pending] {
+  cursor: progress;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 6px,
+    color-mix(in srgb, currentColor 18%, transparent) 6px 12px
+  );
+  background-size: 17px 17px;
+  animation: rt-stripes 700ms linear infinite;
+}
+
+@keyframes rt-stripes {
+  to {
+    background-position: 17px 0;
+  }
+}
+
+/* Button Sizes */
+.rt-button[data-size="sm"] {
+  min-height: 1.875rem;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.8125rem;
+}
+
+.rt-button[data-size="lg"] {
+  min-height: 2.75rem;
+  padding: 0.6875rem 1.125rem;
+  font-size: 1rem;
+}
+
+.rt-icon-button {
+  padding: 0.5rem;
+  min-width: 2.375rem;
+  width: 2.375rem;
+  height: 2.375rem;
+}
+
+.rt-icon-button[data-size="sm"] {
+  padding: 0.25rem;
+  min-width: 1.875rem;
+  width: 1.875rem;
+  height: 1.875rem;
+}
+
+/* Focus Visible */
+.rt-button:focus-visible,
+.rt-input:focus-visible {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   Field & Text Input Components
+   ========================================================================== */
+
+.rt-field {
+  display: grid;
+  gap: 0.375rem;
+  max-width: 28rem;
+}
+
+.rt-field label,
+.rt-label,
+.rt-field [data-part="label"] {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--rt-text);
+}
+
+/* A pin field (pin-field.tsx): one box per digit, sharing the field's width. */
+.rt-pin {
+  display: flex;
+  gap: 0.5rem;
+}
+.rt-pin-box.rt-input {
+  flex: 1 1 0;
+  min-height: 3rem;
+  padding-inline: 0;
+  text-align: center;
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.rt-input {
+  min-width: 0;
+  width: 100%;
+  min-height: 2.375rem;
+  padding: var(--rt-control-padding);
+  border: 1px solid var(--rt-field-border);
+  border-radius: var(--rt-radius-control);
+  background: var(--rt-surface);
+  line-height: 1.5;
+  transition:
+    border-color var(--rt-motion),
+    box-shadow var(--rt-motion),
+    background-color var(--rt-motion);
+}
+
+.rt-input::placeholder {
+  color: var(--rt-muted);
+  opacity: 1;
+}
+
+.rt-input:hover:not(:disabled):not([readonly]):not([aria-invalid="true"]) {
+  border-color: var(--rt-ink);
+  background: var(--rt-surface-subtle);
+}
+
+.rt-input:focus {
+  background: var(--rt-paper);
+}
+
+.rt-input[aria-invalid="true"] {
+  border-color: var(--rt-error);
+  box-shadow: 0 0 0 1px var(--rt-error);
+}
+
+.rt-input:disabled {
+  background: var(--rt-disabled-surface);
+  color: var(--rt-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.rt-input[readonly] {
+  border-style: dashed;
+  box-shadow: none;
+  background: var(--rt-workspace);
+}
+
+.rt-field textarea {
+  resize: vertical;
+  min-height: 5.5rem;
+  line-height: 1.5;
+}
+
+.rt-control {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.rt-control .rt-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.rt-label-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* The help button is 24px (the minimum target) but must not make its row taller than a plain
+   label, or neighbouring fields stop lining up. */
+.rt-label-row .rt-icon-button {
+  width: 1.5rem;
+  height: 1.5rem;
+  min-width: 1.5rem;
+  margin-block: -0.3125rem;
+  padding: 0.125rem;
+}
+
+.rt-hint,
+.rt-error {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.rt-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+}
+
+.rt-error svg {
+  width: 0.9375rem;
+  height: 0.9375rem;
+  margin-top: 0.1875rem;
+}
+
+.rt-hint {
+  color: var(--rt-muted);
+}
+
+.rt-error {
+  color: var(--rt-error);
+  font-weight: 500;
+}
+
+/* A list is as wide as its field and no wider: what is chosen is cut with an ellipsis, it does not push the
+   field (and on a phone the page) out to the length of its longest choice. */
+.rt-field[data-scope="select"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.rt-select-trigger {
+  justify-content: space-between;
+  align-items: center;
+  text-align: start;
+  background: var(--rt-surface);
+}
+
+.rt-select-trigger > * {
+  min-width: 0;
+}
+
+.rt-select-trigger [data-part="value-text"] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rt-select-trigger [data-part="value-text"][data-placeholder-shown] {
+  color: var(--rt-muted);
+}
+
+/* ==========================================================================
+   Choice Controls (Checkbox & Radio)
+   ========================================================================== */
+
+.rt-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  cursor: pointer;
+  min-height: 2.25rem;
+  width: fit-content;
+  user-select: none;
+  font-size: 0.875rem;
+}
+
+.rt-choice[data-disabled] {
+  color: var(--rt-muted);
+  cursor: not-allowed;
+}
+
+/* With a second line under the label, the box sits beside the first line. */
+.rt-choice[data-hint] {
+  align-items: flex-start;
+  padding-block: 0.375rem;
+}
+
+/* Written with :where so it weighs no more than the rules for the box that follow it. */
+.rt-choice[data-hint] :where([data-part="control"], [data-part="item-control"]) {
+  margin-block-start: 0.125rem;
+}
+
+.rt-choice-hint {
+  display: block;
+  color: var(--rt-muted);
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.rt-choice [data-part="control"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 1px solid var(--rt-ink);
+  border-radius: var(--rt-radius);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--rt-surface);
+  transition: all var(--rt-motion);
+}
+
+.rt-choice:hover:not([data-disabled]) [data-part="control"] {
+  border-color: var(--rt-text);
+}
+
+.rt-choice [data-part="control"][data-state="checked"],
+.rt-choice [data-part="control"][data-state="indeterminate"] {
+  background: var(--rt-ink);
+  border-color: var(--rt-ink);
+  color: var(--rt-paper);
+}
+
+.rt-choice [data-part="control"][data-focus-visible] {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 3px;
+}
+
+.rt-choice [data-scope="radio-group"][data-part="item-control"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 1px solid var(--rt-ink);
+  border-radius: 50%;
+  transition: all var(--rt-motion);
+}
+
+.rt-choice:hover:not([data-disabled]) [data-scope="radio-group"][data-part="item-control"] {
+  border-color: var(--rt-text);
+}
+
+.rt-choice [data-part="item-control"][data-state="checked"] {
+  border: 5px solid var(--rt-ink);
+}
+
+.rt-choice [data-part="item-control"][data-focus-visible] {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   A date (date-field.tsx): one box, with the calendar's button inside it at the end, as a list's chevron is.
+   ========================================================================== */
+
+.rt-date-field .rt-date-control {
+  position: relative;
+  gap: 0;
+}
+
+.rt-date-field .rt-input {
+  padding-inline-end: 2.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.rt-date-open {
+  position: absolute;
+  inset-block: 1px 3px;
+  inset-inline-end: 1px;
+  display: grid;
+  place-items: center;
+  width: 2.875rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--rt-text);
+  cursor: pointer;
+}
+
+.rt-date-open svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.rt-date-open:focus-visible {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: -2px;
+}
+
+.rt-date-open[data-disabled] {
+  color: var(--rt-muted);
+  cursor: not-allowed;
+}
+
+/* The checkbox of a row of a table (row-check.tsx): the box alone, in a row no taller for it. */
+.rt-row-check {
+  min-height: 1.5rem;
+  vertical-align: middle;
+}
+
+/* ==========================================================================
+   A file to choose (file-field.tsx)
+   ========================================================================== */
+
+.rt-file {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.rt-file [data-part="label"] {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.rt-file-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* A place to drop the file: a dashed box that turns solid while a file is held over it. */
+.rt-file-drop {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 1.5rem;
+  border: 1.5px dashed var(--rt-border);
+  background: var(--rt-surface);
+  transition:
+    border-color var(--rt-motion),
+    background-color var(--rt-motion);
+}
+
+.rt-file-drop[data-dragging] {
+  border-style: solid;
+  border-color: var(--rt-accent);
+  background: var(--rt-selection);
+}
+
+.rt-file-drop[data-invalid] {
+  border-color: var(--rt-error);
+}
+
+.rt-radio-field {
+  display: grid;
+  justify-items: start;
+}
+
+.rt-radio-field-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   Status Labels & Persistent Notices
+   ========================================================================== */
+
+.rt-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--rt-text);
+  font: 500 0.8125rem / 1.5 var(--rt-font);
+  white-space: nowrap;
+}
+
+/* Status is a cell: the square the wordmark is drawn from (design-language.md). Empty for a plain fact, blue for
+   good to know, orange for what needs the person, red for what failed. The words beside it are plain. */
+.rt-status::before {
+  content: "";
+  flex: none;
+  box-sizing: border-box;
+  width: 0.5625rem;
+  height: 0.5625rem;
+  border: 1px solid var(--rt-field-border);
+}
+
+/* The four tones (kit/tones.ts): calm is grey, info ink, attention orange, problem red. Quiet by
+   default: a fact whispers, and only what needs a person or has failed shouts. */
+.rt-status[data-tone="info"]::before {
+  border: 0;
+  background: var(--rt-tone-info);
+}
+
+.rt-status[data-tone="attention"]::before {
+  border: 0;
+  background: var(--rt-tone-attention);
+}
+
+.rt-status[data-tone="problem"]::before {
+  border: 0;
+  background: var(--rt-tone-problem);
+}
+
+/* A notice is a block of the page with its own rule over it, in its tone's colour: ink for good to know, orange for
+   what needs the person, red for what failed. No box and no bar down its side. */
+.rt-notice {
+  font: var(--rt-font-size) / 1.5 var(--rt-font);
+  padding: 0.875rem 0 1rem;
+  border: 0;
+  border-top: 2px solid var(--rt-accent);
+  border-bottom: 1px solid var(--rt-divider);
+  background: var(--rt-paper);
+  color: var(--rt-text);
+  /* A long name (a merchant, an account, a file) wraps inside the notice and never widens the page. */
+  overflow-wrap: anywhere;
+}
+
+.rt-notice strong {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.rt-notice-icon {
+  color: var(--rt-error);
+}
+
+/* The cell is the mark: an icon beside it would say the same thing twice. */
+.rt-status svg {
+  display: none;
+}
+
+.rt-notice strong + div {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--rt-muted);
+}
+
+.rt-notice[data-tone="calm"] {
+  border-top-color: var(--rt-ink);
+}
+
+.rt-notice[data-tone="info"] {
+  border-top-color: var(--rt-tone-info);
+}
+
+.rt-notice[data-tone="attention"] {
+  border-top-color: var(--rt-tone-attention);
+}
+
+.rt-notice[data-tone="problem"] {
+  border-top-color: var(--rt-tone-problem);
+}
+
+/* ==========================================================================
+   Popups, Dropdowns & Menus
+   ========================================================================== */
+
+.rt-popup {
+  font: var(--rt-font-size) / 1.5 var(--rt-font);
+  background: var(--rt-surface);
+  color: var(--rt-text);
+  border: 1px solid var(--rt-border-subtle);
+  border-radius: var(--rt-radius-overlay);
+  padding: 0;
+  min-width: var(--reference-width, 13rem);
+  max-width: min(28rem, calc(100vw - 2rem));
+  max-height: min(22rem, var(--available-height, 22rem));
+  overflow-y: auto;
+  z-index: var(--rt-overlay);
+  box-shadow: var(--rt-shadow-popup);
+}
+
+.rt-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5625rem 0.75rem;
+  border-radius: var(--rt-radius);
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color var(--rt-motion);
+}
+
+.rt-item + .rt-item {
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-item[data-highlighted],
+.rt-item:focus {
+  background: var(--rt-pressed);
+  outline: none;
+}
+
+.rt-item[data-disabled] {
+  color: var(--rt-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.rt-item[data-state="checked"] {
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Overlays & Dialogs
+   ========================================================================== */
+
+.rt-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--rt-backdrop);
+  z-index: var(--rt-overlay);
+}
+
+/* A dialog that must be answered before anything else (a sign-in): nothing of the page shows behind it. */
+.rt-backdrop[data-opaque] {
+  background: var(--rt-workspace, Canvas);
+}
+
+.rt-dialog-lead {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.045em;
+}
+
+.rt-positioner {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  padding: 1.5rem;
+  z-index: var(--rt-overlay);
+  overflow-y: auto;
+}
+
+.rt-dialog {
+  width: min(34rem, 100%);
+  padding: 1.75rem;
+  background: var(--rt-surface);
+  color: var(--rt-text);
+  border: 1px solid var(--rt-border-subtle);
+  border-radius: calc(var(--rt-radius-overlay) * 1.2);
+  font: var(--rt-font-size) / 1.5 var(--rt-font);
+  box-shadow: var(--rt-shadow-xl);
+}
+
+.rt-dialog [data-part="title"] {
+  font-size: 1.75rem;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.rt-dialog [data-part="description"] {
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+  margin: 0 0 1.25rem;
+  line-height: 1.45;
+}
+
+.rt-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.rt-dialog-header [data-part="title"] {
+  flex: 1;
+}
+
+.rt-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-dialog-body {
+  margin-top: 0.75rem;
+}
+
+.rt-help {
+  min-width: 14rem;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 0.875rem 1rem;
+}
+
+.rt-help-title {
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.rt-help-body {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.rt-tooltip {
+  background: var(--rt-ink);
+  color: var(--rt-paper);
+  padding: 0.375rem 0.625rem;
+  font: 600 0.75rem / 1.4 var(--rt-font);
+  max-width: 18rem;
+  z-index: var(--rt-overlay);
+  border-radius: var(--rt-radius);
+  box-shadow: var(--rt-shadow-md);
+}
+
+/* ==========================================================================
+   Tabs
+   ========================================================================== */
+
+/* The parts are matched by scope as well as by name: a Select or another widget inside a tab panel has parts
+   of the same names (trigger, content) and must not take the tab styles. */
+.rt-tabs [data-scope="tabs"][data-part="list"] {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--rt-divider);
+  overflow-x: auto;
+}
+
+.rt-tabs [data-scope="tabs"][data-part="trigger"] {
+  padding: 0.75rem 0.125rem 0.625rem;
+  margin-bottom: -1px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--rt-muted);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color var(--rt-motion),
+    border-color var(--rt-motion);
+}
+
+.rt-tabs [data-scope="tabs"][data-part="trigger"]:hover:not([data-selected]) {
+  color: var(--rt-text);
+}
+
+.rt-tabs [data-scope="tabs"][data-part="trigger"][data-selected] {
+  border-bottom-color: var(--rt-ink);
+  color: var(--rt-ink);
+  font-weight: 600;
+}
+
+.rt-tabs [data-scope="tabs"][data-part="content"] {
+  padding: 1.25rem 0;
+}
+
+/* ==========================================================================
+   Segment: one choice out of a few, as a row of segments
+   ========================================================================== */
+
+/* A ruled row of equal segments, the chosen one filled with ink (the way the theme switch reads). The
+   parts are matched by scope, as the tabs are. */
+.rt-segment {
+  border-radius: var(--rt-radius-control);
+  overflow: hidden;
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  border: 1px solid var(--rt-ink);
+}
+
+.rt-segment [data-scope="segment-group"][data-part="item"] {
+  display: grid;
+  place-items: center;
+  min-height: 2.5rem;
+  padding: 0.375rem 0.75rem;
+  color: var(--rt-text);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+}
+
+.rt-segment [data-scope="segment-group"][data-part="item"] + [data-part="item"] {
+  border-inline-start: 1px solid var(--rt-ink);
+}
+
+.rt-segment [data-scope="segment-group"][data-part="item"]:hover:not([data-state="checked"]) {
+  background: var(--rt-hover);
+}
+
+.rt-segment [data-scope="segment-group"][data-part="item"][data-state="checked"] {
+  background: var(--rt-ink);
+  color: var(--rt-paper);
+}
+
+.rt-segment [data-scope="segment-group"][data-part="item"][data-focus-visible] {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 3px;
+}
+
+.rt-segment [data-scope="segment-group"][data-part="item"][data-disabled] {
+  color: var(--rt-muted);
+  cursor: default;
+}
+
+.rt-segment [data-scope="segment-group"][data-part="item-control"] {
+  display: none;
+}
+
+/* ==========================================================================
+   Breadcrumbs & Error Summary
+   ========================================================================== */
+
+.rt-breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+}
+
+.rt-breadcrumbs li + li::before {
+  content: "/" / "";
+  margin-inline-end: 0.5rem;
+  color: var(--rt-muted);
+}
+
+.rt-breadcrumbs [aria-current="page"] {
+  font-weight: 700;
+}
+
+/* What a form could not take: a block of the page with a red rule over it, like a notice that failed. In no box. */
+.rt-error-summary {
+  padding: 0.875rem 0 1rem;
+  border-top: 2px solid var(--rt-error);
+  border-bottom: 1px solid var(--rt-divider);
+  background: var(--rt-paper);
+}
+
+.rt-error-summary h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.rt-error-summary ul {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+
+.rt-error-summary a {
+  color: var(--rt-error);
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Progress Bar
+   ========================================================================== */
+
+/* Progress is cells that fill in ink (design-language.md): the track is a row of pale cells, and the part done is the
+   same row in ink. Both are drawn from the same origin, so a cell is never cut where the two meet by more than the
+   part's own edge. */
+.rt-progress [data-part="track"] {
+  height: 0.5rem;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--rt-divider) 0 0.5rem,
+    transparent 0.5rem 0.6875rem
+  );
+  margin-top: 0.5rem;
+  overflow: hidden;
+}
+
+.rt-progress [data-part="range"] {
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--rt-ink) 0 0.5rem,
+    var(--rt-paper) 0.5rem 0.6875rem
+  );
+  width: var(--percent);
+}
+
+.rt-progress[data-state="indeterminate"] [data-part="range"] {
+  width: 35%;
+  animation: rt-progress 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes rt-progress {
+  to {
+    transform: translateX(180%);
+  }
+}
+
+/* ==========================================================================
+   Calendar & Date Picker
+   ========================================================================== */
+
+.rt-calendar {
+  width: 19.5rem;
+  padding: 0.5rem;
+}
+
+.rt-calendar-nav {
+  justify-content: space-between;
+}
+
+.rt-calendar table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.rt-calendar th {
+  font-size: 0.75rem;
+  color: var(--rt-muted);
+  font-weight: 500;
+  padding: 0.5rem 0;
+}
+
+.rt-calendar td {
+  padding: 0.0625rem;
+}
+
+.rt-calendar [data-part="table-cell-trigger"] {
+  display: grid;
+  place-items: center;
+  min-height: 2.125rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  border-radius: var(--rt-radius);
+  transition: background-color var(--rt-motion);
+}
+
+.rt-calendar [data-part="table-cell-trigger"]:hover:not([data-disabled]) {
+  background: var(--rt-hover);
+}
+
+.rt-calendar [data-part="table-cell-trigger"][data-in-range] {
+  background: var(--rt-selection);
+}
+
+.rt-calendar [data-part="table-cell-trigger"][data-selected] {
+  background: var(--rt-ink);
+  color: var(--rt-paper);
+  font-weight: 600;
+}
+
+.rt-calendar [data-part="table-cell-trigger"][data-outside-range] {
+  color: var(--rt-muted);
+  opacity: 0.45;
+}
+
+.rt-calendar [data-part="table-cell-trigger"][data-disabled] {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   The page eyebrow: the small black label above a page's title (the book, the section). One rule
+   for every screen. It is a chip, never a bar: in a grid or a flex column it does not stretch.
+   ========================================================================== */
+
+.eyebrow {
+  display: inline-block;
+  justify-self: start;
+  align-self: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 1rem;
+  color: var(--rt-muted);
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Figures
+   Money is set in tabular, lining figures and never wraps, so a column of amounts lines up on its
+   decimal point and a figure is never split across two lines. See `Money` and `format.ts`.
+   ========================================================================== */
+
+/* Figures are set in the mono face, as a ledger sets them (docs/reference/design-language.md): a little smaller
+   than the text beside them, because a mono face runs wide. */
+.rt-money {
+  font-family: var(--rt-mono);
+  font-size: 0.94em;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* A date is set the same way: "Mar 20, 2026" is never split across two lines, and a column of dates
+   lines up. See `DateValue` and `format.ts`. */
+.rt-date {
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Tables & Financial Grids
+   ========================================================================== */
+
+.rt-table-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+  border-radius: var(--rt-radius);
+}
+
+.rt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: 0.875rem;
+  text-align: start;
+}
+
+.rt-table caption {
+  text-align: start;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.03em;
+  padding-bottom: 0.75rem;
+}
+
+.rt-table th,
+.rt-table td {
+  padding: var(--rt-row-padding) 0.875rem;
+  text-align: start;
+  border-bottom: 1px solid var(--rt-divider);
+  vertical-align: middle;
+}
+
+.rt-table thead th {
+  color: var(--rt-muted);
+  font-family: var(--rt-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  background: transparent;
+  border-top: var(--rt-rule);
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-table .rt-number,
+.rt-table td.amount,
+.rt-table th.amount {
+  text-align: end;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.rt-table tfoot th,
+.rt-table tfoot td {
+  border-top: 1px solid var(--rt-ink);
+  border-bottom: 6px double var(--rt-ink);
+  color: var(--rt-text);
+  background: var(--rt-paper);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.rt-table tbody tr {
+  transition: background-color var(--rt-motion);
+}
+
+.rt-table tbody tr:hover {
+  background: var(--rt-hover);
+}
+
+.rt-table tbody th {
+  background: transparent;
+  color: var(--rt-text);
+  font-weight: 500;
+}
+
+.rt-table small {
+  display: block;
+  color: var(--rt-muted);
+  font-size: 0.75rem;
+  margin-top: 0.125rem;
+}
+
+.rt-table .rt-input {
+  min-width: 6.5rem;
+}
+
+.rt-table .rt-field {
+  min-width: 11rem;
+}
+
+.rt-skeleton {
+  background: var(--rt-disabled-surface);
+  min-height: 1rem;
+  border-radius: var(--rt-radius);
+}
+
+/* A page while it loads (skeleton.tsx): its heading, three cards and a list, in the shape the page will take. A light
+   band passes over them, unless the reader asked for less motion. */
+.rt-page-skeleton-body {
+  display: grid;
+  gap: 0.75rem;
+  animation: rt-skeleton-in 160ms ease-out;
+}
+.rt-page-skeleton-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  margin-block: 0.75rem;
+}
+.rt-skeleton-title {
+  height: 2.25rem;
+  margin-block-end: 0.25rem;
+}
+.rt-skeleton-line {
+  height: 1.25rem;
+}
+.rt-skeleton-card {
+  height: 7rem;
+}
+.rt-skeleton-row {
+  height: 2.5rem;
+}
+.rt-skeleton-choice {
+  height: 4.5rem;
+}
+.rt-skeleton-chart {
+  height: 12rem;
+}
+/* A list or a report while it loads: a toolbar of fields, then rows whose figure sits on the right, as the table's. */
+.rt-skeleton-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-block: 1rem;
+  border-block-start: 4px solid var(--rt-disabled-surface);
+  margin-block-end: 0.5rem;
+}
+.rt-skeleton-field {
+  flex: 1 1 9rem;
+  max-width: 16rem;
+  height: 2.75rem;
+}
+.rt-skeleton-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding-block-end: 0.75rem;
+}
+.rt-skeleton-tab {
+  width: 6.5rem;
+  height: 1.25rem;
+}
+.rt-skeleton-tr {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  min-height: 3.5rem;
+  border-block-end: 1px solid var(--rt-divider);
+}
+.rt-skeleton-cell {
+  height: 1rem;
+  min-width: 0;
+}
+.rt-skeleton-figure {
+  width: 5rem;
+  margin-inline-start: auto;
+}
+.rt-skeleton-form {
+  max-width: 34rem;
+  gap: 1.25rem;
+}
+.rt-skeleton-labelled {
+  display: grid;
+  gap: 0.5rem;
+}
+.rt-skeleton-label {
+  height: 1rem;
+  max-width: 100%;
+}
+.rt-skeleton-input {
+  height: 2.75rem;
+}
+.rt-page-skeleton .rt-skeleton {
+  background: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--rt-surface) 55%, transparent) 50%,
+      transparent 100%
+    )
+    var(--rt-disabled-surface);
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: rt-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes rt-skeleton-shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+@keyframes rt-skeleton-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rt-page-skeleton .rt-skeleton,
+  .rt-page-skeleton-body {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+   Utilities & Common Shell
+   ========================================================================== */
+
+.rt-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.rt-theme {
+  font: var(--rt-font-size) / 1.5 var(--rt-font);
+  color: var(--rt-text);
+  background: var(--rt-surface);
+  font-optical-sizing: auto;
+}
+
+.rt-theme *,
+.rt-popup *,
+.rt-dialog * {
+  box-sizing: border-box;
+}
+
+.rt-theme :where(button, input, textarea, select) {
+  font: inherit;
+}
+
+.rt-theme :where(button, input, textarea, select, a, [tabindex]):focus-visible,
+.rt-popup :where(button, input, [tabindex]):focus-visible,
+.rt-dialog :where(button, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 3px;
+}
+
+/* A page's title takes focus by script when the page opens, so a screen reader starts at the title.
+   It is not a control, nothing can be done to it and Tab cannot reach it, so it draws no ring: the ring
+   belongs on controls and on keyboard use. (The heading stays focusable; only the outline goes. The
+   setup wizard keeps its own ring, because it moves focus to a step's heading after a person's action.) */
+:is(h1, h2, h3, h4, h5, h6)[tabindex="-1"]:not(.rt-wizard-heading):focus,
+:is(h1, h2, h3, h4, h5, h6)[tabindex="-1"]:not(.rt-wizard-heading):focus-visible {
+  outline: none;
+}
+
+.rt-theme a {
+  color: var(--rt-accent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.rt-theme a:hover {
+  color: var(--rt-accent-hover);
+}
+
+/* A name or a figure that is itself the link to its page (a transaction's description in a list, a figure in
+   a report, the date that opens a row) is read as text: ink and plain, and shown to be a link by the pointer
+   or the keyboard being on it. A link inside a sentence keeps the blue and the line. */
+.rt-theme :is(th[scope="row"], th[role="rowheader"]) > a,
+.rt-theme
+  :is(
+    .rt-register-entry-link,
+    .rt-amount-link,
+    .rt-recon-entry-link,
+    .rt-bank-tile-open,
+    .rt-bank-row-name > a
+  ) {
+  color: inherit;
+  text-decoration: none;
+}
+
+.rt-theme :is(th[scope="row"], th[role="rowheader"]) > a:is(:hover, :focus-visible),
+.rt-theme
+  :is(
+    .rt-register-entry-link,
+    .rt-amount-link,
+    .rt-recon-entry-link,
+    .rt-bank-tile-open,
+    .rt-bank-row-name > a
+  ):is(:hover, :focus-visible) {
+  color: var(--rt-accent-hover);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.rt-theme svg,
+.rt-popup svg,
+.rt-dialog svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  stroke-width: 1.75;
+}
+
+.rt-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+/* The provider only carries lang and dir; it must not affect layout. */
+.rt-ui {
+  display: contents;
+}
+
+/* Directional glyphs (chevrons, arrows) point the other way in right-to-left text. */
+.rt-dir-icon:dir(rtl) {
+  transform: scaleX(-1);
+}
+
+/* Accessibility Preferences */
+@media (prefers-reduced-motion: reduce) {
+  .rt-button {
+    transition: none;
+  }
+  .rt-button:hover:not(:disabled) {
+    transform: none;
+  }
+  .rt-progress[data-state="indeterminate"] [data-part="range"] {
+    animation: none;
+  }
+  .rt-button[data-pending] {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .rt-button,
+  .rt-button[data-variant],
+  .rt-status,
+  .rt-popup,
+  .rt-dialog {
+    border: 1px solid ButtonText;
+  }
+  .rt-choice [data-part="control"][data-state="checked"] {
+    outline: 2px solid Highlight;
+  }
+  .rt-theme :focus-visible {
+    outline-color: Highlight;
+  }
+  .rt-progress [data-part="range"] {
+    background: Highlight;
+  }
+}

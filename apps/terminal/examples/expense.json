@@ -1,0 +1,11 @@
+{
+  "data": {
+    "date": "2026-01-16",
+    "reference": "EXP-1",
+    "narration": "Office expense",
+    "lines": [
+      { "accountId": "5000", "debit": "50.00", "credit": "" },
+      { "accountId": "1000", "debit": "", "credit": "50.00" }
+    ]
+  }
+}

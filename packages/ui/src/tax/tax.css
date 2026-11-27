@@ -1,0 +1,825 @@
+/* Styles for the tax lane's components. Tokens from base.css only; no one-off colors.
+   Structure comes from rules and space: a heavy rule above each section, hairlines between rows, a
+   double rule under the figure a table exists to state. Meaning is never carried by color alone: every
+   state has words and, where it needs one, an icon. The one color that means "needs a person" is the
+   orange the rest of the product uses for it. */
+
+.app-tax {
+  display: grid;
+  max-width: 76rem;
+}
+
+/* The page header keeps the space under it that every page's header has; what follows is spaced by its own
+   parts. */
+.app-tax > :not(.rt-page-header) {
+  margin: 0;
+}
+
+/* ---- The year ------------------------------------------------------------------------------ */
+
+.rt-tax-yearbar {
+  display: grid;
+  /* One column that can shrink: without it the widest choice sets the width, and a phone scrolls sideways. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-2);
+}
+
+.rt-tax-yearbar-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-2) var(--rt-space-6);
+}
+
+.rt-tax-yearbar-controls > .rt-field {
+  min-width: 0;
+}
+
+/* The year is a short field; the form and the share of meals are wider. */
+.rt-tax-yearbar-controls > .rt-field:first-child {
+  width: 12rem;
+}
+
+.rt-tax-yearbar-controls > .rt-field:not(:first-child) {
+  width: 22rem;
+  max-width: 100%;
+}
+
+/* The year bar and the checks sit between the tabs and the tool, as the report's choices do. */
+.rt-tax-tabs .rt-tax-yearbar {
+  padding-top: var(--rt-space-3);
+}
+
+/* The state of a book with nothing to work on yet: no book, or a calendar that covers no tax year. A notice
+   with a way forward, never an error. */
+.rt-tax-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-3) var(--rt-space-4);
+}
+
+/* ---- Before the figures are relied on ------------------------------------------------------ */
+
+/* Three kinds of check, by what they ask of the person: orange rows (acting would change the figures),
+   plain notes (a fact about the figures) and a closed line of grey good practice. A normal book shows at
+   most the notes and the closed line. */
+.rt-tax-checks {
+  display: grid;
+  gap: var(--rt-space-3);
+  margin-top: var(--rt-space-2);
+}
+
+.rt-tax-checks:not(:has(*)) {
+  display: none;
+}
+
+.rt-tax-checklist {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-tax-check {
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0, 1fr);
+  gap: var(--rt-space-3);
+  padding-block: var(--rt-space-3);
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-tax-check-marker {
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.125rem;
+  font: 700 0.875rem / 1 var(--rt-mono);
+}
+
+.rt-tax-check p {
+  margin: 0;
+}
+
+/* Orange rows come first, under a heavy rule: they are what changes the figures. */
+.rt-tax-attention {
+  border-top: var(--rt-rule);
+}
+
+/* Good practice is quiet: grey words, and a hollow square for what is not done yet, a tick for what is. */
+.rt-tax-check[data-severity="calm"] {
+  color: var(--rt-muted);
+}
+
+.rt-tax-check[data-state="todo"] .rt-tax-check-marker::before {
+  content: "";
+  width: 0.625rem;
+  height: 0.625rem;
+  border: 2px solid var(--rt-muted);
+}
+
+.rt-tax-check-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--rt-space-1) var(--rt-space-3);
+}
+
+.rt-tax-check[data-severity="calm"] .rt-tax-check-title strong {
+  color: var(--rt-text);
+}
+
+.rt-tax-check-status {
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-tax-check-detail {
+  max-width: 52rem;
+  margin-top: var(--rt-space-1);
+  line-height: 1.5;
+}
+
+.rt-tax-check-fix {
+  margin-top: var(--rt-space-1);
+  font-weight: 700;
+}
+
+/* A note is a plain sentence under the choices: a fact about the figures, in quiet type. */
+.rt-tax-about {
+  display: grid;
+  gap: var(--rt-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-tax-about p {
+  max-width: 54rem;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--rt-muted);
+}
+
+.rt-tax-goodpractice .rt-tax-checklist {
+  margin-top: var(--rt-space-2);
+}
+
+/* ---- Tabs ---------------------------------------------------------------------------------- */
+
+.rt-tax-tabs {
+  min-width: 0;
+}
+
+.rt-tax-tabs [role="tabpanel"],
+.rt-tax-panel {
+  display: grid;
+  gap: var(--rt-space-6);
+  padding-top: var(--rt-space-6);
+  min-width: 0;
+}
+
+/* A tool's tab: its introduction, its controls, what they read and the files it saves, spaced as one column. */
+.rt-tax-section {
+  display: grid;
+  gap: var(--rt-space-4);
+  min-width: 0;
+}
+
+.rt-tax-section > * {
+  margin: 0;
+}
+
+/* ---- The worksheet ------------------------------------------------------------------------- */
+
+.rt-tax-worksheet-view {
+  display: grid;
+  gap: var(--rt-space-6);
+  min-width: 0;
+}
+
+.rt-tax-worksheet-view > * {
+  margin: 0;
+}
+
+.rt-tax-worksheet small {
+  display: block;
+  max-width: 36rem;
+  margin-top: var(--rt-space-1);
+  font-weight: 400;
+  color: var(--rt-muted);
+  white-space: normal;
+}
+
+.rt-tax-accountsrow > td {
+  padding: 0 0 var(--rt-space-3) var(--rt-space-6);
+  background: var(--rt-surface-subtle);
+}
+
+.rt-tax-worksheet tfoot th,
+.rt-tax-worksheet tfoot td {
+  border-top: 3px double var(--rt-ink);
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+/* At a phone's width the line's label wraps and both columns of figures stay beside it: the columns are as wide
+   as their figures, and the table scrolls sideways only when even that does not fit. */
+.rt-tax-worksheet.rt-statement {
+  min-width: 0;
+}
+
+.rt-tax-worksheet thead th.rt-number {
+  min-width: 5.5rem;
+}
+
+.rt-tax-worksheet td.rt-number {
+  white-space: nowrap;
+}
+
+/* A date range is not broken in the middle of a date. */
+.rt-tax-nowrap {
+  white-space: nowrap;
+}
+
+/* The button that opens the accounts behind a line looks like a link and acts like a disclosure. */
+.rt-tax-toggle,
+.rt-tax-linkbutton {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--rt-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.rt-tax-linkbutton {
+  font-size: inherit;
+  text-align: start;
+}
+
+.rt-tax-toggle:focus-visible,
+.rt-tax-linkbutton:focus-visible {
+  outline: 3px solid var(--rt-accent);
+  outline-offset: 2px;
+}
+
+.rt-tax-accountlist {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-tax-accountlist > li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--rt-space-2) var(--rt-space-6);
+  padding: var(--rt-space-2) var(--rt-space-3);
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-tax-accountname small {
+  display: block;
+}
+
+.rt-tax-unmapped,
+.rt-tax-reconciliation,
+.rt-tax-notes,
+.rt-tax-threshold,
+.rt-tax-accounts,
+.rt-tax-vendorlist,
+.rt-tax-payees,
+.rt-tax-preview,
+.rt-tax-history {
+  display: grid;
+  gap: var(--rt-space-3);
+  min-width: 0;
+}
+
+.rt-tax-unmapped > h3,
+.rt-tax-reconciliation > h3,
+.rt-tax-threshold > h3,
+.rt-tax-accounts > h3,
+.rt-tax-vendorlist h3,
+.rt-tax-payees > h3,
+.rt-tax-preview > h3,
+.rt-tax-history > h3,
+.rt-tax-imported > h3 {
+  margin: 0;
+  padding-top: var(--rt-space-3);
+  border-top: 1px solid var(--rt-ink);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.rt-tax-unmapped p,
+.rt-tax-notes p {
+  margin: 0;
+}
+
+.rt-tax-tie {
+  max-width: 40rem;
+}
+
+.rt-tax-tie tfoot th,
+.rt-tax-tie tfoot td {
+  border-top: 3px double var(--rt-ink);
+  font-weight: 700;
+}
+
+.rt-tax-notes ul,
+.rt-tax-sources {
+  display: grid;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.rt-tax-sources {
+  margin-top: var(--rt-space-1);
+  font-size: 0.875rem;
+}
+
+.rt-tax-warnings {
+  display: grid;
+  gap: var(--rt-space-3);
+}
+
+/* ---- Packs --------------------------------------------------------------------------------- */
+
+.rt-tax-pack {
+  display: grid;
+  gap: var(--rt-space-3);
+  min-width: 0;
+  padding-top: var(--rt-space-4);
+  border-top: var(--rt-rule);
+}
+
+.rt-tax-pack > p,
+.rt-tax-pack-built > p {
+  margin: 0;
+  max-width: 54rem;
+}
+
+.rt-tax-pack-actions,
+.rt-tax-filepick-actions,
+.rt-tax-importactions,
+.rt-tax-exports {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-3) var(--rt-space-4);
+}
+
+.rt-tax-pack-built {
+  display: grid;
+  gap: var(--rt-space-3);
+  min-width: 0;
+}
+
+/* A pack the books have moved on from is marked as not current by its edge, and its words keep their contrast. */
+.rt-tax-pack-built[data-stale] {
+  padding-inline-start: var(--rt-space-4);
+  border-inline-start: 4px dashed var(--rt-muted);
+}
+
+.rt-tax-pack-facts {
+  font-weight: 700;
+}
+
+.rt-tax-path,
+.rt-tax-payee {
+  font-family: var(--rt-mono);
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+table.rt-tax-files td,
+table.rt-tax-files th {
+  vertical-align: top;
+}
+
+/* A file name breaks at its slashes and hyphens and never in the middle of a word, so the column keeps the
+   width of its longest piece; a hash stays on one line. */
+.rt-tax-files .rt-tax-path {
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.rt-tax-filemeta,
+.rt-tax-statusinline {
+  display: none;
+}
+
+.rt-tax-datecell,
+.rt-tax-entrytable td.rt-number {
+  white-space: nowrap;
+}
+
+/* In a tab the tab's own rule is the first section's rule; a later section keeps its own. */
+.rt-tax-tabs .rt-tax-pack:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.rt-tax-accountant {
+  display: grid;
+  gap: var(--rt-space-6);
+  min-width: 0;
+}
+
+/* ---- 1099 vendors -------------------------------------------------------------------------- */
+
+.rt-tax-vendors,
+.rt-tax-sales,
+.rt-tax-adjustments {
+  display: grid;
+  gap: var(--rt-space-6);
+  min-width: 0;
+}
+
+.rt-tax-vendors > p,
+.rt-tax-sales > p,
+.rt-tax-adjustments > p {
+  margin: 0;
+  max-width: 54rem;
+}
+
+.rt-tax-threshold-amount {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.rt-tax-accountchoices {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
+  gap: var(--rt-space-2) var(--rt-space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-tax-accountchoices > li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-2);
+}
+
+/* The name is the choice; the account's code stays beside it, muted, as it does in a list of accounts. */
+.rt-tax-accountcode {
+  color: var(--rt-muted);
+  font: 0.8125rem / 1.5 var(--rt-mono);
+}
+
+.rt-tax-sectionhead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rt-space-3);
+}
+
+.rt-tax-vendortable td small,
+.rt-tax-vendortable th small,
+.rt-tax-payeetable th small {
+  display: block;
+  max-width: 28rem;
+  margin-top: var(--rt-space-1);
+  font-weight: 400;
+  color: var(--rt-muted);
+  white-space: normal;
+}
+
+.rt-tax-attention {
+  display: grid;
+  gap: var(--rt-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-tax-totals {
+  margin: 0;
+  padding-top: var(--rt-space-3);
+  border-top: 1px solid var(--rt-divider);
+  font-weight: 700;
+}
+
+.rt-tax-vendorform {
+  display: grid;
+  gap: var(--rt-space-4);
+}
+
+.rt-tax-formrow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--rt-space-4);
+  align-items: start;
+}
+
+.rt-tax-history ol {
+  display: grid;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.875rem;
+}
+
+/* ---- Sales tax ----------------------------------------------------------------------------- */
+
+.rt-tax-salescontrols {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--rt-space-4) var(--rt-space-6);
+}
+
+.rt-tax-salescontrols .rt-field {
+  min-width: 12rem;
+}
+
+.rt-tax-salescontrols p {
+  margin: 0;
+}
+
+.rt-tax-salestable tfoot th,
+.rt-tax-salestable tfoot td {
+  border-top: 3px double var(--rt-ink);
+  font-weight: 700;
+}
+
+.rt-tax-salestable tr[data-differs] th,
+.rt-tax-salestable tr[data-differs] td {
+  background: var(--rt-surface-subtle);
+}
+
+.rt-tax-salestable tr small {
+  display: block;
+  font-weight: 400;
+  color: var(--rt-muted);
+}
+
+.rt-tax-noaccount {
+  display: grid;
+  gap: var(--rt-space-3);
+  padding: var(--rt-space-3) 0 var(--rt-space-4);
+  border-top: var(--rt-rule);
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-tax-noaccount > * {
+  margin: 0;
+}
+
+.rt-tax-candidates {
+  display: grid;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+/* ---- Adjusting entries --------------------------------------------------------------------- */
+
+.rt-tax-filepick {
+  display: grid;
+  gap: var(--rt-space-3);
+  min-width: 0;
+  margin: 0;
+  padding: var(--rt-space-3) 0 var(--rt-space-4);
+  border-top: var(--rt-rule);
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-tax-filepick .rt-tax-filepick-label {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.rt-tax-filepick p {
+  margin: 0;
+}
+
+.rt-tax-filename {
+  font-family: var(--rt-mono);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+.rt-tax-previewcounts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-2) var(--rt-space-3);
+  margin: 0;
+  font-weight: 700;
+}
+
+.rt-tax-problems {
+  display: grid;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-tax-problem {
+  max-width: 54rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.rt-tax-entrytable .rt-tax-entry > tr > th,
+.rt-tax-entrytable .rt-tax-entry > tr > td {
+  vertical-align: top;
+}
+
+.rt-tax-entry > tr:first-child > th,
+.rt-tax-entry > tr:first-child > td {
+  border-top: 1px solid var(--rt-ink);
+  background: var(--rt-surface-subtle);
+}
+
+.rt-tax-entry th small {
+  display: block;
+  max-width: 28rem;
+  font-weight: 400;
+  color: var(--rt-muted);
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.rt-tax-entrytable tr.rt-tax-entryline td {
+  font-size: 0.875rem;
+}
+
+.rt-tax-imported {
+  display: grid;
+  gap: var(--rt-space-3);
+  padding: var(--rt-space-3) 0 var(--rt-space-4);
+  border-top: var(--rt-rule);
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-tax-imported > * {
+  margin: 0;
+}
+
+.rt-tax-imported ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2) var(--rt-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--rt-mono);
+  font-size: 0.875rem;
+}
+
+/* ---- Narrow screens ------------------------------------------------------------------------ */
+
+@media (max-width: 40rem) {
+  /* The worksheet's label may be narrow and its cells tight, so two columns of figures as large as a business's
+     (48,250.00) still sit beside it. */
+  .rt-tax-worksheet th,
+  .rt-tax-worksheet td {
+    padding-inline: var(--rt-space-2);
+  }
+
+  .rt-tax-entrytable th,
+  .rt-tax-entrytable td {
+    padding-inline: var(--rt-space-2);
+  }
+
+  .rt-tax-worksheet tbody th[scope="row"],
+  .rt-tax-worksheet tfoot th[scope="row"] {
+    min-width: 7rem;
+  }
+
+  /* The net line is the largest figure on the page; at a phone's width it is set a little smaller, so it fits. */
+  .rt-table.rt-tax-worksheet tfoot th,
+  .rt-table.rt-tax-worksheet tfoot td {
+    font-size: 1rem;
+  }
+
+  /* An entry's status moves under the entry on a phone, so the date and the two figures keep their room. */
+  .rt-tax-statuscolumn {
+    display: none;
+  }
+
+  .rt-tax-statusinline {
+    display: grid;
+    justify-items: start;
+    gap: var(--rt-space-1);
+    margin-top: var(--rt-space-2);
+  }
+
+  /* The badge may wrap here, so its words do not set the width of the whole column. */
+  .rt-tax-statusinline .rt-status {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  /* A pack's file list is two columns on a phone: the file and what it is, with the size under the description.
+     The table stays a table. */
+  .rt-tax-filecolumn {
+    display: none;
+  }
+
+  .rt-tax-filemeta {
+    display: block;
+    margin-top: var(--rt-space-1);
+    color: var(--rt-muted);
+    font-size: 0.8125rem;
+  }
+
+  .rt-tax-yearbar-controls > .rt-field:first-child,
+  .rt-tax-yearbar-controls > .rt-field:not(:first-child),
+  .rt-tax-salescontrols .rt-field {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .rt-tax-threshold-amount {
+    font-size: 1.5rem;
+  }
+}
+
+@media print {
+  .rt-tax-pack-actions,
+  .rt-tax-exports,
+  .rt-tax-toggle {
+    display: none;
+  }
+}
+
+/* How final a pack is: the sentence the calendar's own close gives it, set off as a fact about the figures. */
+.rt-tax-final {
+  display: grid;
+  gap: var(--rt-space-2);
+  padding: var(--rt-space-3) 0;
+  border-top: var(--rt-rule);
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-tax-final > h3 {
+  margin: 0;
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-tax-final > p {
+  margin: 0;
+  max-width: 54rem;
+  line-height: 1.5;
+}
+
+/* The choices above a tool are one row, each with its label beside it, as the report's are: the table
+   comes straight after them. On a phone the label goes back above the control. */
+.rt-tax-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-2) var(--rt-space-6);
+}
+
+.rt-tax-controls > .rt-field {
+  min-width: 14rem;
+  max-width: 24rem;
+}
+
+.rt-tax-yearbar-controls > .rt-field,
+.rt-tax-controls > .rt-field {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--rt-space-2);
+}
+
+@media (max-width: 40rem) {
+  .rt-tax-yearbar-controls > .rt-field,
+  .rt-tax-controls > .rt-field {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Last, because the rules above that name a paragraph have less specificity than this one. */
+.rt-tax-notes li > p {
+  max-width: 52rem;
+  line-height: 1.5;
+}

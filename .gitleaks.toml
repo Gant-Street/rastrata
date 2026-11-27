@@ -1,0 +1,15 @@
+title = "Rastrata public secret scan config"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Allow synthetic generic-api-key test fixtures and English prose in spec notes; all provider-specific secret rules remain enforced everywhere."
+rules = ["generic-api-key"]
+paths = [
+  '''_test\.go$''',
+  '''\.test\.ts$''',
+  '''\.spec\.ts$''',
+  '''^packages/application/test/bankfeed/fake-bridge\.ts$''',
+  '''^packages/ledger/spec/design-review\.md$''',
+]

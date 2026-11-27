@@ -1,0 +1,5 @@
+2025-01-01 open Assets:EUR EUR
+2025-01-01 open Assets:USD USD
+2025-01-02 * "Exchange"
+  Assets:USD      -480 USD
+  Assets:EUR       400 EUR @ 1.2 USD

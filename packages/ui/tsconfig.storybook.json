@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["bun", "vite/client"],
+    "skipLibCheck": true
+  },
+  "include": [
+    ".storybook/**/*.ts",
+    "unit/**/*.test.ts",
+    "stories/**/*.tsx",
+    "tests/**/*.ts",
+    "playwright.config.ts"
+  ]
+}

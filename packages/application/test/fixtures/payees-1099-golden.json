@@ -1,0 +1,853 @@
+{
+  "vendorIds": {
+    "Jane Roe": "ven_db99dafe5bbbedeb5faf",
+    "ATX Accounting PLLC": "ven_deacec7a6e320f35cf01",
+    "LegalZoom": "ven_e38cf140034460fd4cb1",
+    "Check writer": "ven_59c29b4264463706844c",
+    "Nobody yet": "ven_c599d5e81413a5e11592"
+  },
+  "rows": [
+    {
+      "seq": 1,
+      "kind": "account",
+      "subject": "6030",
+      "body": "{\"reportable\":true}",
+      "recorded_at": "2026-04-02T12:00:00.000Z",
+      "principal": "owner",
+      "operation_id": "00000000-0000-4000-8000-000000000022"
+    },
+    {
+      "seq": 2,
+      "kind": "account",
+      "subject": "6080",
+      "body": "{\"reportable\":true}",
+      "recorded_at": "2026-04-02T12:00:00.000Z",
+      "principal": "owner",
+      "operation_id": "00000000-0000-4000-8000-000000000022"
+    },
+    {
+      "seq": 3,
+      "kind": "vendor",
+      "subject": "ven_db99dafe5bbbedeb5faf",
+      "body": "{\"name\":\"Jane Roe\",\"payeeKeys\":[\"jane roe\"],\"reporting\":\"yes\",\"reason\":null,\"w9\":\"requested\",\"w9On\":\"2026-03-02\",\"classification\":null,\"paidBy\":\"unknown\",\"notes\":\"\"}",
+      "recorded_at": "2026-04-02T12:00:00.000Z",
+      "principal": "owner",
+      "operation_id": "00000000-0000-4000-8000-000000000023"
+    },
+    {
+      "seq": 4,
+      "kind": "vendor",
+      "subject": "ven_deacec7a6e320f35cf01",
+      "body": "{\"name\":\"ATX Accounting PLLC\",\"payeeKeys\":[\"atx accounting\"],\"reporting\":\"yes\",\"reason\":null,\"w9\":\"received\",\"w9On\":\"2026-01-15\",\"classification\":\"partnership\",\"paidBy\":\"bank\",\"notes\":\"\"}",
+      "recorded_at": "2026-04-02T12:00:00.000Z",
+      "principal": "owner",
+      "operation_id": "00000000-0000-4000-8000-000000000024"
+    },
+    {
+      "seq": 5,
+      "kind": "vendor",
+      "subject": "ven_e38cf140034460fd4cb1",
+      "body": "{\"name\":\"LegalZoom\",\"payeeKeys\":[\"legalzoom\"],\"reporting\":\"no\",\"reason\":\"corporation\",\"w9\":\"not_requested\",\"w9On\":null,\"classification\":null,\"paidBy\":\"unknown\",\"notes\":\"\"}",
+      "recorded_at": "2026-04-02T12:00:00.000Z",
+      "principal": "owner",
+      "operation_id": "00000000-0000-4000-8000-000000000025"
+    },
+    {
+      "seq": 6,
+      "kind": "vendor",
+      "subject": "ven_59c29b4264463706844c",
+      "body": "{\"name\":\"Check writer\",\"payeeKeys\":[\"check 1041\"],\"reporting\":\"undecided\",\"reason\":null,\"w9\":\"not_requested\",\"w9On\":null,\"classification\":null,\"paidBy\":\"unknown\",\"notes\":\"Paid by check, number 1041\"}",
+      "recorded_at": "2026-04-02T12:00:00.000Z",
+      "principal": "owner",
+      "operation_id": "00000000-0000-4000-8000-000000000026"
+    },
+    {
+      "seq": 7,
+      "kind": "vendor",
+      "subject": "ven_c599d5e81413a5e11592",
+      "body": "{\"name\":\"Nobody yet\",\"payeeKeys\":[\"nobody yet\"],\"reporting\":\"undecided\",\"reason\":null,\"w9\":\"not_requested\",\"w9On\":null,\"classification\":null,\"paidBy\":\"unknown\",\"notes\":\"\"}",
+      "recorded_at": "2026-04-02T12:00:00.000Z",
+      "principal": "owner",
+      "operation_id": "00000000-0000-4000-8000-000000000027"
+    },
+    {
+      "seq": 8,
+      "kind": "vendor",
+      "subject": "ven_db99dafe5bbbedeb5faf",
+      "body": "{\"name\":\"Jane Roe\",\"payeeKeys\":[\"jane roe\"],\"reporting\":\"yes\",\"reason\":null,\"w9\":\"received\",\"w9On\":\"2026-03-20\",\"classification\":null,\"paidBy\":\"unknown\",\"notes\":\"\"}",
+      "recorded_at": "2026-04-02T12:00:00.000Z",
+      "principal": "owner",
+      "operation_id": "00000000-0000-4000-8000-000000000028"
+    }
+  ],
+  "list": {
+    "taxYear": 2026,
+    "from": "2026-01-01",
+    "to": "2026-12-31",
+    "currency": "USD",
+    "basis": "cash",
+    "bookRevision": "93",
+    "vendorsRevision": "8",
+    "vendorsHash": "ef8d539b4ac83e76c1c7c037139ce5774ff997af384bedef8d58f61a48f6a4f2",
+    "threshold": {
+      "taxYear": 2026,
+      "amount": "2000.00",
+      "note": "For payments made in 2026 the IRS threshold is $2,000. From 2027 it may be adjusted for inflation. Some payments have their own thresholds: royalties $10, and gross proceeds paid to an attorney $600 (Form 1099-MISC). A payee from whom you withheld federal income tax under the backup withholding rules is reported whatever the amount.",
+      "sources": [
+        {
+          "title": "Am I required to file a Form 1099 or other information return?",
+          "url": "https://www.irs.gov/businesses/small-businesses-self-employed/am-i-required-to-file-a-form-1099-or-other-information-return",
+          "readOn": "2026-10-04"
+        },
+        {
+          "title": "Instructions for Forms 1099-MISC and 1099-NEC (12/2026)",
+          "url": "https://www.irs.gov/instructions/i1099mec",
+          "readOn": "2026-10-04"
+        },
+        {
+          "title": "Publication 1099 (2026), General Instructions for Certain Information Returns",
+          "url": "https://www.irs.gov/publications/p1099",
+          "readOn": "2026-10-04"
+        }
+      ]
+    },
+    "accounts": [
+      {
+        "accountId": "5000",
+        "code": "5000",
+        "name": "Cost of goods sold: Purchases",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line36"
+      },
+      {
+        "accountId": "5100",
+        "code": "5100",
+        "name": "Cost of goods sold: Cost of labor",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line37"
+      },
+      {
+        "accountId": "5200",
+        "code": "5200",
+        "name": "Cost of goods sold: Materials and supplies",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line38"
+      },
+      {
+        "accountId": "5900",
+        "code": "5900",
+        "name": "Cost of goods sold: Other costs",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line39"
+      },
+      {
+        "accountId": "6000",
+        "code": "6000",
+        "name": "Advertising and marketing",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line8"
+      },
+      {
+        "accountId": "6010",
+        "code": "6010",
+        "name": "Car and truck expenses",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line9"
+      },
+      {
+        "accountId": "6020",
+        "code": "6020",
+        "name": "Commissions and fees",
+        "marked": false,
+        "suggested": true,
+        "taxLine": "scheduleC.line10"
+      },
+      {
+        "accountId": "6025",
+        "code": "6025",
+        "name": "Stripe fees",
+        "marked": false,
+        "suggested": true,
+        "taxLine": "scheduleC.line10"
+      },
+      {
+        "accountId": "6026",
+        "code": "6026",
+        "name": "Chargebacks and disputes",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line27b"
+      },
+      {
+        "accountId": "6030",
+        "code": "6030",
+        "name": "Contract labor",
+        "marked": true,
+        "suggested": true,
+        "taxLine": "scheduleC.line11"
+      },
+      {
+        "accountId": "6040",
+        "code": "6040",
+        "name": "Depreciation",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line13"
+      },
+      {
+        "accountId": "6060",
+        "code": "6060",
+        "name": "Insurance (other than health)",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line15"
+      },
+      {
+        "accountId": "6070",
+        "code": "6070",
+        "name": "Interest expense",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line16c"
+      },
+      {
+        "accountId": "6080",
+        "code": "6080",
+        "name": "Legal and professional services",
+        "marked": true,
+        "suggested": true,
+        "taxLine": "scheduleC.line17"
+      },
+      {
+        "accountId": "6090",
+        "code": "6090",
+        "name": "Office expense",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line18"
+      },
+      {
+        "accountId": "6110",
+        "code": "6110",
+        "name": "Rent or lease: Equipment",
+        "marked": false,
+        "suggested": true,
+        "taxLine": "scheduleC.line20a"
+      },
+      {
+        "accountId": "6120",
+        "code": "6120",
+        "name": "Rent or lease: Office space",
+        "marked": false,
+        "suggested": true,
+        "taxLine": "scheduleC.line20b"
+      },
+      {
+        "accountId": "6130",
+        "code": "6130",
+        "name": "Repairs and maintenance",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line21"
+      },
+      {
+        "accountId": "6140",
+        "code": "6140",
+        "name": "Supplies",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line22"
+      },
+      {
+        "accountId": "6150",
+        "code": "6150",
+        "name": "Taxes and licenses",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line23"
+      },
+      {
+        "accountId": "6160",
+        "code": "6160",
+        "name": "Travel",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line24a"
+      },
+      {
+        "accountId": "6170",
+        "code": "6170",
+        "name": "Meals",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line24b"
+      },
+      {
+        "accountId": "6180",
+        "code": "6180",
+        "name": "Utilities",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line25"
+      },
+      {
+        "accountId": "6190",
+        "code": "6190",
+        "name": "Wages",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line26"
+      },
+      {
+        "accountId": "6200",
+        "code": "6200",
+        "name": "Software and subscriptions",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line27b"
+      },
+      {
+        "accountId": "6210",
+        "code": "6210",
+        "name": "Bank and card fees",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line27b"
+      },
+      {
+        "accountId": "6290",
+        "code": "6290",
+        "name": "Other expenses",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line27b"
+      },
+      {
+        "accountId": "6295",
+        "code": "6295",
+        "name": "Other Stripe adjustments",
+        "marked": false,
+        "suggested": false,
+        "taxLine": "scheduleC.line27b"
+      }
+    ],
+    "vendors": [
+      {
+        "vendor": {
+          "id": "ven_59c29b4264463706844c",
+          "version": 1,
+          "name": "Check writer",
+          "payeeKeys": ["check 1041"],
+          "reporting": "undecided",
+          "reason": null,
+          "w9": "not_requested",
+          "w9On": null,
+          "classification": null,
+          "paidBy": "unknown",
+          "notes": "Paid by check, number 1041",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        },
+        "payments": 1,
+        "counted": "600.00",
+        "card": "0.00",
+        "other": "0.00",
+        "meetsThreshold": false,
+        "attention": []
+      },
+      {
+        "vendor": {
+          "id": "ven_db99dafe5bbbedeb5faf",
+          "version": 2,
+          "name": "Jane Roe",
+          "payeeKeys": ["jane roe"],
+          "reporting": "yes",
+          "reason": null,
+          "w9": "received",
+          "w9On": "2026-03-20",
+          "classification": null,
+          "paidBy": "unknown",
+          "notes": "",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        },
+        "payments": 1,
+        "counted": "400.00",
+        "card": "0.00",
+        "other": "0.00",
+        "meetsThreshold": false,
+        "attention": []
+      },
+      {
+        "vendor": {
+          "id": "ven_deacec7a6e320f35cf01",
+          "version": 1,
+          "name": "ATX Accounting PLLC",
+          "payeeKeys": ["atx accounting"],
+          "reporting": "yes",
+          "reason": null,
+          "w9": "received",
+          "w9On": "2026-01-15",
+          "classification": "partnership",
+          "paidBy": "bank",
+          "notes": "",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        },
+        "payments": 1,
+        "counted": "250.00",
+        "card": "0.00",
+        "other": "0.00",
+        "meetsThreshold": false,
+        "attention": []
+      },
+      {
+        "vendor": {
+          "id": "ven_e38cf140034460fd4cb1",
+          "version": 1,
+          "name": "LegalZoom",
+          "payeeKeys": ["legalzoom"],
+          "reporting": "no",
+          "reason": "corporation",
+          "w9": "not_requested",
+          "w9On": null,
+          "classification": null,
+          "paidBy": "unknown",
+          "notes": "",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        },
+        "payments": 1,
+        "counted": "79.00",
+        "card": "0.00",
+        "other": "0.00",
+        "meetsThreshold": false,
+        "attention": []
+      },
+      {
+        "vendor": {
+          "id": "ven_c599d5e81413a5e11592",
+          "version": 1,
+          "name": "Nobody yet",
+          "payeeKeys": ["nobody yet"],
+          "reporting": "undecided",
+          "reason": null,
+          "w9": "not_requested",
+          "w9On": null,
+          "classification": null,
+          "paidBy": "unknown",
+          "notes": "",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        },
+        "payments": 0,
+        "counted": "0.00",
+        "card": "0.00",
+        "other": "0.00",
+        "meetsThreshold": false,
+        "attention": []
+      }
+    ],
+    "payees": [],
+    "totals": {
+      "payments": 4,
+      "counted": "1329.00",
+      "card": "0.00",
+      "other": "0.00"
+    },
+    "overThreshold": 0,
+    "needW9": 0,
+    "undecided": 0,
+    "notes": [
+      {
+        "key": "threshold",
+        "text": "For payments made in 2026 the IRS threshold is $2,000. From 2027 it may be adjusted for inflation. Some payments have their own thresholds: royalties $10, and gross proceeds paid to an attorney $600 (Form 1099-MISC). A payee from whom you withheld federal income tax under the backup withholding rules is reported whatever the amount.",
+        "sources": [
+          {
+            "title": "Am I required to file a Form 1099 or other information return?",
+            "url": "https://www.irs.gov/businesses/small-businesses-self-employed/am-i-required-to-file-a-form-1099-or-other-information-return",
+            "readOn": "2026-10-04"
+          },
+          {
+            "title": "Instructions for Forms 1099-MISC and 1099-NEC (12/2026)",
+            "url": "https://www.irs.gov/instructions/i1099mec",
+            "readOn": "2026-10-04"
+          },
+          {
+            "title": "Publication 1099 (2026), General Instructions for Certain Information Returns",
+            "url": "https://www.irs.gov/publications/p1099",
+            "readOn": "2026-10-04"
+          }
+        ]
+      },
+      {
+        "key": "card_and_network",
+        "text": "Payments made with a credit card or payment card, and certain other payments including third-party network transactions, are reported by the payment settlement entity on Form 1099-K. They are not reported by you on Form 1099-NEC or Form 1099-MISC.",
+        "sources": [
+          {
+            "title": "Instructions for Forms 1099-MISC and 1099-NEC (12/2026)",
+            "url": "https://www.irs.gov/instructions/i1099mec",
+            "readOn": "2026-10-04"
+          }
+        ]
+      },
+      {
+        "key": "not_reported",
+        "text": "Some payments do not need a Form 1099-NEC or 1099-MISC even above the threshold: generally payments to a corporation, including an LLC taxed as a C or S corporation (but legal services, and medical or health care payments, to a corporation are reportable); payments for merchandise, telegrams, telephone, freight, storage and similar items; wages to employees (Form W-2); payments to a tax-exempt organization, the United States, a state or a foreign government; and personal payments, which are not reportable at all.",
+        "sources": [
+          {
+            "title": "Instructions for Forms 1099-MISC and 1099-NEC (12/2026)",
+            "url": "https://www.irs.gov/instructions/i1099mec",
+            "readOn": "2026-10-04"
+          }
+        ]
+      },
+      {
+        "key": "w9",
+        "text": "Form W-9 is how a requester asks a payee for their taxpayer identification number and certifications. If a payee does not give a correct TIN, backup withholding at a flat 24% may apply to reportable payments. Rastrata records only whether a W-9 is on file and when. It never stores a TIN: keep the form itself somewhere safe.",
+        "sources": [
+          {
+            "title": "Instructions for the Requester of Form W-9 (03/2024)",
+            "url": "https://www.irs.gov/instructions/iw9",
+            "readOn": "2026-10-04"
+          },
+          {
+            "title": "Topic no. 307, Backup withholding",
+            "url": "https://www.irs.gov/taxtopics/tc307",
+            "readOn": "2026-10-04"
+          },
+          {
+            "title": "Form W-9 (Rev. March 2024)",
+            "url": "https://www.irs.gov/pub/irs-pdf/fw9.pdf",
+            "readOn": "2026-10-04"
+          }
+        ]
+      },
+      {
+        "key": "not_filing",
+        "text": "Rastrata files nothing and fills in no form. This is a list for you or your accountant."
+      }
+    ],
+    "warnings": [
+      {
+        "code": "year_not_ended",
+        "message": "The range ends on 2026-12-31, after today (2026-04-02): these are the payments so far."
+      }
+    ],
+    "disclaimer": "Rastrata books and reports. It does not give tax advice, choose a tax line for you, file anything or predict what you owe. Verify every figure against the current IRS form and instructions, or with whoever prepares your return."
+  },
+  "vendorsCsv": "Report,1099 vendor totals 2026\r\nBook,Willow Lane Studio\r\nCurrency,USD\r\nBasis,cash\r\nPeriod start,2026-01-01\r\nPeriod end,2026-12-31\r\nBook revision,93\r\nPopulation hash,<hash>\r\nCompiler version,rastrata-1099-vendors-v1\r\nLedger population hash,<hash>\r\nVendors revision,8\r\nVendors hash,ef8d539b4ac83e76c1c7c037139ce5774ff997af384bedef8d58f61a48f6a4f2\r\nThreshold,\"2000.00 (For payments made in 2026 the IRS threshold is $2,000. From 2027 it may be adjusted for inflation. Some payments have their own thresholds: royalties $10, and gross proceeds paid to an attorney $600 (Form 1099-MISC). A payee from whom you withheld federal income tax under the backup withholding rules is reported whatever the amount.)\"\r\nAccounts counted,6030 Contract labor; 6080 Legal and professional services\r\nNotice,\"Rastrata files nothing and fills in no form. This is a list for you or your accountant. Rastrata books and reports. It does not give tax advice, choose a tax line for you, file anything or predict what you owe. Verify every figure against the current IRS form and instructions, or with whoever prepares your return.\"\r\n\r\nRow,Vendor or payee,Reporting,Reason,W-9,W-9 date,Tax classification on the W-9,Paid by,Payments,Counted toward the threshold,Paid by card or payment app (not counted),Other payments (not counted),Threshold,At or over the threshold,Needs attention,Payee text matched,Notes\r\nvendor,Check writer,not decided yet,,not requested,,,not confirmed,1,600.00,0.00,0.00,2000.00,no,,check 1041,\"Paid by check, number 1041\"\r\nvendor,Jane Roe,needs a 1099,,received,2026-03-20,,not confirmed,1,400.00,0.00,0.00,2000.00,no,,jane roe,\r\nvendor,ATX Accounting PLLC,needs a 1099,,received,2026-01-15,partnership,\"bank transfer, check or cash\",1,250.00,0.00,0.00,2000.00,no,,atx accounting,\r\nvendor,LegalZoom,does not need a 1099,incorporated,not requested,,,not confirmed,1,79.00,0.00,0.00,2000.00,no,,legalzoom,\r\nvendor,Nobody yet,not decided yet,,not requested,,,not confirmed,0,0.00,0.00,0.00,2000.00,no,,nobody yet,\r\n",
+  "paymentsCsv": "Report,1099 vendor totals 2026\r\nBook,Willow Lane Studio\r\nCurrency,USD\r\nBasis,cash\r\nPeriod start,2026-01-01\r\nPeriod end,2026-12-31\r\nBook revision,93\r\nPopulation hash,<hash>\r\nCompiler version,rastrata-1099-vendors-v1\r\nLedger population hash,<hash>\r\nVendors revision,8\r\nVendors hash,ef8d539b4ac83e76c1c7c037139ce5774ff997af384bedef8d58f61a48f6a4f2\r\nThreshold,\"2000.00 (For payments made in 2026 the IRS threshold is $2,000. From 2027 it may be adjusted for inflation. Some payments have their own thresholds: royalties $10, and gross proceeds paid to an attorney $600 (Form 1099-MISC). A payee from whom you withheld federal income tax under the backup withholding rules is reported whatever the amount.)\"\r\nAccounts counted,6030 Contract labor; 6080 Legal and professional services\r\nNotice,\"Rastrata files nothing and fills in no form. This is a list for you or your accountant. Rastrata books and reports. It does not give tax advice, choose a tax line for you, file anything or predict what you owe. Verify every figure against the current IRS form and instructions, or with whoever prepares your return.\"\r\n\r\nDate,Journal ID,Vendor,Payee text,Payee text from,Accounts,Amount,Paid from,Counted,Why not counted\r\n2026-03-04,source-8585f44697ab521659fa665691c2051aed11380431c68bebc43f91a76e9ef7c0,LegalZoom,LEGALZOOM.COM LEGALZOOM.COM Willow Lane Studio Rho Checking,description,6080 Legal and professional services,79.00,bank account,yes,\r\n2026-03-05,source-d6252cdb021c455498ac240724b827981f0feddbd2850c7d3ec18667c85978e2,Jane Roe,INVOICE 14 FEB DESIGN WORK JANE ROE Willow Lane Studio Rho Checking,description,6030 Contract labor,400.00,bank account,yes,\r\n2026-03-24,source-b2a7e78609275b726b3a38331ba0e49fab54792e576d32ac6714a820100b3300,ATX Accounting PLLC,ATX ACCOUNTING PLLC ATX ACCOUNTING PLLC Willow Lane Studio Rho Checking,description,6080 Legal and professional services,250.00,bank account,yes,\r\n2026-03-26,source-439caa27218cceac01992ea5d8733bf3ad61ff89db00ca6a61f5b9ec8b86b687,Check writer,CHECK 1041,description,6030 Contract labor,600.00,bank account,yes,\r\n",
+  "details": {
+    "Jane Roe": {
+      "vendor": {
+        "vendor": {
+          "id": "ven_db99dafe5bbbedeb5faf",
+          "version": 2,
+          "name": "Jane Roe",
+          "payeeKeys": ["jane roe"],
+          "reporting": "yes",
+          "reason": null,
+          "w9": "received",
+          "w9On": "2026-03-20",
+          "classification": null,
+          "paidBy": "unknown",
+          "notes": "",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        },
+        "payments": 1,
+        "counted": "400.00",
+        "card": "0.00",
+        "other": "0.00",
+        "meetsThreshold": false,
+        "attention": []
+      },
+      "history": [
+        {
+          "id": "ven_db99dafe5bbbedeb5faf",
+          "version": 1,
+          "name": "Jane Roe",
+          "payeeKeys": ["jane roe"],
+          "reporting": "yes",
+          "reason": null,
+          "w9": "requested",
+          "w9On": "2026-03-02",
+          "classification": null,
+          "paidBy": "unknown",
+          "notes": "",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        },
+        {
+          "id": "ven_db99dafe5bbbedeb5faf",
+          "version": 2,
+          "name": "Jane Roe",
+          "payeeKeys": ["jane roe"],
+          "reporting": "yes",
+          "reason": null,
+          "w9": "received",
+          "w9On": "2026-03-20",
+          "classification": null,
+          "paidBy": "unknown",
+          "notes": "",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        }
+      ],
+      "payments": [
+        {
+          "date": "2026-03-05",
+          "journalId": "source-d6252cdb021c455498ac240724b827981f0feddbd2850c7d3ec18667c85978e2",
+          "payee": "INVOICE 14 FEB DESIGN WORK JANE ROE Willow Lane Studio Rho Checking",
+          "accounts": "6030 Contract labor",
+          "amount": "400.00",
+          "paidFrom": "bank",
+          "counted": true,
+          "reason": "Counts toward the threshold"
+        }
+      ],
+      "truncated": false,
+      "taxYear": 2026,
+      "from": "2026-01-01",
+      "to": "2026-12-31"
+    },
+    "ATX Accounting PLLC": {
+      "vendor": {
+        "vendor": {
+          "id": "ven_deacec7a6e320f35cf01",
+          "version": 1,
+          "name": "ATX Accounting PLLC",
+          "payeeKeys": ["atx accounting"],
+          "reporting": "yes",
+          "reason": null,
+          "w9": "received",
+          "w9On": "2026-01-15",
+          "classification": "partnership",
+          "paidBy": "bank",
+          "notes": "",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        },
+        "payments": 1,
+        "counted": "250.00",
+        "card": "0.00",
+        "other": "0.00",
+        "meetsThreshold": false,
+        "attention": []
+      },
+      "history": [
+        {
+          "id": "ven_deacec7a6e320f35cf01",
+          "version": 1,
+          "name": "ATX Accounting PLLC",
+          "payeeKeys": ["atx accounting"],
+          "reporting": "yes",
+          "reason": null,
+          "w9": "received",
+          "w9On": "2026-01-15",
+          "classification": "partnership",
+          "paidBy": "bank",
+          "notes": "",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        }
+      ],
+      "payments": [
+        {
+          "date": "2026-03-24",
+          "journalId": "source-b2a7e78609275b726b3a38331ba0e49fab54792e576d32ac6714a820100b3300",
+          "payee": "ATX ACCOUNTING PLLC ATX ACCOUNTING PLLC Willow Lane Studio Rho Checking",
+          "accounts": "6080 Legal and professional services",
+          "amount": "250.00",
+          "paidFrom": "bank",
+          "counted": true,
+          "reason": "Counts toward the threshold"
+        }
+      ],
+      "truncated": false,
+      "taxYear": 2026,
+      "from": "2026-01-01",
+      "to": "2026-12-31"
+    },
+    "LegalZoom": {
+      "vendor": {
+        "vendor": {
+          "id": "ven_e38cf140034460fd4cb1",
+          "version": 1,
+          "name": "LegalZoom",
+          "payeeKeys": ["legalzoom"],
+          "reporting": "no",
+          "reason": "corporation",
+          "w9": "not_requested",
+          "w9On": null,
+          "classification": null,
+          "paidBy": "unknown",
+          "notes": "",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        },
+        "payments": 1,
+        "counted": "79.00",
+        "card": "0.00",
+        "other": "0.00",
+        "meetsThreshold": false,
+        "attention": []
+      },
+      "history": [
+        {
+          "id": "ven_e38cf140034460fd4cb1",
+          "version": 1,
+          "name": "LegalZoom",
+          "payeeKeys": ["legalzoom"],
+          "reporting": "no",
+          "reason": "corporation",
+          "w9": "not_requested",
+          "w9On": null,
+          "classification": null,
+          "paidBy": "unknown",
+          "notes": "",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        }
+      ],
+      "payments": [
+        {
+          "date": "2026-03-04",
+          "journalId": "source-8585f44697ab521659fa665691c2051aed11380431c68bebc43f91a76e9ef7c0",
+          "payee": "LEGALZOOM.COM LEGALZOOM.COM Willow Lane Studio Rho Checking",
+          "accounts": "6080 Legal and professional services",
+          "amount": "79.00",
+          "paidFrom": "bank",
+          "counted": true,
+          "reason": "Counts toward the threshold"
+        }
+      ],
+      "truncated": false,
+      "taxYear": 2026,
+      "from": "2026-01-01",
+      "to": "2026-12-31"
+    },
+    "Check writer": {
+      "vendor": {
+        "vendor": {
+          "id": "ven_59c29b4264463706844c",
+          "version": 1,
+          "name": "Check writer",
+          "payeeKeys": ["check 1041"],
+          "reporting": "undecided",
+          "reason": null,
+          "w9": "not_requested",
+          "w9On": null,
+          "classification": null,
+          "paidBy": "unknown",
+          "notes": "Paid by check, number 1041",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        },
+        "payments": 1,
+        "counted": "600.00",
+        "card": "0.00",
+        "other": "0.00",
+        "meetsThreshold": false,
+        "attention": []
+      },
+      "history": [
+        {
+          "id": "ven_59c29b4264463706844c",
+          "version": 1,
+          "name": "Check writer",
+          "payeeKeys": ["check 1041"],
+          "reporting": "undecided",
+          "reason": null,
+          "w9": "not_requested",
+          "w9On": null,
+          "classification": null,
+          "paidBy": "unknown",
+          "notes": "Paid by check, number 1041",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        }
+      ],
+      "payments": [
+        {
+          "date": "2026-03-26",
+          "journalId": "source-439caa27218cceac01992ea5d8733bf3ad61ff89db00ca6a61f5b9ec8b86b687",
+          "payee": "CHECK 1041",
+          "accounts": "6030 Contract labor",
+          "amount": "600.00",
+          "paidFrom": "bank",
+          "counted": true,
+          "reason": "Counts toward the threshold"
+        }
+      ],
+      "truncated": false,
+      "taxYear": 2026,
+      "from": "2026-01-01",
+      "to": "2026-12-31"
+    },
+    "Nobody yet": {
+      "vendor": {
+        "vendor": {
+          "id": "ven_c599d5e81413a5e11592",
+          "version": 1,
+          "name": "Nobody yet",
+          "payeeKeys": ["nobody yet"],
+          "reporting": "undecided",
+          "reason": null,
+          "w9": "not_requested",
+          "w9On": null,
+          "classification": null,
+          "paidBy": "unknown",
+          "notes": "",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        },
+        "payments": 0,
+        "counted": "0.00",
+        "card": "0.00",
+        "other": "0.00",
+        "meetsThreshold": false,
+        "attention": []
+      },
+      "history": [
+        {
+          "id": "ven_c599d5e81413a5e11592",
+          "version": 1,
+          "name": "Nobody yet",
+          "payeeKeys": ["nobody yet"],
+          "reporting": "undecided",
+          "reason": null,
+          "w9": "not_requested",
+          "w9On": null,
+          "classification": null,
+          "paidBy": "unknown",
+          "notes": "",
+          "recordedAt": "2026-04-02T12:00:00.000Z",
+          "principal": "owner"
+        }
+      ],
+      "payments": [],
+      "truncated": false,
+      "taxYear": 2026,
+      "from": "2026-01-01",
+      "to": "2026-12-31"
+    }
+  },
+  "pack": {
+    "vendorsCsv": "Report,1099 vendor totals 2026\r\nBook,Willow Lane Studio\r\nCurrency,USD\r\nBasis,cash\r\nPeriod start,2026-01-01\r\nPeriod end,2026-12-31\r\nBook revision,93\r\nPopulation hash,<hash>\r\nCompiler version,rastrata-1099-vendors-v1\r\nLedger population hash,<hash>\r\nVendors revision,8\r\nVendors hash,ef8d539b4ac83e76c1c7c037139ce5774ff997af384bedef8d58f61a48f6a4f2\r\nThreshold,\"2000.00 (For payments made in 2026 the IRS threshold is $2,000. From 2027 it may be adjusted for inflation. Some payments have their own thresholds: royalties $10, and gross proceeds paid to an attorney $600 (Form 1099-MISC). A payee from whom you withheld federal income tax under the backup withholding rules is reported whatever the amount.)\"\r\nAccounts counted,6030 Contract labor; 6080 Legal and professional services\r\nNotice,\"Rastrata files nothing and fills in no form. This is a list for you or your accountant. Rastrata books and reports. It does not give tax advice, choose a tax line for you, file anything or predict what you owe. Verify every figure against the current IRS form and instructions, or with whoever prepares your return.\"\r\n\r\nRow,Vendor or payee,Reporting,Reason,W-9,W-9 date,Tax classification on the W-9,Paid by,Payments,Counted toward the threshold,Paid by card or payment app (not counted),Other payments (not counted),Threshold,At or over the threshold,Needs attention,Payee text matched,Notes\r\nvendor,Check writer,not decided yet,,not requested,,,not confirmed,1,600.00,0.00,0.00,2000.00,no,,check 1041,\"Paid by check, number 1041\"\r\nvendor,Jane Roe,needs a 1099,,received,2026-03-20,,not confirmed,1,400.00,0.00,0.00,2000.00,no,,jane roe,\r\nvendor,ATX Accounting PLLC,needs a 1099,,received,2026-01-15,partnership,\"bank transfer, check or cash\",1,250.00,0.00,0.00,2000.00,no,,atx accounting,\r\nvendor,LegalZoom,does not need a 1099,incorporated,not requested,,,not confirmed,1,79.00,0.00,0.00,2000.00,no,,legalzoom,\r\nvendor,Nobody yet,not decided yet,,not requested,,,not confirmed,0,0.00,0.00,0.00,2000.00,no,,nobody yet,\r\n",
+    "paymentsCsv": "Report,1099 vendor totals 2026\r\nBook,Willow Lane Studio\r\nCurrency,USD\r\nBasis,cash\r\nPeriod start,2026-01-01\r\nPeriod end,2026-12-31\r\nBook revision,93\r\nPopulation hash,<hash>\r\nCompiler version,rastrata-1099-vendors-v1\r\nLedger population hash,<hash>\r\nVendors revision,8\r\nVendors hash,ef8d539b4ac83e76c1c7c037139ce5774ff997af384bedef8d58f61a48f6a4f2\r\nThreshold,\"2000.00 (For payments made in 2026 the IRS threshold is $2,000. From 2027 it may be adjusted for inflation. Some payments have their own thresholds: royalties $10, and gross proceeds paid to an attorney $600 (Form 1099-MISC). A payee from whom you withheld federal income tax under the backup withholding rules is reported whatever the amount.)\"\r\nAccounts counted,6030 Contract labor; 6080 Legal and professional services\r\nNotice,\"Rastrata files nothing and fills in no form. This is a list for you or your accountant. Rastrata books and reports. It does not give tax advice, choose a tax line for you, file anything or predict what you owe. Verify every figure against the current IRS form and instructions, or with whoever prepares your return.\"\r\n\r\nDate,Journal ID,Vendor,Payee text,Payee text from,Accounts,Amount,Paid from,Counted,Why not counted\r\n2026-03-04,source-8585f44697ab521659fa665691c2051aed11380431c68bebc43f91a76e9ef7c0,LegalZoom,LEGALZOOM.COM LEGALZOOM.COM Willow Lane Studio Rho Checking,description,6080 Legal and professional services,79.00,bank account,yes,\r\n2026-03-05,source-d6252cdb021c455498ac240724b827981f0feddbd2850c7d3ec18667c85978e2,Jane Roe,INVOICE 14 FEB DESIGN WORK JANE ROE Willow Lane Studio Rho Checking,description,6030 Contract labor,400.00,bank account,yes,\r\n2026-03-24,source-b2a7e78609275b726b3a38331ba0e49fab54792e576d32ac6714a820100b3300,ATX Accounting PLLC,ATX ACCOUNTING PLLC ATX ACCOUNTING PLLC Willow Lane Studio Rho Checking,description,6080 Legal and professional services,250.00,bank account,yes,\r\n2026-03-26,source-439caa27218cceac01992ea5d8733bf3ad61ff89db00ca6a61f5b9ec8b86b687,Check writer,CHECK 1041,description,6030 Contract labor,600.00,bank account,yes,\r\n",
+    "check": {
+      "key": "vendors",
+      "status": "ok",
+      "title": "1099 vendors",
+      "detail": "0 vendors are at or over the 2000.00 threshold, and each has a decision and a W-9."
+    }
+  }
+}

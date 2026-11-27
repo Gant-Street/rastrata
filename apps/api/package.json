@@ -1,0 +1,23 @@
+{
+  "name": "@rastrata/api",
+  "private": true,
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "dev": "bun src/main.ts",
+    "build:service": "bun tooling/build-service.ts",
+    "package": "bun tooling/package.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "bun test test"
+  },
+  "dependencies": {
+    "@rastrata/application": "workspace:*",
+    "@rastrata/booklog": "workspace:*",
+    "@rastrata/telemetry": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.4",
+    "typescript": "7.0.2"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "expectations": [
+    {"result": "01_missing_amount/beancount.json", "exit_status": 0, "stdout_contains": ["\"value\": \"123.450\"", "\"__automatic__\": true"]},
+    {"result": "01_missing_amount/hledger.json", "exit_status": 0, "stdout_contains": ["-123.450 USD"]},
+    {"result": "01_missing_amount/ledger.json", "exit_status": 0, "stdout_contains": ["123.450 USD"]},
+
+    {"result": "02_repeating_basis/beancount.json", "exit_status": 1, "stdout_contains": ["Transaction does not balance: (-0.000000000000000000000000001 USD)"]},
+    {"result": "02_repeating_basis/hledger_print.json", "exit_status": 0, "stdout_contains": ["3.33333333 USD", "@@ 10 USD"]},
+    {"result": "02_repeating_basis/ledger_balance.json", "exit_status": 0, "stdout_contains": ["3 UNIT {3.333333 USD}"]},
+
+    {"result": "03_ambiguous_default/beancount_strict.json", "exit_status": 1, "stdout_contains": ["Ambiguous matches"]},
+    {"result": "03_ambiguous_default/hledger_default.json", "exit_status": 0, "stdout_contains": ["1 UNIT  assets:stock:{2025-02-02, 20 USD}"]},
+    {"result": "03_ambiguous_default/ledger_default.json", "exit_status": 0, "stdout_contains": ["-1 UNIT {$30} [2025/03/02]"]},
+    {"result": "03_ambiguous_default/ledger_fifo.json", "exit_status": 0, "stdout_contains": ["1 UNIT {$20} [2025/02/02]"], "stdout_excludes": ["-1 UNIT"]},
+
+    {"result": "04_selection_policy/hledger_fifo.json", "exit_status": 0, "stdout_contains": ["1 UNIT  assets:stock:{2025-02-02, 30 USD}", "2 UNIT  assets:stock:{2025-03-02, 20 USD}"]},
+    {"result": "04_selection_policy/hledger_lifo.json", "exit_status": 0, "stdout_contains": ["2 UNIT  assets:stock:{2025-01-02, 10 USD}", "1 UNIT  assets:stock:{2025-02-02, 30 USD}"]},
+    {"result": "04_selection_policy/hledger_hifo.json", "exit_status": 0, "stdout_contains": ["2 UNIT  assets:stock:{2025-01-02, 10 USD}", "1 UNIT  assets:stock:{2025-03-02, 20 USD}"]},
+    {"result": "04_selection_policy/ledger_fifo.json", "exit_status": 0, "stdout_contains": ["2 UNIT {$20}", "1 UNIT {$30}"]},
+    {"result": "04_selection_policy/ledger_lifo.json", "exit_status": 0, "stdout_contains": ["2 UNIT {$10}", "1 UNIT {$30}"]},
+
+    {"result": "05_basis_vs_price/beancount.json", "exit_status": 0, "stdout_contains": ["\"narration\": \"Sell\"", "\"value\": \"-6\""]},
+    {"result": "05_basis_vs_price/hledger_gain.json", "exit_status": 0, "stdout_contains": ["-6 USD  revenue:gains"]},
+    {"result": "05_basis_vs_price/ledger.json", "exit_status": 0, "stdout_contains": ["$-6  Income:Gain"]},
+
+    {"result": "06_basis_transfer/hledger.json", "exit_status": 0, "stdout_contains": ["assets:brokera:{2025-01-02, 10 USD}", "assets:brokerb:{2025-01-02, 10 USD}"]},
+    {"result": "06_basis_transfer/ledger.json", "exit_status": 0, "stdout_contains": ["BrokerA", "BrokerB", "{$10} [2025/01/02]"]},
+
+    {"result": "07_average_cost/beancount.json", "exit_status": 1, "stdout_contains": ["AVERAGE method is not supported"]},
+    {"result": "07_average_cost/hledger.json", "exit_status": 0, "stdout_contains": ["{2025-01-02, 12 USD} @ 20 USD", "-8 USD"]},
+    {"result": "07_average_cost/ledger_average_report.json", "exit_status": 0, "stdout_contains": ["2 UNIT {$8}"]},
+
+    {"result": "08_account_lifecycle/beancount.json", "exit_status": 1, "stdout_contains": ["Invalid reference to inactive account 'Assets:Cash'"]},
+    {"result": "08_account_lifecycle/hledger.json", "exit_status": 0},
+    {"result": "08_account_lifecycle/ledger.json", "exit_status": 0},
+
+    {"result": "09_balance_assertion/beancount.json", "exit_status": 1, "stdout_contains": ["Balance failed for 'Assets:Cash'"]},
+    {"result": "09_balance_assertion/hledger.json", "exit_status": 1, "stderr_contains": ["asserted balance is:         99 USD", "calculated balance is:  100 USD"]},
+    {"result": "09_balance_assertion/ledger.json", "exit_status": 1, "stderr_contains": ["Balance assertion off by -1 USD"]},
+
+    {"result": "10_specific_identification/hledger_selected.json", "exit_status": 0, "stdout_contains": ["1 UNIT  assets:stock:{2025-01-02, 10 USD}"]},
+    {"result": "10_specific_identification/hledger_missing_selector.json", "exit_status": 1, "stderr_contains": ["SPECID requires a lot selector"]},
+    {"result": "10_specific_identification/ledger.json", "exit_status": 0, "stdout_contains": ["1 UNIT {$10} [2025/01/02]"]},
+
+    {"result": "11_valuation_path/beancount.json", "exit_status": 0, "stdout_contains": ["\"direct_result\"", "\"currency\": \"AAA\"", "\"via_result\"", "\"number\": \"6\""]},
+    {"result": "11_valuation_path/hledger.json", "exit_status": 0, "stdout_contains": ["6 USD  assets:token"]},
+    {"result": "11_valuation_path/ledger.json", "exit_status": 0, "stdout_contains": ["USD6  Assets:Token"]},
+
+    {"result": "12_posting_order/beancount_eur_first.json", "exit_status": 0},
+    {"result": "12_posting_order/beancount_usd_first.json", "exit_status": 0},
+    {"result": "12_posting_order/hledger_eur_first.json", "exit_status": 0, "stdout_contains": ["480.0 USD  assets:eur", "-480.0 USD  assets:usd"]},
+    {"result": "12_posting_order/hledger_usd_first.json", "exit_status": 0, "stdout_contains": ["480.0 USD  assets:eur", "-480.0 USD  assets:usd"]},
+    {"result": "12_posting_order/ledger_eur_first.json", "exit_status": 0, "stdout_contains": ["480.0 USD    EUR", "-480.0 USD    USD"]},
+    {"result": "12_posting_order/ledger_usd_first.json", "exit_status": 0, "stdout_contains": ["480.0 USD    EUR", "-480.0 USD    USD"]},
+
+    {"result": "13_virtual_postings/beancount.json", "exit_status": 1, "stdout_contains": ["syntax error, unexpected LPAREN"]},
+    {"result": "13_virtual_postings/hledger.json", "exit_status": 0, "stdout_contains": ["(expenses:memo)"]},
+    {"result": "13_virtual_postings/hledger_real.json", "exit_status": 0, "stdout_excludes": ["memo"]},
+    {"result": "13_virtual_postings/ledger.json", "exit_status": 0, "stdout_contains": ["(Expenses:Memo)"]},
+    {"result": "13_virtual_postings/ledger_real.json", "exit_status": 0, "stdout_excludes": ["Memo"]}
+  ],
+  "equal_stdout": [
+    ["12_posting_order/hledger_eur_first.json", "12_posting_order/hledger_usd_first.json"],
+    ["12_posting_order/ledger_eur_first.json", "12_posting_order/ledger_usd_first.json"]
+  ]
+}

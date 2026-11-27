@@ -1,0 +1,15 @@
+commodity UNIT  ; lots: FIFO
+account assets:stock  ; lots: FIFO
+account revenue:gains  ; type: G
+2025-01-02 Oldest
+    assets:stock  2 UNIT {10 USD}
+    assets:cash  -20 USD
+2025-02-02 Highest
+    assets:stock  2 UNIT {30 USD}
+    assets:cash  -60 USD
+2025-03-02 Newest
+    assets:stock  2 UNIT {20 USD}
+    assets:cash  -40 USD
+2025-04-02 Sell
+    assets:stock  -3 UNIT {} @ 40 USD
+    assets:cash   120 USD

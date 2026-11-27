@@ -1,0 +1,239 @@
+/* Bank accounts (banks/bank-accounts.tsx), in the ledger language (docs/reference/design-language.md). */
+.rt-banks {
+  display: grid;
+  gap: 2.75rem;
+}
+.rt-banks > .rt-page-header {
+  margin-bottom: 0;
+}
+.rt-bankacct-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* The cell: the square the wordmark is drawn from. Empty for nothing, orange for what needs the person. */
+.rt-cell {
+  flex: none;
+  box-sizing: border-box;
+  width: 0.5625rem;
+  height: 0.5625rem;
+  border: 1px solid var(--rt-field-border);
+}
+.rt-cell[data-tone="attention"] {
+  border: 0;
+  background: var(--rt-tone-attention);
+}
+.rt-cell[data-tone="problem"] {
+  border: 0;
+  background: var(--rt-tone-problem);
+}
+
+/* Before any bank: one sentence and the two ways to bring transactions in. */
+.rt-bankacct-empty {
+  display: grid;
+  justify-items: start;
+  gap: 1.25rem;
+  padding-top: 1.5rem;
+  border-top: var(--rt-rule);
+}
+.rt-bankacct-empty-lead {
+  max-width: 34rem;
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.45;
+}
+
+/* A bank: one rule over it, in orange when it needs the person. */
+.rt-bankacct {
+  border-top: var(--rt-rule);
+}
+.rt-bankacct[data-attention] {
+  border-top-color: var(--rt-tone-attention);
+}
+.rt-bankacct-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 0.875rem;
+  padding: 1rem 0;
+}
+.rt-bankacct-mark {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  background: var(--rt-ink);
+  color: var(--rt-paper);
+  font: 600 1rem / 1 var(--rt-mono);
+}
+.rt-bankacct-name {
+  display: grid;
+  flex: 1 1 12rem;
+  gap: 0.125rem;
+  min-width: 0;
+}
+.rt-bankacct-name h2 {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.rt-bankacct-attention {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.rt-bankacct-dateline,
+.rt-bankacct-labels {
+  color: var(--rt-muted);
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+}
+
+.rt-bankacct-labels,
+.rt-bankacct-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.3fr) minmax(0, 0.7fr) minmax(0, 1fr) 2.25rem;
+  gap: 1rem;
+  align-items: center;
+}
+.rt-bankacct-labels {
+  padding: 0.5625rem 0;
+  border-top: 1px solid var(--rt-divider);
+}
+.rt-bankacct-labels > :nth-child(4) {
+  text-align: end;
+}
+.rt-bankacct-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rt-bankacct-rows > li {
+  display: grid;
+  gap: 0.875rem;
+  padding: 0.9375rem 0;
+  border-top: 1px solid var(--rt-divider);
+}
+.rt-bankacct-rows > li:last-child {
+  border-bottom: 1px solid var(--rt-divider);
+}
+.rt-bankacct-account {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.125rem 0.625rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.rt-bankacct-account strong {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+.rt-bankacct-ending {
+  color: var(--rt-muted);
+  font: 400 0.75rem / 1.4 var(--rt-mono);
+}
+/* The words after a count are for a phone, where the headings above the rows are not shown; elsewhere they are
+   there for a screen reader only. */
+.rt-bankacct-count-words {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.rt-bankacct-note {
+  color: var(--rt-muted);
+  font-size: 0.8125rem;
+}
+.rt-bankacct-waiting {
+  color: var(--rt-muted);
+}
+.rt-bankacct-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5625rem;
+  color: var(--rt-muted);
+  font: 400 0.875rem / 1.4 var(--rt-mono);
+}
+.rt-bankacct-count[data-waiting] {
+  color: var(--rt-ink);
+  font-weight: 600;
+}
+.rt-bankacct-review a {
+  text-decoration: none;
+}
+.rt-bankacct-balance {
+  text-align: end;
+}
+.rt-bankacct-balance .rt-money {
+  font: 500 0.9375rem / 1.4 var(--rt-mono);
+}
+.rt-bankacct-menu {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* The one question a row can ask. */
+.rt-bankacct-question {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+.rt-bankacct-question p {
+  flex: 1 1 16rem;
+  margin: 0;
+}
+
+@media (max-width: 44rem) {
+  .rt-banks {
+    gap: 2rem;
+  }
+  .rt-bankacct-labels {
+    display: none;
+  }
+  /* A phone stacks a row: the name and the figure, then where it goes and what waits. */
+  .rt-bankacct-row {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      "account balance menu"
+      "books   review  review";
+    gap: 0.375rem 0.75rem;
+  }
+  .rt-bankacct-account {
+    grid-area: account;
+  }
+  .rt-bankacct-balance {
+    grid-area: balance;
+  }
+  .rt-bankacct-menu {
+    grid-area: menu;
+  }
+  .rt-bankacct-books {
+    grid-area: books;
+    font-size: 0.8125rem;
+  }
+  .rt-bankacct-review {
+    grid-area: review;
+    justify-self: end;
+  }
+  .rt-bankacct-count-words {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+  }
+  .rt-bankacct-buttons .rt-button {
+    flex: 1 1 auto;
+  }
+}

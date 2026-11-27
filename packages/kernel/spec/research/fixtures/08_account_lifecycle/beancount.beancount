@@ -1,0 +1,6 @@
+2025-01-01 open Equity:Opening USD
+2025-01-10 open Assets:Cash USD
+
+2025-01-05 * "Before account opened"
+  Assets:Cash        1 USD
+  Equity:Opening    -1 USD

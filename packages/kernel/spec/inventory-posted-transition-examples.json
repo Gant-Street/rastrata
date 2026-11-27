@@ -1,0 +1,98 @@
+{
+  "schema": "rastrata-inventory-posted-transition-examples-v1",
+  "status": "prospective-design-not-command-executable",
+  "scope": "Exact arithmetic and normative movement classification only; not evidence of command admission, posting emission, source authentication, persistence or replay.",
+  "examples": [
+    {
+      "id": "written-down-eight-in-thirds",
+      "roundingMode": "halfEven",
+      "quantity": "3/1",
+      "exactCarrying": "8/1",
+      "postedSourceBudgets": ["8.00"],
+      "reductions": ["1/1", "1/1", "1/1"],
+      "expectedPosted": ["2.67", "2.66", "2.67"],
+      "expectedConsumedPosted": ["2.67", "5.33", "8.00"],
+      "expectedRemainingQuantity": ["2/1", "1/1", "0/1"],
+      "expectedPostedMinusEconomic": ["1/300", "-1/150", "1/300"],
+      "expectedMovementKinds": ["journalLinked", "journalLinked", "journalLinked"]
+    },
+    {
+      "id": "one-cent-terminal-quantity-only",
+      "roundingMode": "halfEven",
+      "quantity": "3/1",
+      "exactCarrying": "1/100",
+      "postedSourceBudgets": ["0.01"],
+      "reductions": ["1/1", "1/1", "1/1"],
+      "expectedPosted": ["0.00", "0.01", "0.00"],
+      "expectedConsumedPosted": ["0.00", "0.01", "0.01"],
+      "expectedRemainingQuantity": ["2/1", "1/1", "0/1"],
+      "expectedPostedMinusEconomic": ["-1/300", "1/150", "-1/300"],
+      "expectedMovementKinds": ["quantityOnly", "journalLinked", "quantityOnly"]
+    },
+    {
+      "id": "coalescing-keeps-two-booked-cents-per-source",
+      "roundingMode": "halfEven",
+      "quantity": "2/1",
+      "exactCarrying": "3/100",
+      "postedSourceBudgets": ["0.02", "0.02"],
+      "reductions": ["1/1", "1/1"],
+      "expectedPosted": ["0.02", "0.02"],
+      "expectedConsumedPosted": ["0.02", "0.04"],
+      "expectedRemainingQuantity": ["1/1", "0/1"],
+      "expectedPostedMinusEconomic": ["1/200", "1/200"],
+      "expectedMovementKinds": ["journalLinked", "journalLinked"]
+    },
+    {
+      "id": "free-live-inventory",
+      "roundingMode": "halfEven",
+      "quantity": "2/1",
+      "exactCarrying": "0/1",
+      "postedSourceBudgets": ["0.00"],
+      "reductions": ["1/1", "1/1"],
+      "expectedPosted": ["0.00", "0.00"],
+      "expectedConsumedPosted": ["0.00", "0.00"],
+      "expectedRemainingQuantity": ["1/1", "0/1"],
+      "expectedPostedMinusEconomic": ["0/1", "0/1"],
+      "expectedMovementKinds": ["quantityOnly", "quantityOnly"]
+    },
+    {
+      "id": "unequal-fractional-quantities",
+      "roundingMode": "halfEven",
+      "quantity": "1/1",
+      "exactCarrying": "1/20",
+      "postedSourceBudgets": ["0.05"],
+      "reductions": ["1/10", "3/10", "3/5"],
+      "expectedPosted": ["0.00", "0.02", "0.03"],
+      "expectedConsumedPosted": ["0.00", "0.02", "0.05"],
+      "expectedRemainingQuantity": ["9/10", "3/5", "0/1"],
+      "expectedPostedMinusEconomic": ["-1/200", "1/200", "0/1"],
+      "expectedMovementKinds": ["quantityOnly", "journalLinked", "journalLinked"]
+    },
+    {
+      "id": "ceiling-exhausts-money-before-quantity",
+      "roundingMode": "ceiling",
+      "quantity": "3/1",
+      "exactCarrying": "1/100",
+      "postedSourceBudgets": ["0.01"],
+      "reductions": ["1/1", "1/1", "1/1"],
+      "expectedPosted": ["0.01", "0.00", "0.00"],
+      "expectedConsumedPosted": ["0.01", "0.01", "0.01"],
+      "expectedRemainingQuantity": ["2/1", "1/1", "0/1"],
+      "expectedPostedMinusEconomic": ["1/150", "-1/300", "-1/300"],
+      "expectedMovementKinds": ["journalLinked", "quantityOnly", "quantityOnly"]
+    },
+    {
+      "id": "floor-delays-money-until-depletion",
+      "roundingMode": "floor",
+      "quantity": "3/1",
+      "exactCarrying": "1/100",
+      "postedSourceBudgets": ["0.01"],
+      "reductions": ["1/1", "1/1", "1/1"],
+      "expectedPosted": ["0.00", "0.00", "0.01"],
+      "expectedConsumedPosted": ["0.00", "0.00", "0.01"],
+      "expectedRemainingQuantity": ["2/1", "1/1", "0/1"],
+      "expectedPostedMinusEconomic": ["-1/300", "-1/300", "1/150"],
+      "expectedMovementKinds": ["quantityOnly", "quantityOnly", "journalLinked"]
+    }
+  ]
+}

@@ -1,0 +1,347 @@
+{
+  "note": "Ground truth for the fixtures, computed by build.ts with exact integer cents, never by the parser. Every file is synthetic.",
+  "stories": {
+    "checking": {
+      "opening": "8500.00",
+      "count": 14,
+      "moneyIn": "7650.00",
+      "moneyOut": "-4685.75",
+      "net": "2964.25",
+      "from": "2026-01-02",
+      "to": "2026-02-27",
+      "transactions": [
+        {
+          "date": "2026-01-02",
+          "amount": "2500.00",
+          "memo": "STRIPE TRANSFER ST-8KD3P1",
+          "kind": "ach_credit"
+        },
+        {
+          "date": "2026-01-02",
+          "amount": "-44.00",
+          "memo": "GITHUB INC SAN FRANCISCO CA",
+          "kind": "card"
+        },
+        {
+          "date": "2026-01-05",
+          "amount": "-1200.00",
+          "memo": "CHECK 1041",
+          "kind": "check",
+          "check": "1041"
+        },
+        {
+          "date": "2026-01-06",
+          "amount": "-89.99",
+          "memo": "AMAZON WEB SERVICES AWS.AMAZON.CO WA",
+          "kind": "card"
+        },
+        {
+          "date": "2026-01-09",
+          "amount": "850.00",
+          "memo": "ZELLE PAYMENT FROM ACME DESIGN LLC",
+          "kind": "zelle"
+        },
+        {
+          "date": "2026-01-12",
+          "amount": "-15.00",
+          "memo": "MONTHLY SERVICE FEE",
+          "kind": "fee"
+        },
+        {
+          "date": "2026-01-15",
+          "amount": "-2100.00",
+          "memo": "ONLINE TRANSFER TO SAV XXXXXX4321",
+          "kind": "transfer"
+        },
+        {
+          "date": "2026-01-20",
+          "amount": "-62.18",
+          "memo": "SHELL OIL 57444 HOUSTON TX",
+          "kind": "card"
+        },
+        {
+          "date": "2026-01-20",
+          "amount": "-62.18",
+          "memo": "SHELL OIL 57444 HOUSTON TX",
+          "kind": "card"
+        },
+        {
+          "date": "2026-01-28",
+          "amount": "3100.00",
+          "memo": "STRIPE TRANSFER ST-9MQ2L7",
+          "kind": "ach_credit"
+        },
+        {
+          "date": "2026-02-03",
+          "amount": "-44.00",
+          "memo": "GITHUB INC SAN FRANCISCO CA",
+          "kind": "card"
+        },
+        {
+          "date": "2026-02-10",
+          "amount": "-318.40",
+          "memo": "STAPLES 00123 AUSTIN TX",
+          "kind": "card"
+        },
+        {
+          "date": "2026-02-14",
+          "amount": "1200.00",
+          "memo": "ACH CREDIT NORTHWIND LLC INV 2217",
+          "kind": "ach_credit"
+        },
+        {
+          "date": "2026-02-27",
+          "amount": "-750.00",
+          "memo": "RENT PAYMENT ACH WEWORK",
+          "kind": "ach_debit"
+        }
+      ]
+    },
+    "card": {
+      "opening": "0.00",
+      "count": 10,
+      "moneyIn": "1223.45",
+      "moneyOut": "-1579.39",
+      "net": "-355.94",
+      "from": "2026-01-03",
+      "to": "2026-02-25",
+      "transactions": [
+        {
+          "date": "2026-01-03",
+          "amount": "-49.00",
+          "memo": "ADOBE *CREATIVE CLOUD",
+          "kind": "purchase"
+        },
+        {
+          "date": "2026-01-07",
+          "amount": "-129.52",
+          "memo": "DELTA AIR LINES ATLANTA GA",
+          "kind": "purchase"
+        },
+        {
+          "date": "2026-01-11",
+          "amount": "-23.45",
+          "memo": "UBER *TRIP HELP.UBER.COM",
+          "kind": "purchase"
+        },
+        {
+          "date": "2026-01-19",
+          "amount": "-310.00",
+          "memo": "WEWORK 123 SAN FRANCISCO CA",
+          "kind": "purchase"
+        },
+        {
+          "date": "2026-01-25",
+          "amount": "500.00",
+          "memo": "AUTOMATIC PAYMENT - THANK YOU",
+          "kind": "payment"
+        },
+        {
+          "date": "2026-01-29",
+          "amount": "23.45",
+          "memo": "UBER *TRIP HELP.UBER.COM",
+          "kind": "refund"
+        },
+        {
+          "date": "2026-02-04",
+          "amount": "-49.00",
+          "memo": "ADOBE *CREATIVE CLOUD",
+          "kind": "purchase"
+        },
+        {
+          "date": "2026-02-12",
+          "amount": "-1000.00",
+          "memo": "APPLE STORE R123 SAN FRANCISCO CA",
+          "kind": "purchase"
+        },
+        {
+          "date": "2026-02-18",
+          "amount": "-18.42",
+          "memo": "PURCHASE INTEREST CHARGE",
+          "kind": "interest"
+        },
+        {
+          "date": "2026-02-25",
+          "amount": "700.00",
+          "memo": "AUTOMATIC PAYMENT - THANK YOU",
+          "kind": "payment"
+        }
+      ]
+    }
+  },
+  "files": [
+    {
+      "file": "chase-checking.csv",
+      "format": "csv",
+      "detect": "chase-checking",
+      "story": "checking",
+      "order": "newest-first",
+      "opening": "8500.00",
+      "closing": "11464.25",
+      "note": "Rows end with a comma, which makes each one a column wider than the header."
+    },
+    {
+      "file": "chase-card.csv",
+      "format": "csv",
+      "detect": "chase-card",
+      "story": "card",
+      "order": "newest-first",
+      "note": "No balance column."
+    },
+    {
+      "file": "chase-checking.qfx",
+      "format": "ofx",
+      "story": "checking",
+      "order": "none",
+      "closing": "11464.25",
+      "note": "OFX 1.x SGML as an Intuit QFX: leaf tags are never closed, NAME is cut at 32 characters and MEMO holds the whole description."
+    },
+    {
+      "file": "chase-card.qfx",
+      "format": "ofx",
+      "story": "card",
+      "order": "none",
+      "closing": "-355.94",
+      "note": "A credit card statement: CREDITCARDMSGSRSV1, and the ledger balance is negative while money is owed."
+    },
+    {
+      "file": "generic-ofx2.ofx",
+      "format": "ofx",
+      "story": "checking",
+      "order": "none",
+      "closing": "11464.25",
+      "note": "OFX 2.x as XML."
+    },
+    {
+      "file": "rho-checking.csv",
+      "format": "csv",
+      "detect": "rho",
+      "story": "checking",
+      "order": "none",
+      "skipped": {
+        "filtered": 3
+      },
+      "note": "Guessed layout: Rho does not publish its CSV columns. Three rows are not settled and must be skipped."
+    },
+    {
+      "file": "rho-card.csv",
+      "format": "csv",
+      "use": "rho",
+      "story": "card",
+      "order": "none",
+      "skipped": {
+        "filtered": 1
+      },
+      "note": "Guessed layout. A pending card charge must be skipped."
+    },
+    {
+      "file": "mercury.csv",
+      "format": "csv",
+      "detect": "mercury",
+      "story": "checking",
+      "order": "none",
+      "skipped": {
+        "filtered": 2
+      },
+      "note": "Two rows are not sent and must be skipped."
+    },
+    {
+      "file": "bofa-checking.csv",
+      "format": "csv",
+      "detect": "bofa-checking",
+      "story": "checking",
+      "order": "oldest-first",
+      "opening": "8500.00",
+      "closing": "11464.25",
+      "skipped": {
+        "noAmount": 1
+      },
+      "note": "A summary block comes first, then the header. The beginning balance is a row with no amount."
+    },
+    {
+      "file": "bofa-card.csv",
+      "format": "csv",
+      "detect": "bofa-card",
+      "story": "card",
+      "order": "oldest-first"
+    },
+    {
+      "file": "wells-fargo.csv",
+      "format": "csv",
+      "detect": "wells-fargo",
+      "story": "checking",
+      "order": "newest-first",
+      "note": "No header row; five columns: date, amount, a * marker, check number, description."
+    },
+    {
+      "file": "amex-basic.csv",
+      "format": "csv",
+      "use": "amex-card",
+      "story": "card",
+      "order": "newest-first",
+      "note": "Charges are positive and payments negative, the other way round from the book. Looks like any bank's three-column file, so the preset is chosen, not detected."
+    },
+    {
+      "file": "amex-extended.csv",
+      "format": "csv",
+      "detect": "amex-card",
+      "story": "card",
+      "order": "newest-first",
+      "note": "The longer file names a card member, which is distinctive enough to detect."
+    },
+    {
+      "file": "capital-one-card.csv",
+      "format": "csv",
+      "detect": "capital-one-card",
+      "story": "card",
+      "order": "newest-first",
+      "note": "Purchases in Debit, payments and returns in Credit; ISO dates."
+    },
+    {
+      "file": "capital-one-bank.csv",
+      "format": "csv",
+      "detect": "capital-one-bank",
+      "story": "checking",
+      "order": "newest-first",
+      "opening": "8500.00",
+      "closing": "11464.25",
+      "note": "Positive amounts with a Debit or Credit type, two-digit years."
+    },
+    {
+      "file": "citi-card.csv",
+      "format": "csv",
+      "detect": "citi-card",
+      "story": "card",
+      "order": "newest-first"
+    },
+    {
+      "file": "citi-card-negative-credit.csv",
+      "format": "csv",
+      "detect": "citi-card",
+      "story": "card",
+      "order": "newest-first",
+      "warns": ["debit_credit_sign"],
+      "note": "Credits written as negative numbers in the Credit column: the sign is ignored, and said so."
+    },
+    {
+      "file": "us-bank.csv",
+      "format": "csv",
+      "detect": "us-bank",
+      "story": "checking",
+      "order": "newest-first"
+    },
+    {
+      "file": "schwab-bank.csv",
+      "format": "csv",
+      "detect": "schwab-bank",
+      "story": "checking",
+      "order": "newest-first",
+      "opening": "8500.00",
+      "closing": "11464.25",
+      "skipped": {
+        "filtered": 1
+      },
+      "note": "Dollar signs and thousands separators in the amounts; one pending row to skip."
+    }
+  ]
+}

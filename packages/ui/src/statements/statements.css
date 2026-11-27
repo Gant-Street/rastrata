@@ -1,0 +1,542 @@
+/* Styles for the statements lane's components. Tokens from base.css only; no one-off colors.
+   Structure comes from rules and space. What the review exists to state, how many new lines the file
+   would add, is its first sentence. */
+
+.rt-imp-page {
+  display: grid;
+  gap: var(--rt-space-6);
+}
+
+.rt-imp-page > section,
+.rt-imp-page > div {
+  min-width: 0;
+}
+
+/* The page's own gap sits between the header and the work; the header's margin as well would push the first
+   control down. */
+.rt-imp-page > .rt-page-header {
+  margin-bottom: 0;
+}
+
+.rt-imp-step {
+  display: grid;
+  gap: var(--rt-space-3);
+  padding-top: var(--rt-space-4);
+  border-top: var(--rt-rule);
+}
+
+.rt-imp-step > h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+/* The account and the file are one step, so they sit side by side where there is room and the history is
+   within sight of the top of the page. The step is the work itself, directly under the header, so it has no
+   rule and no heading of its own above the first field. */
+.rt-imp-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--rt-space-4) var(--rt-space-8);
+  align-items: start;
+}
+
+.rt-imp-pair > .rt-imp-step,
+.rt-imp-pair[data-checking] ~ .rt-imp-step {
+  padding-top: 0;
+  border-top: 0;
+}
+
+@media (max-width: 800px) {
+  .rt-imp-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Once the file has been read the pair is one line: the file's name, "into", and the account. */
+.rt-imp-pair[data-checking] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-2) var(--rt-space-3);
+}
+
+.rt-imp-pair[data-checking] > .rt-imp-step {
+  flex: 0 1 20rem;
+  min-width: min(100%, 14rem);
+}
+
+.rt-imp-file {
+  margin: 0;
+  max-width: none;
+  font-size: 1.125rem;
+}
+
+.rt-imp-file strong {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.rt-imp-file span {
+  color: var(--rt-muted);
+}
+
+/* What was found, in one sentence. */
+.rt-imp-found {
+  margin: 0;
+  max-width: none;
+  font-size: 1.0625rem;
+}
+
+.rt-imp-rest {
+  margin: 0;
+  max-width: none;
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+}
+
+.rt-imp-details {
+  display: grid;
+  gap: var(--rt-space-6);
+  padding-top: var(--rt-space-3);
+}
+
+.rt-imp-read {
+  margin: 0 0 var(--rt-space-3);
+}
+
+/* ---- File drop --------------------------------------------------------------------------- */
+
+.rt-imp-drop-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.rt-imp-drop-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-3);
+}
+
+.rt-imp-drop-file {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.rt-imp-drop-progress {
+  max-width: 24rem;
+}
+
+/* ---- Review ------------------------------------------------------------------------------ */
+
+.rt-imp-review {
+  display: grid;
+  gap: var(--rt-space-6);
+}
+
+.rt-imp-review h3 {
+  margin: 0 0 var(--rt-space-2);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.rt-imp-summary {
+  display: grid;
+}
+
+.rt-imp-facts {
+  display: grid;
+  align-content: start;
+  margin: 0;
+}
+
+.rt-imp-facts > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--rt-space-4);
+  padding: 0.375rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-imp-facts dt {
+  font-size: 0.8125rem;
+  color: var(--rt-muted);
+}
+
+.rt-imp-facts dd {
+  display: grid;
+  justify-items: end;
+  margin: 0;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  text-align: end;
+}
+
+.rt-imp-facts dd small {
+  max-width: 22rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--rt-muted);
+}
+
+.rt-imp-amount {
+  white-space: nowrap;
+}
+
+.rt-imp-difference dd,
+.rt-imp-difference dt {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--rt-text);
+}
+
+.rt-imp-balance {
+  display: grid;
+  gap: var(--rt-space-2);
+}
+
+.rt-imp-hints {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+
+/* ---- Problems ---------------------------------------------------------------------------- */
+
+.rt-imp-problem-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-4);
+  margin: 0 0 var(--rt-space-2);
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.rt-imp-problem-counts [data-severity="error"] {
+  color: var(--rt-error);
+}
+
+.rt-imp-problem-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rt-ink);
+}
+
+.rt-imp-problem-list li {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  gap: var(--rt-space-2) var(--rt-space-3);
+  align-items: baseline;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+  font-size: 0.875rem;
+}
+
+.rt-imp-problem-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 700;
+}
+
+.rt-imp-problem-kind svg {
+  width: 0.9375rem;
+  height: 0.9375rem;
+}
+
+.rt-imp-problem-list li[data-severity="error"] .rt-imp-problem-kind {
+  color: var(--rt-error);
+}
+
+.rt-imp-problem-row {
+  font-variant-numeric: tabular-nums;
+  margin-inline-end: 0.25rem;
+}
+
+.rt-imp-problem-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Column editor and options ----------------------------------------------------------- */
+
+.rt-imp-columns,
+.rt-imp-options,
+.rt-imp-more {
+  border: 1px solid var(--rt-border-subtle);
+  padding: 0 var(--rt-space-4);
+}
+
+.rt-imp-more {
+  margin-top: var(--rt-space-4);
+}
+
+.rt-imp-mapping {
+  display: grid;
+  gap: var(--rt-space-4);
+}
+
+.rt-imp-mapping-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+  gap: var(--rt-space-4) var(--rt-space-6);
+  align-items: start;
+}
+
+.rt-imp-mapping-grid .rt-field {
+  max-width: none;
+}
+
+.rt-imp-mapping-wide {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: var(--rt-space-1);
+}
+
+.rt-imp-preset {
+  margin-bottom: var(--rt-space-4);
+}
+
+.rt-imp-save {
+  display: grid;
+  gap: var(--rt-space-3);
+  max-width: 28rem;
+  margin-top: var(--rt-space-4);
+  padding-top: var(--rt-space-4);
+  border-top: 1px solid var(--rt-divider);
+}
+
+/* ---- Sample table ------------------------------------------------------------------------ */
+
+.rt-imp-sample {
+  display: grid;
+  gap: var(--rt-space-3);
+}
+
+.rt-imp-sample-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--rt-space-3);
+}
+
+.rt-imp-sample-head h3 {
+  margin: 0;
+}
+
+.rt-imp-filter {
+  min-width: 14rem;
+}
+
+.rt-imp-scroll {
+  max-height: min(70vh, 40rem);
+  overflow: auto;
+  border-bottom: 1px solid var(--rt-ink);
+}
+
+.rt-imp-table th,
+.rt-imp-table td {
+  padding: 0.5rem 0.625rem;
+  vertical-align: top;
+}
+
+.rt-imp-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--rt-paper);
+}
+
+.rt-imp-row,
+.rt-imp-date {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-imp-row {
+  color: var(--rt-muted);
+}
+
+.rt-imp-text {
+  min-width: 9rem;
+  max-width: 34rem;
+}
+
+.rt-imp-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.rt-imp-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-1);
+  margin-top: var(--rt-space-1);
+}
+
+.rt-imp-money {
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+
+.rt-imp-reason {
+  max-width: 14rem;
+}
+
+.rt-imp-table tr[data-status="duplicate"] td,
+.rt-imp-table tr[data-status="overlap"] td,
+.rt-imp-table tr[data-status="excluded"] td {
+  color: var(--rt-muted);
+}
+
+/* ---- Commit and result ------------------------------------------------------------------- */
+
+.rt-imp-commit {
+  display: grid;
+  gap: var(--rt-space-3);
+}
+
+.rt-imp-commit h2,
+.rt-imp-result h2,
+.rt-imp-history h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.rt-imp-commit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-3);
+}
+
+.rt-imp-result {
+  display: grid;
+  gap: var(--rt-space-4);
+  padding: var(--rt-space-4) 0;
+  border-top: var(--rt-rule);
+  border-bottom: 6px double var(--rt-ink);
+}
+
+.rt-imp-result h2 {
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  letter-spacing: -0.045em;
+}
+
+.rt-imp-result p {
+  margin: 0;
+}
+
+.rt-imp-history {
+  display: grid;
+  gap: var(--rt-space-3);
+} /* A link that looks like a button keeps the button's own text color: the shell's link color would
+   otherwise put blue on black. */
+.rt-imp-page a.rt-button {
+  text-decoration: none;
+}
+
+.rt-imp-page a.rt-button[data-variant="primary"],
+.rt-imp-page a.rt-button[data-variant="primary"]:hover {
+  color: var(--rt-on-action);
+}
+
+.rt-imp-page a.rt-button[data-variant="secondary"],
+.rt-imp-page a.rt-button[data-variant="secondary"]:hover {
+  color: var(--rt-text);
+}
+
+/* ---- Narrow screens ---------------------------------------------------------------------- */
+
+@media (max-width: 40rem) {
+  .rt-imp-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Recent imports on a phone: the table scrolls sideways inside its own box and the date stays put,
+     so a row is never cut off at the edge of the page. */
+  .rt-imp-history .rt-imp-table th,
+  .rt-imp-history .rt-imp-table td {
+    padding: 0.5rem 0.5rem;
+  }
+
+  .rt-imp-history .rt-imp-table th:first-child,
+  .rt-imp-history .rt-imp-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--rt-paper);
+  }
+
+  .rt-imp-history .rt-imp-table thead th:first-child {
+    z-index: 2;
+  }
+
+  .rt-imp-problem-list li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.125rem;
+  }
+
+  .rt-imp-drop {
+    padding: var(--rt-space-4);
+  }
+
+  .rt-imp-filter {
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* The first rows fit a phone without scrolling: the amount is what they are compared by. */
+  .rt-imp-sample .rt-imp-table th,
+  .rt-imp-sample .rt-imp-table td {
+    padding-inline: 0.375rem;
+  }
+
+  .rt-imp-sample .rt-imp-text {
+    min-width: 6rem;
+  }
+
+  .rt-imp-facts > div {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rt-imp-drop {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .rt-imp-drop {
+    border: 2px dashed CanvasText;
+  }
+
+  .rt-imp-drop[data-dragging] {
+    border-style: solid;
+    border-color: Highlight;
+  }
+
+  .rt-imp-steps li[data-state="current"] .rt-imp-step-mark {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.4/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "includes": [
+      "**",
+      "!!packages/kernel/spec",
+      "!!packages/kernel/src",
+      "!!packages/kernel/test",
+      "!!packages/kernel/slow",
+      "!!packages/kernel/scripts/mutation-equivalents.json",
+      "!!packages/ledger/test/data/allocation-rounding-legacy.json",
+      "!!packages/ledger/test/data/posting-reference-collision-legacy.json",
+      "!!packages/ledger/test/data/owned-inventory-preparation-baseline.json",
+      "!!bun.lock",
+      "!!**/.astro",
+      "!!packages/application/schema/application-v1.json",
+      "!!packages/application/schema/contract-v1.golden.json",
+      "!!apps/terminal/internal/api/contract-v1.golden.json",
+      "!!apps/terminal/internal/api/application-v1.json"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "complexity": {
+        "useMathMinMax": "off"
+      },
+      "performance": {
+        "useDomNodeTextContent": "off"
+      }
+    }
+  },
+  "markdown": {
+    "formatter": {
+      "enabled": false
+    }
+  },
+  "assist": {
+    "enabled": false
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "html": {
+    "experimentalFullSupportEnabled": true
+  },
+  "overrides": [
+    {
+      "includes": [
+        "packages/kernel/scripts/mutation-check.ts",
+        "packages/kernel/scripts/check-kernel-coverage.ts"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/kernel/scripts/mutation-check.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noUndeclaredEnvVars": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/booklog/test/**", "packages/booklog/experiments/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["apps/marketing/**/*.astro"],
+      "html": {
+        "formatter": {
+          "enabled": true
+        },
+        "linter": {
+          "enabled": true
+        }
+      }
+    }
+  ]
+}

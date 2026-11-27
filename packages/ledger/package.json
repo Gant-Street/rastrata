@@ -1,0 +1,38 @@
+{
+  "name": "@rastrata/ledger",
+  "private": true,
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json",
+    "test": "bun test --parallel --timeout 60000 --retry 1 test",
+    "check:native-workflow": "bun scripts/check-native-workflow.ts",
+    "profile:local": "bun scripts/local-profile.ts",
+    "profile:storage": "bun scripts/storage-profile.ts",
+    "check:release": "bun run check:syside && bun run check:native-workflow",
+    "probe:capacity": "bun scripts/capacity-probe.ts",
+    "probe:compact-capacity": "bun scripts/capacity-probe.ts --compact",
+    "probe:outcome-payload": "bun scripts/outcome-payload-probe.ts",
+    "plan:workloads": "bun scripts/workload-plan.ts",
+    "plan:identities": "bun scripts/permanent-identity-plan.ts",
+    "probe:index-capacity": "bun scripts/index-capacity-probe.ts",
+    "probe:cold-index": "bun scripts/cold-index-layout.ts",
+    "probe:incremental-index": "bun scripts/incremental-index-layout.ts",
+    "probe:logical-map": "bun scripts/logical-map-probe.ts",
+    "check:spec": "python3 scripts/check-design.py && python3 -m unittest discover -s scripts -p 'test_*.py'",
+    "check:syside": "python3 ../kernel/scripts/check-syside-diagnostics.py --model packages/ledger/spec/rastrata-production-ledger.sysml --dependency packages/kernel/spec/rastrata-accounting-backend.sysml --workspace"
+  },
+  "dependencies": {
+    "@rastrata/kernel": "workspace:*",
+    "jose": "6.2.15"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.4",
+    "typescript": "7.0.2",
+    "miniflare": "4.20260730.0"
+  }
+}

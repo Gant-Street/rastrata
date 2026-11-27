@@ -1,0 +1,5 @@
+2025-01-02 Opening
+    assets:cash       100 USD
+    equity:opening   -100 USD
+2025-01-03 Assertion
+    assets:cash       0 USD = 99 USD

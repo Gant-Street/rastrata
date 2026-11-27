@@ -1,0 +1,125 @@
+{
+  "corpus": "rastrata-accounting-engine-lab-v0.1",
+  "cases": [
+    {
+      "id": "01_missing_amount",
+      "probes": [
+        {"name": "beancount", "engine": "beancount", "fixture": "beancount.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount.beancount"]},
+        {"name": "hledger", "engine": "hledger", "fixture": "hledger.journal", "argv": ["{hledger}", "-f", "{case}/hledger.journal", "print", "--explicit"]},
+        {"name": "ledger", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "-f", "{case}/ledger.ledger", "print"]}
+      ]
+    },
+    {
+      "id": "02_repeating_basis",
+      "probes": [
+        {"name": "beancount", "engine": "beancount", "fixture": "beancount.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount.beancount"]},
+        {"name": "hledger_print", "engine": "hledger", "fixture": "hledger.journal", "argv": ["{hledger}", "-f", "{case}/hledger.journal", "print", "--all"]},
+        {"name": "hledger_balance", "engine": "hledger", "fixture": "hledger.journal", "argv": ["{hledger}", "-f", "{case}/hledger.journal", "balance", "--lots"]},
+        {"name": "ledger_print", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "-f", "{case}/ledger.ledger", "print"]},
+        {"name": "ledger_balance", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "-f", "{case}/ledger.ledger", "balance", "--lots"]}
+      ]
+    },
+    {
+      "id": "03_ambiguous_default",
+      "probes": [
+        {"name": "beancount_strict", "engine": "beancount", "fixture": "beancount.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount.beancount"]},
+        {"name": "hledger_default", "engine": "hledger", "fixture": "hledger.journal", "argv": ["{hledger}", "-f", "{case}/hledger.journal", "balance", "--lots", "assets:stock"]},
+        {"name": "ledger_default", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "-f", "{case}/ledger.ledger", "balance", "--lots", "Assets:Stock"]},
+        {"name": "ledger_fifo", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "--lot-matching", "fifo", "-f", "{case}/ledger.ledger", "balance", "--lots", "Assets:Stock"]}
+      ]
+    },
+    {
+      "id": "04_selection_policy",
+      "probes": [
+        {"name": "beancount_fifo", "engine": "beancount", "fixture": "beancount-fifo.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount-fifo.beancount"]},
+        {"name": "beancount_lifo", "engine": "beancount", "fixture": "beancount-lifo.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount-lifo.beancount"]},
+        {"name": "beancount_hifo", "engine": "beancount", "fixture": "beancount-hifo.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount-hifo.beancount"]},
+        {"name": "hledger_fifo", "engine": "hledger", "fixture": "hledger-fifo.journal", "argv": ["{hledger}", "-f", "{case}/hledger-fifo.journal", "balance", "--lots", "assets:stock"]},
+        {"name": "hledger_lifo", "engine": "hledger", "fixture": "hledger-lifo.journal", "argv": ["{hledger}", "-f", "{case}/hledger-lifo.journal", "balance", "--lots", "assets:stock"]},
+        {"name": "hledger_hifo", "engine": "hledger", "fixture": "hledger-hifo.journal", "argv": ["{hledger}", "-f", "{case}/hledger-hifo.journal", "balance", "--lots", "assets:stock"]},
+        {"name": "ledger_fifo", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "--lot-matching", "fifo", "-f", "{case}/ledger.ledger", "balance", "--lots", "Assets:Stock"]},
+        {"name": "ledger_lifo", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "--lot-matching", "lifo", "-f", "{case}/ledger.ledger", "balance", "--lots", "Assets:Stock"]}
+      ]
+    },
+    {
+      "id": "05_basis_vs_price",
+      "probes": [
+        {"name": "beancount", "engine": "beancount", "fixture": "beancount.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount.beancount"]},
+        {"name": "hledger", "engine": "hledger", "fixture": "hledger.journal", "argv": ["{hledger}", "-f", "{case}/hledger.journal", "print", "--all"]},
+        {"name": "hledger_gain", "engine": "hledger", "fixture": "hledger.journal", "argv": ["{hledger}", "-f", "{case}/hledger.journal", "balance", "revenue:gains"]},
+        {"name": "ledger", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "--lot-matching", "fifo", "-f", "{case}/ledger.ledger", "balance", "Income:Gain"]}
+      ]
+    },
+    {
+      "id": "06_basis_transfer",
+      "probes": [
+        {"name": "beancount", "engine": "beancount", "fixture": "beancount.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount.beancount"]},
+        {"name": "hledger", "engine": "hledger", "fixture": "hledger.journal", "argv": ["{hledger}", "-f", "{case}/hledger.journal", "balance", "--lots", "assets"]},
+        {"name": "ledger", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "-f", "{case}/ledger.ledger", "balance", "--lots", "Assets"]}
+      ]
+    },
+    {
+      "id": "07_average_cost",
+      "probes": [
+        {"name": "beancount", "engine": "beancount", "fixture": "beancount.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount.beancount"]},
+        {"name": "hledger", "engine": "hledger", "fixture": "hledger.journal", "argv": ["{hledger}", "-f", "{case}/hledger.journal", "print", "--all"]},
+        {"name": "hledger_pool", "engine": "hledger", "fixture": "hledger.journal", "argv": ["{hledger}", "-f", "{case}/hledger.journal", "balance", "--lots", "assets:stock"]},
+        {"name": "ledger_average_report", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "-f", "{case}/ledger.ledger", "balance", "--average-lot-prices", "Assets:Stock"]}
+      ]
+    },
+    {
+      "id": "08_account_lifecycle",
+      "probes": [
+        {"name": "beancount", "engine": "beancount", "fixture": "beancount.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount.beancount"]},
+        {"name": "hledger", "engine": "hledger", "fixture": "hledger.journal", "argv": ["{hledger}", "--strict", "-f", "{case}/hledger.journal", "check", "accounts"]},
+        {"name": "ledger", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "-f", "{case}/ledger.ledger", "print"]}
+      ]
+    },
+    {
+      "id": "09_balance_assertion",
+      "probes": [
+        {"name": "beancount", "engine": "beancount", "fixture": "beancount.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount.beancount"]},
+        {"name": "hledger", "engine": "hledger", "fixture": "hledger.journal", "argv": ["{hledger}", "-f", "{case}/hledger.journal", "check", "assertions"]},
+        {"name": "ledger", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "-f", "{case}/ledger.ledger", "print"]}
+      ]
+    },
+    {
+      "id": "10_specific_identification",
+      "probes": [
+        {"name": "beancount", "engine": "beancount", "fixture": "beancount.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount.beancount"]},
+        {"name": "hledger_selected", "engine": "hledger", "fixture": "hledger-selected.journal", "argv": ["{hledger}", "-f", "{case}/hledger-selected.journal", "balance", "--lots", "assets:stock"]},
+        {"name": "hledger_missing_selector", "engine": "hledger", "fixture": "hledger-missing-selector.journal", "argv": ["{hledger}", "-f", "{case}/hledger-missing-selector.journal", "balance", "--lots", "assets:stock"]},
+        {"name": "ledger", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "-f", "{case}/ledger.ledger", "balance", "--lots", "Assets:Stock"]}
+      ]
+    },
+    {
+      "id": "11_valuation_path",
+      "probes": [
+        {"name": "beancount", "engine": "beancount", "fixture": "beancount.beancount", "argv": ["{beancount_python}", "{beancount_valuation_probe}", "{case}/beancount.beancount", "1", "AAA", "USD", "BBB"]},
+        {"name": "hledger", "engine": "hledger", "fixture": "hledger.journal", "argv": ["{hledger}", "-f", "{case}/hledger.journal", "balance", "--value=2025-01-03,USD", "assets:token"]},
+        {"name": "ledger", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "-f", "{case}/ledger.ledger", "balance", "--exchange", "USD", "Assets:Token"]}
+      ]
+    },
+    {
+      "id": "12_posting_order",
+      "probes": [
+        {"name": "beancount_eur_first", "engine": "beancount", "fixture": "beancount-eur-first.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount-eur-first.beancount"]},
+        {"name": "beancount_usd_first", "engine": "beancount", "fixture": "beancount-usd-first.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount-usd-first.beancount"]},
+        {"name": "hledger_eur_first", "engine": "hledger", "fixture": "hledger-eur-first.journal", "argv": ["{hledger}", "-f", "{case}/hledger-eur-first.journal", "balance", "--exchange", "USD", "assets"]},
+        {"name": "hledger_usd_first", "engine": "hledger", "fixture": "hledger-usd-first.journal", "argv": ["{hledger}", "-f", "{case}/hledger-usd-first.journal", "balance", "--exchange", "USD", "assets"]},
+        {"name": "ledger_eur_first", "engine": "ledger", "fixture": "ledger-eur-first.ledger", "argv": ["{ledger}", "-f", "{case}/ledger-eur-first.ledger", "balance", "--exchange", "USD", "Assets"]},
+        {"name": "ledger_usd_first", "engine": "ledger", "fixture": "ledger-usd-first.ledger", "argv": ["{ledger}", "-f", "{case}/ledger-usd-first.ledger", "balance", "--exchange", "USD", "Assets"]}
+      ]
+    },
+    {
+      "id": "13_virtual_postings",
+      "probes": [
+        {"name": "beancount", "engine": "beancount", "fixture": "beancount.beancount", "argv": ["{beancount_python}", "{beancount_probe}", "{case}/beancount.beancount"]},
+        {"name": "hledger", "engine": "hledger", "fixture": "hledger.journal", "argv": ["{hledger}", "-f", "{case}/hledger.journal", "print"]},
+        {"name": "hledger_real", "engine": "hledger", "fixture": "hledger.journal", "argv": ["{hledger}", "-f", "{case}/hledger.journal", "balance", "--real"]},
+        {"name": "ledger", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "-f", "{case}/ledger.ledger", "print"]},
+        {"name": "ledger_real", "engine": "ledger", "fixture": "ledger.ledger", "argv": ["{ledger}", "-f", "{case}/ledger.ledger", "balance", "--real"]}
+      ]
+    }
+  ]
+}

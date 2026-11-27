@@ -1,0 +1,417 @@
+/* Styles for the safety lane's components. Tokens from base.css only; no one-off colors, no
+   decorative strips. Structure comes from rules and space, like the rest of the application: a
+   heavy rule above each section, hairlines between lines, the status in words as well as tone. */
+
+.rt-safe-workspace {
+  display: grid;
+  gap: var(--rt-space-6);
+}
+
+.rt-safe-workspace > section,
+.rt-safe-workspace > div {
+  min-width: 0;
+}
+
+.rt-safe-head {
+  display: grid;
+  gap: var(--rt-space-2);
+}
+
+.rt-safe-head h1 {
+  margin: 0;
+}
+
+.rt-safe-head p {
+  margin: 0;
+  max-width: 46rem;
+}
+
+.rt-safe-workspace h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.rt-safe-workspace > section,
+.rt-safe-columns > section {
+  display: grid;
+  align-content: start;
+  gap: var(--rt-space-3);
+  padding-top: var(--rt-space-4);
+  border-top: var(--rt-rule);
+}
+
+.rt-safe-workspace p {
+  margin: 0;
+}
+
+.rt-safe-loading {
+  padding: var(--rt-space-4) 0;
+  border-top: var(--rt-rule);
+}
+
+.rt-safe-path {
+  font: 0.8125rem / 1.5 var(--rt-mono);
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+/* ---- Summary ---------------------------------------------------------------------------------- */
+
+.rt-safe-summary {
+  padding-inline-start: var(--rt-space-4);
+  border-top: 2px solid var(--rt-accent);
+}
+
+.rt-safe-summary[data-tone="review"] {
+  border-inline-start-color: var(--rt-penguin-orange);
+}
+
+.rt-safe-summary[data-tone="error"] {
+  border-inline-start-color: var(--rt-error);
+}
+
+.rt-safe-summary h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--rt-space-2);
+}
+
+.rt-safe-summary-icon {
+  color: var(--rt-error);
+}
+
+.rt-safe-warnings {
+  display: grid;
+  gap: var(--rt-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-safe-warnings li {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: start;
+  gap: var(--rt-space-3);
+}
+
+/* What is only good to know: a quiet section of its own, with a hairline for a rule, no bar and no chip. */
+.rt-safe-workspace > .rt-safe-notes {
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-safe-notelist {
+  display: grid;
+  gap: var(--rt-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--rt-muted);
+}
+
+/* ---- Two columns: what to do, where you stand ---------------------------------------------------- */
+
+.rt-safe-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--rt-space-8);
+}
+
+@media (max-width: 52rem) {
+  .rt-safe-columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--rt-space-6);
+  }
+}
+
+.rt-safe-actions ul {
+  display: grid;
+  gap: var(--rt-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-safe-actions li {
+  display: grid;
+  justify-items: start;
+  gap: var(--rt-space-2);
+}
+
+.rt-safe-actions .rt-hint,
+.rt-safe-export .rt-hint {
+  margin: 0;
+}
+
+.rt-safe-facts dl {
+  display: grid;
+  margin: 0;
+}
+
+.rt-safe-facts dl > div {
+  display: grid;
+  gap: var(--rt-space-1);
+  padding: var(--rt-space-3) 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-safe-facts dt {
+  font-size: 0.8125rem;
+  color: var(--rt-muted);
+}
+
+.rt-safe-facts dd {
+  display: grid;
+  gap: var(--rt-space-1);
+  margin: 0;
+  font-weight: 600;
+}
+
+.rt-safe-facts small,
+.rt-safe-table small,
+.rt-safe-exports small {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--rt-muted);
+}
+
+/* ---- A job ------------------------------------------------------------------------------------ */
+
+.rt-safe-job {
+  padding-inline-start: var(--rt-space-4);
+  border-top: 2px solid var(--rt-accent);
+}
+
+.rt-safe-job h2 {
+  margin: 0;
+}
+
+.rt-safe-job-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-1) var(--rt-space-4);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-safe-job-uncertain {
+  font-weight: 600;
+}
+
+.rt-safe-result {
+  padding-inline-start: var(--rt-space-4);
+  border-top: 2px solid var(--rt-accent);
+}
+
+.rt-safe-result[data-tone="error"] {
+  border-inline-start-color: var(--rt-error);
+}
+
+.rt-safe-result h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--rt-space-2);
+}
+
+.rt-safe-result > button {
+  justify-self: start;
+}
+
+/* ---- Checks ----------------------------------------------------------------------------------- */
+
+.rt-safe-checks {
+  display: grid;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-safe-checks li {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  gap: var(--rt-space-2);
+  align-items: start;
+}
+
+.rt-safe-check-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.125rem;
+  border: 1.5px solid currentColor;
+}
+
+.rt-safe-check-mark svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.rt-safe-check-word {
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-safe-checks li[data-status="failed"] .rt-safe-check-mark,
+.rt-safe-checks li[data-status="failed"] .rt-safe-check-word {
+  color: var(--rt-error);
+}
+
+.rt-safe-check-body {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.rt-safe-check-body small {
+  color: var(--rt-muted);
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+/* ---- The list --------------------------------------------------------------------------------- */
+
+/* Keep the table's natural width: on a narrow screen it scrolls inside its own container instead of
+   squeezing every date into a column of single words. */
+.rt-safe-table {
+  min-width: 42rem;
+}
+
+.rt-safe-table th[scope="row"] {
+  font-weight: 600;
+}
+
+.rt-safe-table th[scope="row"] small {
+  display: block;
+}
+
+.rt-safe-table td,
+.rt-safe-table th {
+  vertical-align: top;
+}
+
+.rt-safe-table td.amount,
+.rt-safe-table th.amount {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-safe-table tr[data-state="missing"] {
+  color: var(--rt-muted);
+}
+
+.rt-safe-row-failed .rt-details-toggle {
+  color: var(--rt-error);
+}
+
+.rt-safe-row-details .rt-safe-checks {
+  min-width: 18rem;
+}
+
+.rt-safe-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2);
+}
+
+.rt-safe-empty {
+  display: grid;
+  gap: var(--rt-space-2);
+  padding: var(--rt-space-6) var(--rt-space-4);
+  border: 1px solid var(--rt-divider);
+}
+
+.rt-safe-unrecorded h3,
+.rt-safe-export h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.rt-safe-unrecorded ul,
+.rt-safe-exports {
+  display: grid;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-safe-exports li {
+  display: grid;
+  gap: var(--rt-space-1);
+  padding: var(--rt-space-3) 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+/* ---- Settings --------------------------------------------------------------------------------- */
+
+.rt-safe-settings form {
+  display: grid;
+  gap: var(--rt-space-6);
+}
+
+.rt-safe-fieldset {
+  display: grid;
+  gap: var(--rt-space-3);
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.rt-safe-fieldset > legend {
+  padding: 0;
+  margin-bottom: var(--rt-space-2);
+  font-weight: 700;
+}
+
+.rt-safe-fieldset > .rt-hint,
+.rt-safe-settings .rt-hint {
+  margin: 0;
+}
+
+.rt-safe-keep {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--rt-space-4);
+}
+
+@media (max-width: 40rem) {
+  .rt-safe-keep {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.rt-safe-fewer {
+  font-weight: 600;
+}
+
+.rt-safe-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-4);
+}
+
+.rt-safe-form-error {
+  color: var(--rt-error);
+  font-weight: 600;
+}
+
+/* ---- Code and restore ------------------------------------------------------------------------- */
+
+.rt-safe-code {
+  margin: 0;
+  padding: var(--rt-space-3) var(--rt-space-4);
+  overflow-x: auto;
+  border: 1px solid var(--rt-ink);
+  background: var(--rt-surface-subtle);
+  font: 0.8125rem / 1.6 var(--rt-mono);
+}
+
+.rt-safe-code code {
+  font: inherit;
+}

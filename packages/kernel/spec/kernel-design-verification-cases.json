@@ -1,0 +1,2855 @@
+{
+ "version": "rastrata-kernel-design-verification-cases-v1",
+ "status": "implemented-and-executable",
+ "purpose": "Concrete executable specifications for unified accounting-kernel requirements ACC-039 through ACC-047",
+ "number_format": "Exact rationals are encoded as numerator/denominator strings; book values are integer cents",
+ "fixture_contract": {
+  "hash_algorithm": "sha256",
+  "canonicalization": "fixture-json-sorted-keys-v1",
+  "posting_sign": "debit positive, credit negative",
+  "hash_scope": "Each case hash covers its id, polarity, parent and atomic requirements, fixture, input or scenarios, and expected result, excluding case_hash"
+ },
+ "cases": [
+  {
+   "id": "D01-deterministic-inventory-costing",
+   "case_hash": "sha256:838d8682c644b672e4947fba9f790f6f4263d8f14796ac6d385ea10f8f429c01",
+   "outcome": "admit",
+   "requirements": [
+    "ACC-039"
+   ],
+   "atomic_requirements": [
+    "ACC-039.1",
+    "ACC-039.2",
+    "ACC-039.3",
+    "ACC-039.4",
+    "ACC-039.5",
+    "ACC-039.6",
+    "ACC-039.7",
+    "ACC-039.8",
+    "ACC-039.9"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:6b897a97e1476613f75d78aa901f484f6536323580b951b52617533d7f7de552"
+    },
+    "commands": [
+     {
+      "id": "CMD-INV-001",
+      "kind": "postInventoryTransaction",
+      "expected_book_revision": 17,
+      "payload": "inventoryCostRequest"
+     },
+     {
+      "id": "CMD-INV-ADJUST-001",
+      "kind": "adjustInventoryValue",
+      "expected_book_revision": 18,
+      "payload": "inventoryValueAdjustmentRequest"
+     }
+    ],
+    "expected_transactions": [
+     {
+      "id": "TX-INV-001",
+      "postings": [
+       {
+        "ordinal": 1,
+        "account": "COGS",
+        "units": "12/1",
+        "book_value_cents": 14400
+       },
+       {
+        "ordinal": 2,
+        "account": "INVENTORY-A",
+        "units": "-12/1",
+        "book_value_cents": -14400
+       }
+      ]
+     },
+     {
+      "id": "TX-INV-ADJUST-001",
+      "postings": [
+       {
+        "ordinal": 1,
+        "account": "INVENTORY-A",
+        "units": "1200/1",
+        "book_value_cents": 1200
+       },
+       {
+        "ordinal": 2,
+        "account": "ADJUSTMENT",
+        "units": "-1200/1",
+        "book_value_cents": -1200
+       }
+      ]
+     }
+    ],
+    "expected_diagnostics": [],
+    "state_delta": {
+     "book_revision": 2,
+     "posting_sequence": 2,
+     "lot_allocations": 2,
+     "inventory_recostings": 0,
+     "inventory_value_adjustments": 1
+    }
+   },
+   "input": {
+    "book": "BOOK-USD",
+    "commodity": "UNIT",
+    "pool_accounts": [
+     "INVENTORY-A",
+     "INVENTORY-B"
+    ],
+    "acquisitions": [
+     {
+      "lot": "LOT-1",
+      "account": "INVENTORY-A",
+      "acquired_at": "2026-01-01T00:00:00Z",
+      "quantity": "10/1",
+      "total_basis_cents": "10000/1"
+     },
+     {
+      "lot": "LOT-2",
+      "account": "INVENTORY-A",
+      "acquired_at": "2026-01-02T00:00:00Z",
+      "quantity": "10/1",
+      "total_basis_cents": "14000/1"
+     }
+    ],
+    "disposal_quantity": "12/1",
+    "method_scenarios": [
+     {
+      "method": "specificIdentification",
+      "selected_lots": [
+       "LOT-2",
+       "LOT-1"
+      ],
+      "selected_quantities": [
+       "10/1",
+       "2/1"
+      ]
+     },
+     {
+      "method": "fifo",
+      "selected_lots": [
+       "LOT-1",
+       "LOT-2"
+      ],
+      "selected_quantities": [
+       "10/1",
+       "2/1"
+      ]
+     },
+     {
+      "method": "lifo",
+      "selected_lots": [
+       "LOT-2",
+       "LOT-1"
+      ],
+      "selected_quantities": [
+       "10/1",
+       "2/1"
+      ]
+     },
+     {
+      "method": "hifo",
+      "selected_lots": [
+       "LOT-2",
+       "LOT-1"
+      ],
+      "selected_quantities": [
+       "10/1",
+       "2/1"
+      ]
+     },
+     {
+      "method": "weightedAverage",
+      "selected_lots": [
+       "LOT-1",
+       "LOT-2"
+      ],
+      "selected_quantities": [
+       "6/1",
+       "6/1"
+      ]
+     }
+    ],
+    "owned_inventory": {
+     "quantity": "3/1",
+     "algorithm_version": "1.2.0"
+    },
+    "value_adjustment": {
+     "kind": "directlyAttributableCost",
+     "remaining_quantity": "8/1",
+     "prior_remaining_basis_cents": "9600/1",
+     "directly_attributable_cost_cents": "1200/1"
+    }
+   },
+   "expect": {
+    "basis_by_method_cents": {
+     "specificIdentification": "16000/1",
+     "fifo": "12800/1",
+     "lifo": "16000/1",
+     "hifo": "16000/1",
+     "weightedAverage": "14400/1"
+    },
+    "weighted_average_remaining_quantity": "8/1",
+    "weighted_average_remaining_basis_cents": "9600/1",
+    "quantity_conserved": "20/1",
+    "basis_conserved_cents": "24000/1",
+    "value_adjustment_kind": "directlyAttributableCost",
+    "value_adjustment_exact_cents": "1200/1",
+    "adjusted_remaining_basis_cents": "10800/1",
+    "adjusted_remaining_quantity": "8/1",
+    "value_adjustment_journal_balanced": true,
+    "owned_inventory": {
+     "revision_delta": 1,
+     "posting_sequence_delta": 0,
+     "journal_count": 0,
+     "quantity_only_movements": 1,
+     "remaining_quantity": "3/1",
+     "durable_retry_identical": true
+    }
+   }
+  },
+  {
+   "id": "D02-incoherent-inventory-cost-policy",
+   "case_hash": "sha256:807c9407286503649a71c74e15ecac65e5cdef5f04d78f330e0e33f2a2351739",
+   "outcome": "reject",
+   "requirements": [
+    "ACC-039"
+   ],
+   "atomic_requirements": [
+    "ACC-039.1",
+    "ACC-039.2",
+    "ACC-039.3",
+    "ACC-039.4",
+    "ACC-039.5",
+    "ACC-039.6",
+    "ACC-039.7",
+    "ACC-039.8",
+    "ACC-039.9"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:68612e866db0532103714327f41c346a3ab0c722f3e722e8c965050407ae7cc6"
+    },
+    "command": {
+     "id": "CMD-INV-REJECT",
+     "kind": "postInventoryTransaction",
+     "expected_book_revision": 17,
+     "payload": "inventoryCostRequest"
+    },
+    "rejection_contract": {
+     "expected_transactions": [],
+     "book_revision_delta": 0,
+     "posting_sequence_delta": 0,
+     "resulting_state_hash": "unchanged"
+    }
+   },
+   "scenarios": [
+    {
+     "id": "D02a-pool-omits-holding",
+     "atomic_requirements": [
+      "ACC-039.2",
+      "ACC-039.6"
+     ],
+     "input": {
+      "method": "weightedAverage",
+      "pool_accounts": [
+       "INVENTORY-A"
+      ],
+      "holding_accounts": [
+       "INVENTORY-A",
+       "INVENTORY-B"
+      ]
+     },
+     "expect": {
+      "diagnostic": "inventory_cost_policy_incoherent",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:1d49c13830b93ae336e767978cdda8586314ef4a5e8d5577e210a6d8f780fc01"
+    },
+    {
+     "id": "D02b-capability-method-mismatch",
+     "atomic_requirements": [
+      "ACC-039.1",
+      "ACC-039.6"
+     ],
+     "input": {
+      "policy_method": "fifo",
+      "capability_method_key": "weightedAverage",
+      "capability_status": "supported"
+     },
+     "expect": {
+      "diagnostic": "inventory_cost_policy_incoherent",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:0afc267fa2e9c75258ce85ce0b6447240992c9acbfce36cd25be3812f3a58c53"
+    },
+    {
+     "id": "D02c-unsupported-inventory-method",
+     "atomic_requirements": [
+      "ACC-039.1",
+      "ACC-039.6"
+     ],
+     "input": {
+      "policy_method": "lifo",
+      "capability_method_key": "lifo",
+      "capability_status": "unsupported"
+     },
+     "expect": {
+      "diagnostic": "inventory_cost_policy_incoherent",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:70bab7ef383aece8eacb476ac6a3543f1f1ef6c14e0555ec516e8249de762c5b"
+    },
+    {
+     "id": "D02d-nondeterministic-cost-order",
+     "atomic_requirements": [
+      "ACC-039.3"
+     ],
+     "input": {
+      "method": "fifo",
+      "candidate_layers": [
+       {
+        "id": "LOT-1",
+        "acquired_at": "2026-01-01T00:00:00Z"
+       },
+       {
+        "id": "LOT-1",
+        "acquired_at": "2026-01-01T00:00:00Z"
+       }
+      ],
+      "stable_tie_breaker": null
+     },
+     "expect": {
+      "diagnostic": "inventory_cost_policy_incoherent",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:1ca8859c0ea05f59be6e67dfa1510f001a02c504d8e847b25cbff8cee6b49d66"
+    },
+    {
+     "id": "D02e-quantity-conservation-failure",
+     "atomic_requirements": [
+      "ACC-039.4"
+     ],
+     "input": {
+      "requested_quantity": "5/1",
+      "allocated_quantities": [
+       "2/1",
+       "2/1"
+      ]
+     },
+     "expect": {
+      "diagnostic": "inventory_cost_policy_incoherent",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:eb3cab357f26a772eb2a0562f2afac4f9e2d380c4c3bfd38f72fbbe8ecbe06d3"
+    },
+    {
+     "id": "D02f-cost-basis-conservation-failure",
+     "atomic_requirements": [
+      "ACC-039.5"
+     ],
+     "input": {
+      "source_basis_cents": 5000,
+      "allocated_basis_cents": [
+       2000,
+       2999
+      ]
+     },
+     "expect": {
+      "diagnostic": "inventory_cost_policy_incoherent",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:ec5d999fa78452ae3ea12528da4ee3d94cf5e8029338dc107b3247b45aa603a5"
+    },
+    {
+     "id": "D02g-unauthenticated-ownership-anchor",
+     "atomic_requirements": [
+      "ACC-039.7"
+     ],
+     "input": {
+      "quantity": "3/1",
+      "algorithm_version": "1.2.0",
+      "proposed_posted_budget": "1.00"
+     },
+     "expect": {
+      "diagnostic": "lot_overallocation",
+      "diagnostic_path": "inventoryOwnership.anchorSource",
+      "original_posted_budget": "0.00",
+      "proposed_posted_budget": "1.00",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:740220671c0e5196766a7295985162248dfb8eb97455b139e6ffa92288855ed3"
+    },
+    {
+     "id": "D02h-quantity-only-journal-violation",
+     "atomic_requirements": [
+      "ACC-039.8"
+     ],
+     "input": {
+      "quantity": "3/1",
+      "algorithm_version": "1.2.0",
+      "fake_posting_id": "invented-posting"
+     },
+     "expect": {
+      "diagnostic": "inventory_cost_policy_incoherent",
+      "diagnostic_path": "ownedInventory.postingLink",
+      "journal_count": 0,
+      "quantity_only_movements": 0,
+      "remaining_quantity": null,
+      "durable_retry_identical": true,
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:5466634e2ec5c4fd69ad6e731190f27d567471c505b3992b22dfb6c1e40fbfcc"
+    },
+    {
+     "id": "D02i-incompatible-ownership-history",
+     "atomic_requirements": [
+      "ACC-039.9"
+     ],
+     "input": {
+      "quantity": "3/1",
+      "algorithm_version": "9.0.0"
+     },
+     "expect": {
+      "diagnostic": "inventory_cost_policy_incoherent",
+      "diagnostic_path": "ownedInventory.request",
+      "journal_count": 0,
+      "quantity_only_movements": 0,
+      "remaining_quantity": null,
+      "durable_retry_identical": true,
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:852e5b65c7ec4934b8d16ef5cd095432674c43aaf8ff8eafc7db1b366c02e482"
+    }
+   ]
+  },
+  {
+   "id": "D03-provisional-inventory-recosting",
+   "case_hash": "sha256:0c9e1ffe231b256e5de486520b114840d4903e48248336e93e78cb145d4183b2",
+   "outcome": "admit",
+   "requirements": [
+    "ACC-040"
+   ],
+   "atomic_requirements": [
+    "ACC-040.1",
+    "ACC-040.2",
+    "ACC-040.3",
+    "ACC-040.4",
+    "ACC-040.5"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:13600a3efe91fec48ea60a2ed2da291ee14cfd3b961a78865be83655f1fb2db1"
+    },
+    "commands": [
+     {
+      "id": "CMD-ISSUE-001",
+      "kind": "postInventoryTransaction",
+      "expected_book_revision": 17,
+      "payload": "inventoryCostRequest"
+     },
+     {
+      "id": "CMD-RECEIPT-001",
+      "kind": "postJournal",
+      "expected_book_revision": 18,
+      "payload": "resolvedTransaction"
+     },
+     {
+      "id": "CMD-RECOST-001",
+      "kind": "recostProvisionalInventory",
+      "expected_book_revision": 19,
+      "payload": "inventoryCostRequest"
+     }
+    ],
+    "expected_transactions": [
+     {
+      "id": "TX-ISSUE-001",
+      "postings": [
+       {
+        "ordinal": 1,
+        "account": "COGS",
+        "units": "5/1",
+        "book_value_cents": 6000
+       },
+       {
+        "ordinal": 2,
+        "account": "INVENTORY",
+        "units": "-5/1",
+        "book_value_cents": -6000
+       }
+      ]
+     },
+     {
+      "id": "TX-RECEIPT-001",
+      "postings": [
+       {
+        "ordinal": 1,
+        "account": "INVENTORY",
+        "units": "3/1",
+        "book_value_cents": 4500
+       },
+       {
+        "ordinal": 2,
+        "account": "ACCOUNTS-PAYABLE",
+        "units": "-4500/1",
+        "book_value_cents": -4500
+       }
+      ]
+     },
+     {
+      "id": "TX-RECOST-001",
+      "postings": [
+       {
+        "ordinal": 1,
+        "account": "COGS",
+        "units": "900/1",
+        "book_value_cents": 900
+       },
+       {
+        "ordinal": 2,
+        "account": "INVENTORY",
+        "units": "-900/1",
+        "book_value_cents": -900
+       }
+      ]
+     }
+    ],
+    "expected_diagnostics": [],
+    "state_delta": {
+     "book_revision": 3,
+     "posting_sequence": 3,
+     "provisional_layers": 1,
+     "inventory_recostings": 1
+    }
+   },
+   "input": {
+    "on_hand_quantity": "2/1",
+    "issue_quantity": "5/1",
+    "provisional_basis_method": "explicitRate",
+    "provisional_rate_cents_per_unit": "1200/1",
+    "later_receipts": [
+     {
+      "lot": "LOT-R1",
+      "quantity": "3/1",
+      "total_basis_cents": "4500/1"
+     }
+    ],
+    "affected_period_status": "open"
+   },
+   "expect": {
+    "ordinary_quantity_consumed": "2/1",
+    "provisional_quantity_opened": "3/1",
+    "provisional_basis_cents": "3600/1",
+    "final_basis_cents": "4500/1",
+    "recosting_adjustment_cents": 900,
+    "remaining_provisional_quantity": "0/1",
+    "prior_journal_unchanged": true
+   }
+  },
+  {
+   "id": "D04-unauthorized-provisional-inventory",
+   "case_hash": "sha256:dc8aa8aeb1e83ef6504b98b75fa2f3838d65f55b50588c8d62dddc2e7613c3ba",
+   "outcome": "reject",
+   "requirements": [
+    "ACC-040"
+   ],
+   "atomic_requirements": [
+    "ACC-040.1",
+    "ACC-040.2",
+    "ACC-040.3",
+    "ACC-040.4",
+    "ACC-040.5"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:0d93d013f576b4862dbdd4d4fd56483abf35796862579eb363cc941983629780"
+    },
+    "command": {
+     "id": "CMD-RECOST-REJECT",
+     "kind": "recostProvisionalInventory",
+     "expected_book_revision": 17,
+     "payload": "inventoryCostRequest"
+    },
+    "rejection_contract": {
+     "expected_transactions": [],
+     "book_revision_delta": 0,
+     "posting_sequence_delta": 0,
+     "resulting_state_hash": "unchanged"
+    }
+   },
+   "scenarios": [
+    {
+     "id": "D04a-shortage-policy-rejects",
+     "atomic_requirements": [
+      "ACC-040.1"
+     ],
+     "input": {
+      "on_hand_quantity": "2/1",
+      "issue_quantity": "5/1",
+      "shortage_treatment": "reject",
+      "affected_period_status": "open"
+     },
+     "expect": {
+      "diagnostic": "provisional_inventory_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:07acad7329a0cb286144ef8e7202f054205f596d43979249150e767c11b91275"
+    },
+    {
+     "id": "D04b-provisional-basis-missing",
+     "atomic_requirements": [
+      "ACC-040.2"
+     ],
+     "input": {
+      "shortage_quantity": "3/1",
+      "provisional_basis_method": "standardCost",
+      "policy_provisional_rate": null
+     },
+     "expect": {
+      "diagnostic": "inventory_cost_policy_incoherent",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:8530239925b7996fbedaf02f1f77ae19a9fce64b69b9814c464861a9fef6216a"
+    },
+    {
+     "id": "D04c-receipt-allocation-overresolves",
+     "atomic_requirements": [
+      "ACC-040.3"
+     ],
+     "input": {
+      "layer_open_quantity": "3/1",
+      "receipt_allocations": [
+       {
+        "lot": "LOT-R1",
+        "quantity": "2/1"
+       },
+       {
+        "lot": "LOT-R2",
+        "quantity": "2/1"
+       }
+      ]
+     },
+     "expect": {
+      "diagnostic": "provisional_inventory_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:750379960228bc580d8828c8f927163aedbdcf0ec14a39505cd8d8d6dab0b716"
+    },
+    {
+     "id": "D04d-closed-period-silent-recost",
+     "atomic_requirements": [
+      "ACC-040.5"
+     ],
+     "input": {
+      "layer_open_quantity": "3/1",
+      "affected_period_status": "closed",
+      "admissible_adjustment_present": false,
+      "reopen_present": false
+     },
+     "expect": {
+      "diagnostic": "provisional_inventory_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:ec0a86a8e59fd9a0d40e9c4d5082661f8c4e047746dd85d1716faed57b59b806"
+    },
+    {
+     "id": "D04e-recost-rewrites-prior-journal",
+     "atomic_requirements": [
+      "ACC-040.4"
+     ],
+     "input": {
+      "original_journal_hash": "sha256:29bff7d575d4086057de19453dd974669233993e485335708e8783229f86a3b0",
+      "resulting_original_journal_hash": "sha256:4a62f4c960d0a8418e1a2ba140f75a9f4e7baaa87f89ee4ef5bee157c1f98f32",
+      "separate_adjustment_present": false
+     },
+     "expect": {
+      "diagnostic": "provisional_inventory_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:8db1d473766c3c3f30450d3c193d09c9d7dcdafcdd94d0c19257b1a9baf389b5"
+    }
+   ]
+  },
+  {
+   "id": "D05-many-to-many-open-item-settlement",
+   "case_hash": "sha256:50aecc321064dccf0b5a452b4b737458fc1d8f20952158ef1a4813c2b90bed14",
+   "outcome": "admit",
+   "requirements": [
+    "ACC-041"
+   ],
+   "atomic_requirements": [
+    "ACC-041.1",
+    "ACC-041.2",
+    "ACC-041.3",
+    "ACC-041.4",
+    "ACC-041.5",
+    "ACC-041.6"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 3,
+     "posting_sequence": 2,
+     "content_hash": "sha256:a386b5a470df824c781f06ca3e2aaf0375ea17870d8a810969662c45016f3fb7"
+    },
+    "commands": [
+     {
+      "id": "CMD-SETTLE-PAY-1",
+      "kind": "applySettlement",
+      "expected_book_revision": 3,
+      "payload": "settlementRequest"
+     },
+     {
+      "id": "CMD-SETTLE-PAY-2",
+      "kind": "applySettlement",
+      "expected_book_revision": 4,
+      "payload": "settlementRequest"
+     },
+     {
+      "id": "CMD-APPLY-PAY-2-1",
+      "kind": "applySettlement",
+      "expected_book_revision": 5,
+      "payload": "settlementRequest"
+     },
+     {
+      "id": "CMD-APPLY-PAY-2-2",
+      "kind": "applySettlement",
+      "expected_book_revision": 6,
+      "payload": "settlementRequest"
+     }
+    ],
+    "expected_transactions": [
+     {
+      "id": "PAY-1-journal",
+      "postings": [
+       {
+        "ordinal": 1,
+        "account": "CASH",
+        "units": "150/1",
+        "book_value_cents": 15000
+       },
+       {
+        "ordinal": 2,
+        "account": "ACCOUNTS-RECEIVABLE",
+        "units": "-150/1",
+        "book_value_cents": -15000
+       }
+      ]
+     },
+     {
+      "id": "PAY-2-journal",
+      "postings": [
+       {
+        "ordinal": 1,
+        "account": "CASH",
+        "units": "100/1",
+        "book_value_cents": 10000
+       },
+       {
+        "ordinal": 2,
+        "account": "ACCOUNTS-RECEIVABLE",
+        "units": "-100/1",
+        "book_value_cents": -10000
+       }
+      ]
+     }
+    ],
+    "expected_diagnostics": [],
+    "state_delta": {
+     "book_revision": 4,
+     "posting_sequence": 2,
+     "settlements": 2,
+     "settlement_allocations": 4
+    }
+   },
+   "input": {
+    "settlement_scope": "CUSTOMER-ACME:AR",
+    "open_items": [
+     {
+      "id": "AR-1",
+      "book_value_cents": 10000,
+      "quantity": "100/1",
+      "commodity": "USD"
+     },
+     {
+      "id": "AR-2",
+      "book_value_cents": 20000,
+      "quantity": "200/1",
+      "commodity": "USD"
+     }
+    ],
+    "settlements": [
+     {
+      "id": "PAY-1",
+      "book_value_cents": 15000,
+      "quantity": "150/1",
+      "commodity": "USD"
+     },
+     {
+      "id": "PAY-2",
+      "book_value_cents": 10000,
+      "quantity": "100/1",
+      "commodity": "USD",
+      "operation": "recognizeUnallocated"
+     }
+    ],
+    "allocations": [
+     {
+      "settlement": "PAY-1",
+      "open_item": "AR-1",
+      "book_value_cents": 10000,
+      "open_quantity": "100/1",
+      "settlement_quantity": "100/1"
+     },
+     {
+      "settlement": "PAY-1",
+      "open_item": "AR-2",
+      "book_value_cents": 5000,
+      "open_quantity": "50/1",
+      "settlement_quantity": "50/1"
+     },
+     {
+      "settlement": "PAY-2",
+      "open_item": "AR-2",
+      "book_value_cents": 4000,
+      "open_quantity": "40/1",
+      "settlement_quantity": "40/1",
+      "applied_at": "2026-01-21T14:00:00Z"
+     },
+     {
+      "settlement": "PAY-2",
+      "open_item": "AR-2",
+      "book_value_cents": 6000,
+      "open_quantity": "60/1",
+      "settlement_quantity": "60/1",
+      "applied_at": "2026-01-22T14:00:00Z"
+     }
+    ]
+   },
+   "expect": {
+    "outstanding_book_value_cents": {
+     "AR-1": 0,
+     "AR-2": 5000
+    },
+    "outstanding_quantity": {
+     "AR-1": "0/1",
+     "AR-2": "50/1"
+    },
+    "unapplied_settlement_cents": {
+     "PAY-1": 0,
+     "PAY-2": 0
+    },
+    "allocation_count": 4,
+    "settlement_count": 2,
+    "application_dates": [
+     "2026-01-21T14:00:00Z",
+     "2026-01-22T14:00:00Z"
+    ],
+    "revision_delta": 4,
+    "posting_sequence_delta": 2,
+    "state_before_hash": "sha256:a386b5a470df824c781f06ca3e2aaf0375ea17870d8a810969662c45016f3fb7",
+    "posting_amounts_cents": [
+     [
+      15000,
+      -15000
+     ],
+     [
+      10000,
+      -10000
+     ]
+    ]
+   }
+  },
+  {
+   "id": "D06-invalid-settlement-scope-or-allocation",
+   "case_hash": "sha256:1dfed0d8a20fa976df3a0934c71cecf615340461d3fbb3a5a81bc601f9dde5bf",
+   "outcome": "reject",
+   "requirements": [
+    "ACC-041"
+   ],
+   "atomic_requirements": [
+    "ACC-041.1",
+    "ACC-041.2",
+    "ACC-041.3",
+    "ACC-041.4",
+    "ACC-041.5",
+    "ACC-041.6"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:74931bc42af7be9fd56331088977772708d27f340b3310ac512b584bd230a47f"
+    },
+    "command": {
+     "id": "CMD-SETTLE-REJECT",
+     "kind": "applySettlement",
+     "expected_book_revision": 17,
+     "payload": "settlementRequest"
+    },
+    "rejection_contract": {
+     "expected_transactions": [],
+     "book_revision_delta": 0,
+     "posting_sequence_delta": 0,
+     "resulting_state_hash": "unchanged"
+    }
+   },
+   "scenarios": [
+    {
+     "id": "D06a-cross-scope-allocation",
+     "atomic_requirements": [
+      "ACC-041.2"
+     ],
+     "input": {
+      "open_item_scope": "CUSTOMER-ACME:AR",
+      "settlement_scope": "CUSTOMER-BETA:AR",
+      "allocated_book_value_cents": 5000
+     },
+     "expect": {
+      "diagnostic": "settlement_allocation_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:c80193a207a9844795fcf4ab4bccb0cea759ad25c84419ec15b619c5e35844cf"
+    },
+    {
+     "id": "D06b-open-item-overallocation",
+     "atomic_requirements": [
+      "ACC-041.4"
+     ],
+     "input": {
+      "open_item_book_value_cents": 10000,
+      "prior_allocations_cents": 6000,
+      "new_allocation_cents": 5000
+     },
+     "expect": {
+      "diagnostic": "settlement_allocation_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:2936f79de4fe388a95fe951067a3c85fdc632b96f226f52d9870dbd53fa4cc08"
+    },
+    {
+     "id": "D06c-settlement-overallocation",
+     "atomic_requirements": [
+      "ACC-041.4"
+     ],
+     "input": {
+      "settlement_book_value_cents": 10000,
+      "prior_allocations_cents": 8000,
+      "new_allocation_cents": 3000
+     },
+     "expect": {
+      "diagnostic": "settlement_allocation_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:59387aa60d0e0340f3841905490a32d9580471ef223d1bad6d115b56ef2c4c7c"
+    },
+    {
+     "id": "D06d-unexplained-denomination-difference",
+     "atomic_requirements": [
+      "ACC-041.5",
+      "ACC-041.6"
+     ],
+     "input": {
+      "open_item_commodity": "EUR",
+      "settlement_commodity": "USD",
+      "allocated_open_quantity": "100/1",
+      "allocated_settlement_quantity": "115/1",
+      "realized_exchange_effect_key": null
+     },
+     "expect": {
+      "diagnostic": "settlement_allocation_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:aa9c728a15603e48d79e9c1821ede881f7e01f6f42e665cbe20379c8430504ff"
+    },
+    {
+     "id": "D06e-open-item-without-source-posting",
+     "atomic_requirements": [
+      "ACC-041.1"
+     ],
+     "input": {
+      "open_item_id": "AR-ORPHAN",
+      "source_posting_id": null,
+      "book": "BOOK-USD"
+     },
+     "expect": {
+      "diagnostic": "unresolved_accounting_input",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:430353e84f2601f9560c5c0b675498a66a4f50aad50e0ba408137ed12a30c166"
+    },
+    {
+     "id": "D06f-settled-status-stored-as-mutable-flag",
+     "atomic_requirements": [
+      "ACC-041.3"
+     ],
+     "input": {
+      "open_item_id": "AR-1",
+      "mutable_settled_flag": true,
+      "allocation_sum_cents": 5000,
+      "open_book_value_cents": 10000
+     },
+     "expect": {
+      "diagnostic": "settlement_allocation_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:39206d579f801106d551806e85f3cc19e60da9f0efa3766f7f1a2e9a859ac864"
+    },
+    {
+     "id": "D06g-reuse-exhausted-payment",
+     "atomic_requirements": [
+      "ACC-041.3",
+      "ACC-041.4",
+      "ACC-041.5"
+     ],
+     "input": {
+      "settlement_scope": "CUSTOMER-ACME:AR",
+      "open_items": [
+       {
+        "id": "AR-1",
+        "book_value_cents": 10000,
+        "quantity": "100/1",
+        "commodity": "USD"
+       },
+       {
+        "id": "AR-2",
+        "book_value_cents": 20000,
+        "quantity": "200/1",
+        "commodity": "USD"
+       }
+      ],
+      "settlements": [
+       {
+        "id": "PAY-1",
+        "book_value_cents": 15000,
+        "quantity": "150/1",
+        "commodity": "USD"
+       },
+       {
+        "id": "PAY-2",
+        "book_value_cents": 10000,
+        "quantity": "100/1",
+        "commodity": "USD",
+        "operation": "recognizeUnallocated"
+       }
+      ],
+      "allocations": [
+       {
+        "settlement": "PAY-1",
+        "open_item": "AR-1",
+        "book_value_cents": 10000,
+        "open_quantity": "100/1",
+        "settlement_quantity": "100/1"
+       },
+       {
+        "settlement": "PAY-1",
+        "open_item": "AR-2",
+        "book_value_cents": 5000,
+        "open_quantity": "50/1",
+        "settlement_quantity": "50/1"
+       },
+       {
+        "settlement": "PAY-2",
+        "open_item": "AR-2",
+        "book_value_cents": 4000,
+        "open_quantity": "40/1",
+        "settlement_quantity": "40/1",
+        "applied_at": "2026-01-21T14:00:00Z"
+       },
+       {
+        "settlement": "PAY-2",
+        "open_item": "AR-2",
+        "book_value_cents": 6000,
+        "open_quantity": "60/1",
+        "settlement_quantity": "60/1",
+        "applied_at": "2026-01-22T14:00:00Z"
+       },
+       {
+        "settlement": "PAY-2",
+        "open_item": "AR-2",
+        "book_value_cents": 100,
+        "open_quantity": "1/1",
+        "settlement_quantity": "1/1",
+        "applied_at": "2026-01-23T14:00:00Z"
+       }
+      ]
+     },
+     "expect": {
+      "diagnostic": "settlement_allocation_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0,
+      "state_unchanged": true
+     },
+     "case_hash": "sha256:08b1bd88d1a2219f2dd9db05d7bdccffe772eba4c52cc7c39c198ff68d21e6ab"
+    }
+   ]
+  },
+  {
+   "id": "D07-tied-accounting-basis-projections",
+   "case_hash": "sha256:cf2185a178b93a8b3036667b1e7d102e1496f5a7776e2fd197b486d35967c25e",
+   "outcome": "admit",
+   "requirements": [
+    "ACC-042"
+   ],
+   "atomic_requirements": [
+    "ACC-042.1",
+    "ACC-042.2",
+    "ACC-042.3",
+    "ACC-042.4",
+    "ACC-042.5",
+    "ACC-042.6"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:56066659a3465b7cef2f6b5008c733cb3ff13065f4eb0b3b2985b0f3fd88bc74"
+    },
+    "query": {
+     "id": "QUERY-BASIS-001",
+     "action": "ProjectAccountingBasis",
+     "population_hash": "sha256:7a374edefca3bde70ccff0cbd413ca799ad13608ab074a2fd15c40f250c7301e",
+     "policy": "CASH-BASIS-1"
+    },
+    "source_postings": [
+     {
+      "id": "REV-1",
+      "event": "recognition",
+      "book_value_cents": -12000
+     },
+     {
+      "id": "TAX-1",
+      "event": "tax",
+      "book_value_cents": -1200
+     },
+     {
+      "id": "COGS-1",
+      "event": "inventoryCost",
+      "book_value_cents": 3000
+     },
+     {
+      "id": "DEPR-1",
+      "event": "nonCash",
+      "book_value_cents": 1000
+     }
+    ],
+    "expected_projection_entries": [
+     {
+      "source": "REV-1",
+      "book_value_cents": -6000
+     },
+     {
+      "source": "TAX-1",
+      "book_value_cents": -600
+     },
+     {
+      "source": "COGS-1",
+      "book_value_cents": 1500
+     },
+     {
+      "source": "DEPR-1",
+      "book_value_cents": 0
+     }
+    ],
+    "expected_transactions": [],
+    "expected_diagnostics": [],
+    "state_delta": {
+     "book_revision": 0,
+     "posting_sequence": 0,
+     "canonical_effects": 0
+    }
+   },
+   "input": {
+    "population_hash": "sha256:7a374edefca3bde70ccff0cbd413ca799ad13608ab074a2fd15c40f250c7301e",
+    "basis": "cash",
+    "policy_effective_at": "2026-12-31T23:59:59Z",
+    "entries": [
+     {
+      "event": "recognition",
+      "posting": "REV-1",
+      "book_value_cents": -12000
+     },
+     {
+      "event": "tax",
+      "posting": "TAX-1",
+      "book_value_cents": -1200
+     },
+     {
+      "event": "inventoryCost",
+      "posting": "COGS-1",
+      "book_value_cents": 3000
+     },
+     {
+      "event": "nonCash",
+      "posting": "DEPR-1",
+      "book_value_cents": 1000
+     }
+    ],
+    "open_item": {
+     "id": "case-d07-open-item",
+     "book_value_cents": 13200
+    },
+    "settlement": {
+     "id": "case-d07-settlement",
+     "book_value_cents": 6600,
+     "allocations": [
+      {
+       "id": "case-d07-allocation",
+       "allocated_open_item_book_value_cents": 6600
+      }
+     ]
+    },
+    "cash_rules": {
+     "recognition": "allocateBySettlementRatio",
+     "tax": "allocateBySettlementRatio",
+     "inventoryCost": "allocateBySettlementRatio",
+     "nonCash": "exclude",
+     "rounding": "carryThrough"
+    }
+   },
+   "expect": {
+    "accrual_net_cents": -9200,
+    "cash_net_cents": -5100,
+    "source_population_hash": "sha256:7a374edefca3bde70ccff0cbd413ca799ad13608ab074a2fd15c40f250c7301e",
+    "canonical_revision_delta": 0
+   }
+  },
+  {
+   "id": "D08-incomplete-accounting-basis-policy",
+   "case_hash": "sha256:dd0d88a704af4a37c34374323315ae44cd228de5f2b35c240986a674804471dd",
+   "outcome": "reject",
+   "requirements": [
+    "ACC-042"
+   ],
+   "atomic_requirements": [
+    "ACC-042.1",
+    "ACC-042.2",
+    "ACC-042.3",
+    "ACC-042.4",
+    "ACC-042.5",
+    "ACC-042.6"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:63898235c90e158512ad4c9466f2087cbc99c20ee41e3d724740ebe40df3bf72"
+    },
+    "query": {
+     "id": "QUERY-BASIS-REJECT",
+     "action": "ProjectAccountingBasis",
+     "population_hash": "sha256:0a65b40ead6e41bb590f166e3183628113f179c48bcb49462c397c77609351c1",
+     "policy": "CASH-BASIS-1"
+    },
+    "rejection_contract": {
+     "expected_transactions": [],
+     "book_revision_delta": 0,
+     "posting_sequence_delta": 0,
+     "resulting_state_hash": "unchanged"
+    }
+   },
+   "scenarios": [
+    {
+     "id": "D08a-missing-basis-rule",
+     "atomic_requirements": [
+      "ACC-042.3"
+     ],
+     "input": {
+      "population_event_kinds": [
+       "recognition",
+       "tax",
+       "inventoryCost",
+       "nonCash"
+      ],
+      "policy_rule_kinds": [
+       "recognition",
+       "tax",
+       "inventoryCost"
+      ]
+     },
+     "expect": {
+      "diagnostic": "accounting_basis_policy_incomplete",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:3d5573df1123c9480465a029d9ad0285ee4594f02f73c060f8f617ebf2a8f75a"
+    },
+    {
+     "id": "D08b-unclassified-source-event",
+     "atomic_requirements": [
+      "ACC-042.2"
+     ],
+     "input": {
+      "population_posting_ids": [
+       "P1",
+       "P2"
+      ],
+      "classified_source_posting_ids": [
+       "P1"
+      ]
+     },
+     "expect": {
+      "diagnostic": "accounting_basis_policy_incomplete",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:124de5b12061c26e471c9220ef5f9963d8ccebbe81aea20d4ccf9373a842e1de"
+    },
+    {
+     "id": "D08c-source-population-hash-mismatch",
+     "atomic_requirements": [
+      "ACC-042.1",
+      "ACC-042.4",
+      "ACC-042.5"
+     ],
+     "input": {
+      "snapshot_population_hash": "sha256:0a65b40ead6e41bb590f166e3183628113f179c48bcb49462c397c77609351c1",
+      "projection_population_hash": "sha256:34a065d79e8afc084d9c77804652268f32e7dd9b7977f7048e613ff960e8682a"
+     },
+     "expect": {
+      "diagnostic": "accounting_basis_policy_incomplete",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:e303c0571c4e186cb2158ed460b364c93d6db2cfccce109f33bb8c1c568c3196"
+    },
+    {
+     "id": "D08d-basis-projection-mutates-canonical-state",
+     "atomic_requirements": [
+      "ACC-042.6"
+     ],
+     "input": {
+      "requested_action": "ProjectAccountingBasis",
+      "attempted_book_revision_delta": 1,
+      "attempted_posting_sequence_delta": 1
+     },
+     "expect": {
+      "diagnostic": "accounting_basis_policy_incomplete",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:196a7126f8c614a7692649b395f85fe71c4900a751d9271827a2e7624ef22583"
+    }
+   ]
+  },
+  {
+   "id": "D09-currency-settlement-and-period-remeasurement",
+   "case_hash": "sha256:675aeaccf5a8093d286647ccecd06968001ed6302b8f6bf945ce1dd663f30d6a",
+   "outcome": "admit",
+   "requirements": [
+    "ACC-043"
+   ],
+   "atomic_requirements": [
+    "ACC-043.1",
+    "ACC-043.2",
+    "ACC-043.3",
+    "ACC-043.4",
+    "ACC-043.5",
+    "ACC-043.6"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:39b53b6a211d88451e1d9af4aa672f4f7986914a6ee069d377bb7f7751cb2e42"
+    },
+    "commands": [
+     {
+      "id": "CMD-FX-SETTLE",
+      "kind": "applySettlement",
+      "expected_book_revision": 17,
+      "payload": "settlementRequest"
+     },
+     {
+      "id": "CMD-FX-CLOSE",
+      "kind": "postCurrencyRemeasurement",
+      "expected_book_revision": 18,
+      "payload": "remeasurementRequest"
+     },
+     {
+      "id": "CMD-FX-REVERSE",
+      "kind": "postCurrencyRemeasurement",
+      "expected_book_revision": 19,
+      "payload": "remeasurementRequest"
+     }
+    ],
+    "expected_transactions": [
+     {
+      "id": "TX-FX-SETTLE",
+      "postings": [
+       {
+        "ordinal": 1,
+        "account": "CASH",
+        "units": "11500/1",
+        "book_value_cents": 11500
+       },
+       {
+        "ordinal": 2,
+        "account": "ACCOUNTS-RECEIVABLE",
+        "units": "-100/1",
+        "book_value_cents": -11000
+       },
+       {
+        "ordinal": 3,
+        "account": "REALIZED-FX-GAIN",
+        "units": "-500/1",
+        "book_value_cents": -500
+       }
+      ]
+     },
+     {
+      "id": "TX-FX-CLOSE",
+      "postings": [
+       {
+        "ordinal": 1,
+        "account": "ACCOUNTS-RECEIVABLE",
+        "units": "1000/1",
+        "book_value_cents": 1000
+       },
+       {
+        "ordinal": 2,
+        "account": "UNREALIZED-FX-GAIN",
+        "units": "-1000/1",
+        "book_value_cents": -1000
+       }
+      ]
+     },
+     {
+      "id": "TX-FX-REVERSE",
+      "postings": [
+       {
+        "ordinal": 1,
+        "account": "UNREALIZED-FX-GAIN",
+        "units": "1000/1",
+        "book_value_cents": 1000
+       },
+       {
+        "ordinal": 2,
+        "account": "ACCOUNTS-RECEIVABLE",
+        "units": "-1000/1",
+        "book_value_cents": -1000
+       }
+      ]
+     }
+    ],
+    "expected_diagnostics": [],
+    "state_delta": {
+     "book_revision": 3,
+     "posting_sequence": 3,
+     "settlement_allocations": 1,
+     "remeasurement_results": 2,
+     "remeasurement_reversals": 1
+    }
+   },
+   "input": {
+    "settled_position": {
+     "id": "AR-EUR-1",
+     "quantity": "100/1",
+     "commodity": "EUR",
+     "carrying_book_value_cents": 11000
+    },
+    "open_position": {
+     "id": "AR-EUR-2",
+     "quantity": "100/1",
+     "commodity": "EUR",
+     "carrying_book_value_cents": 11000
+    },
+    "settlement_rate_usd_per_eur": "23/20",
+    "closing_rate_usd_per_eur": "6/5",
+    "classification": "monetary",
+    "policy_effective_at": "2026-12-31T23:59:59Z",
+    "reversal_required": true
+   },
+   "expect": {
+    "settled_position_id": "AR-EUR-1",
+    "settlement_book_value_cents": 11500,
+    "realized_gain_cents": 500,
+    "open_position_id": "AR-EUR-2",
+    "closing_book_value_cents": 12000,
+    "unrealized_gain_cents": 1000,
+    "next_period_reversal_cents": -1000
+   }
+  },
+  {
+   "id": "D10-invalid-currency-remeasurement",
+   "case_hash": "sha256:da18ec22929099d3c5a68c54c924ffea532e2f745fa7a27ca7cf868c3441fe1f",
+   "outcome": "reject",
+   "requirements": [
+    "ACC-043"
+   ],
+   "atomic_requirements": [
+    "ACC-043.1",
+    "ACC-043.2",
+    "ACC-043.3",
+    "ACC-043.4",
+    "ACC-043.5",
+    "ACC-043.6"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:fd3e7e32cf991ec201f58759198d9cbd90d2790acd4e0bfa5366ca3acbc63170"
+    },
+    "command": {
+     "id": "CMD-FX-REJECT",
+     "kind": "postCurrencyRemeasurement",
+     "expected_book_revision": 17,
+     "payload": "remeasurementRequest"
+    },
+    "rejection_contract": {
+     "expected_transactions": [],
+     "book_revision_delta": 0,
+     "posting_sequence_delta": 0,
+     "resulting_state_hash": "unchanged"
+    }
+   },
+   "scenarios": [
+    {
+     "id": "D10a-missing-valuation-path",
+     "atomic_requirements": [
+      "ACC-043.2"
+     ],
+     "input": {
+      "classification": "monetary",
+      "position_commodity": "EUR",
+      "book_commodity": "USD",
+      "valuation_paths": []
+     },
+     "expect": {
+      "diagnostic": "currency_remeasurement_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:3b0e3964512feb0374257bcb933ce6a3dee52c58bc9ab4078b40a7e838efb430"
+    },
+    {
+     "id": "D10b-nonmonetary-position",
+     "atomic_requirements": [
+      "ACC-043.1"
+     ],
+     "input": {
+      "classification": "nonMonetary",
+      "position_commodity": "EUR",
+      "requested_effect": "unrealized"
+     },
+     "expect": {
+      "diagnostic": "currency_remeasurement_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:3e6b2ed4c14b9aac8b67d7203012ffcdde9c690ed894d7cdd68a41be5f1d1d2b"
+    },
+    {
+     "id": "D10c-required-reversal-missing",
+     "atomic_requirements": [
+      "ACC-043.5"
+     ],
+     "input": {
+      "classification": "monetary",
+      "reversal_required": true,
+      "reversal_request_present": false
+     },
+     "expect": {
+      "diagnostic": "currency_remeasurement_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:9dfd1bcaa1889d9f89483c8ef9ad6b700663b2dc78194a968c0c6c65146975cc"
+    },
+    {
+     "id": "D10d-wrong-valuation-effective-date",
+     "atomic_requirements": [
+      "ACC-043.2"
+     ],
+     "input": {
+      "remeasurement_date": "2026-12-31",
+      "valuation_path_effective_at": "2027-01-02T00:00:00Z"
+     },
+     "expect": {
+      "diagnostic": "currency_remeasurement_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:4e49e5b2f26811d27b5a3ed0b120155df46357e6472f67934e1ba2f29fe18149"
+    },
+    {
+     "id": "D10e-realized-exchange-arithmetic-mismatch",
+     "atomic_requirements": [
+      "ACC-043.3"
+     ],
+     "input": {
+      "carrying_book_value_cents": 11000,
+      "settlement_book_value_cents": 11500,
+      "proposed_realized_gain_cents": 499
+     },
+     "expect": {
+      "diagnostic": "currency_remeasurement_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:6e8d39fc8ea7702a5ca279fccb60d4f6ff08cc1398f5c0b7993f3b9617ee5412"
+    },
+    {
+     "id": "D10f-unrealized-exchange-arithmetic-mismatch",
+     "atomic_requirements": [
+      "ACC-043.4"
+     ],
+     "input": {
+      "carrying_book_value_cents": 11000,
+      "closing_book_value_cents": 12000,
+      "proposed_unrealized_gain_cents": 999
+     },
+     "expect": {
+      "diagnostic": "currency_remeasurement_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:0532d00e87205764ddec31f1da64639898d28858ffecd7f71a20c091c1695e0d"
+    },
+    {
+     "id": "D10g-remeasurement-rewrites-source-journal",
+     "atomic_requirements": [
+      "ACC-043.6"
+     ],
+     "input": {
+      "source_journal_unchanged": false,
+      "separate_adjustment_present": false
+     },
+     "expect": {
+      "diagnostic": "currency_remeasurement_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:613c51c70ab3f1fe35b9f67a856f299fd38bba7d55fe14cefee45853b77cd438"
+    }
+   ]
+  },
+  {
+   "id": "D11-exact-allocation-schedule",
+   "case_hash": "sha256:d1f7e94c33cfbafb61a94b0456d7c60acbbfef6a73133aee00981ed51c61ab73",
+   "outcome": "admit",
+   "requirements": [
+    "ACC-044"
+   ],
+   "atomic_requirements": [
+    "ACC-044.1",
+    "ACC-044.2",
+    "ACC-044.3",
+    "ACC-044.4",
+    "ACC-044.5",
+    "ACC-044.6"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:08c491097322e22d388a8ecc6f1e71c3ffe23bc8ea7b2bc9f27d508fe9be0417"
+    },
+    "commands": [
+     {
+      "id": "CMD-SCHEDULE-001",
+      "kind": "createAllocationSchedule",
+      "expected_book_revision": 17,
+      "payload": "allocationScheduleRequest"
+     },
+     {
+      "id": "CMD-ALLOCATE-001",
+      "kind": "recognizeScheduledAllocation",
+      "expected_book_revision": 18,
+      "payload": "allocationRecognitionRequest"
+     },
+     {
+      "id": "CMD-SCHEDULE-REVISE-001",
+      "kind": "reviseAllocationSchedule",
+      "expected_book_revision": 19,
+      "payload": "allocationScheduleRevisionRequest"
+     }
+    ],
+    "expected_transactions": [
+     {
+      "id": "TX-ALLOCATE-001",
+      "postings": [
+       {
+        "ordinal": 1,
+        "account": "DEPRECIATION-EXPENSE",
+        "units": "10000/1",
+        "book_value_cents": 10000
+       },
+       {
+        "ordinal": 2,
+        "account": "ACCUMULATED-DEPRECIATION",
+        "units": "-10000/1",
+        "book_value_cents": -10000
+       }
+      ]
+     }
+    ],
+    "expected_diagnostics": [],
+    "state_delta": {
+     "book_revision": 3,
+     "posting_sequence": 1,
+     "allocation_schedules": 2,
+     "allocation_recognitions": 1,
+     "allocation_schedule_revisions": 1
+    }
+   },
+   "input": {
+    "source_basis_cents": 120000,
+    "residual_value_cents": 0,
+    "starts_on": "2026-01-01",
+    "ends_on": "2026-12-31",
+    "policy_effective_at": "2026-01-01T00:00:00Z",
+    "method": "straightLine",
+    "convention": "fullPeriod",
+    "frequency": "monthly",
+    "quantization_scale": 2,
+    "revision": {
+     "id": "case-d11-revision",
+     "kind": "estimateChange",
+     "effective_on": "2026-02-01",
+     "policy_effective_at": "2026-02-01T00:00:00Z",
+     "revised_residual_value_cents": 0,
+     "successor_schedule_id": "case-d11-successor",
+     "revised_ends_on": "2026-12-01"
+    }
+   },
+   "expect": {
+    "installment_count": 12,
+    "installment_book_values_cents": [
+     10000,
+     10000,
+     10000,
+     10000,
+     10000,
+     10000,
+     10000,
+     10000,
+     10000,
+     10000,
+     10000,
+     10000
+    ],
+    "exact_total_cents": "120000/1",
+    "schedule_mutated_on_recognition": false,
+    "revision_kind": "estimateChange",
+    "revision_recognized_to_date_cents": 10000,
+    "revision_carrying_amount_cents": 110000,
+    "successor_installment_count": 11,
+    "successor_exact_total_cents": 110000,
+    "original_schedule_unchanged": true,
+    "superseded_original_future_rejected": true
+   }
+  },
+  {
+   "id": "D12-invalid-allocation-schedule",
+   "case_hash": "sha256:d55ee71cdea569020e04e7c05f9dc0614e86c07c1ecb574baaba5970efd6e72f",
+   "outcome": "reject",
+   "requirements": [
+    "ACC-044"
+   ],
+   "atomic_requirements": [
+    "ACC-044.1",
+    "ACC-044.2",
+    "ACC-044.3",
+    "ACC-044.4",
+    "ACC-044.5",
+    "ACC-044.6"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:992429e809c4e7828d7744acceac46421b42ca7a1716da533064dbcbd09b4024"
+    },
+    "command": {
+     "id": "CMD-SCHEDULE-REJECT",
+     "kind": "createAllocationSchedule",
+     "expected_book_revision": 17,
+     "payload": "allocationScheduleRequest"
+    },
+    "rejection_contract": {
+     "expected_transactions": [],
+     "book_revision_delta": 0,
+     "posting_sequence_delta": 0,
+     "resulting_state_hash": "unchanged"
+    }
+   },
+   "scenarios": [
+    {
+     "id": "D12a-residual-exceeds-basis",
+     "atomic_requirements": [
+      "ACC-044.1"
+     ],
+     "input": {
+      "source_basis_cents": 10000,
+      "residual_value_cents": 12000,
+      "starts_on": "2026-01-01",
+      "ends_on": "2026-12-31",
+      "method": "straightLine"
+     },
+     "expect": {
+      "diagnostic": "allocation_schedule_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:d7e054c9824a8f4d1e5ba306b2aed83b29e39be0ba5c3a31395e3b567f9e7830"
+    },
+    {
+     "id": "D12b-reversed-schedule-dates",
+     "atomic_requirements": [
+      "ACC-044.1"
+     ],
+     "input": {
+      "source_basis_cents": 10000,
+      "residual_value_cents": 0,
+      "starts_on": "2026-12-31",
+      "ends_on": "2026-01-01",
+      "method": "straightLine"
+     },
+     "expect": {
+      "diagnostic": "allocation_schedule_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:39ddc1580817b61c17b9eaaba6469803841dac198b93eb0974e1283c7a126da5"
+    },
+    {
+     "id": "D12c-declining-rate-missing",
+     "atomic_requirements": [
+      "ACC-044.2"
+     ],
+     "input": {
+      "source_basis_cents": 10000,
+      "residual_value_cents": 0,
+      "starts_on": "2026-01-01",
+      "ends_on": "2026-12-31",
+      "method": "decliningBalance",
+      "declining_rate": null
+     },
+     "expect": {
+      "diagnostic": "allocation_schedule_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:e42197a7763a8db71ba79c19562043ce3412782933428f8ce8f4cfd840f87fa4"
+    },
+    {
+     "id": "D12d-usage-facts-missing",
+     "atomic_requirements": [
+      "ACC-044.2"
+     ],
+     "input": {
+      "source_basis_cents": 10000,
+      "residual_value_cents": 0,
+      "method": "unitsOfProduction",
+      "expected_usage": "1000/1",
+      "usage_facts": []
+     },
+     "expect": {
+      "diagnostic": "allocation_schedule_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:0c015ca2103de6a4f8798268016119dfe256949bd5123a51f9a47029d6cdae15"
+    },
+    {
+     "id": "D12e-duplicate-installment-recognition",
+     "atomic_requirements": [
+      "ACC-044.5"
+     ],
+     "input": {
+      "schedule_id": "SCHED-1",
+      "schedule_ordinal": 4,
+      "prior_recognized_ordinals": [
+       1,
+       2,
+       3,
+       4
+      ]
+     },
+     "expect": {
+      "diagnostic": "allocation_schedule_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:c78d24c3e2388d283b5216c30bc27f4a3f7d59ba0a2182d0f5b7daa866070175"
+    },
+    {
+     "id": "D12f-nonconserving-schedule-total",
+     "atomic_requirements": [
+      "ACC-044.3"
+     ],
+     "input": {
+      "source_basis_cents": 120000,
+      "residual_value_cents": 0,
+      "installment_book_values_cents": [
+       10000,
+       10000,
+       10000,
+       10000,
+       10000,
+       10000,
+       10000,
+       10000,
+       10000,
+       10000,
+       10000,
+       9999
+      ]
+     },
+     "expect": {
+      "diagnostic": "allocation_schedule_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:1525708c6adcfc6703dbe4a5a6bba6b0e3cc2bab64d865723d4b6a3b2075c9c3"
+    },
+    {
+     "id": "D12g-recognition-mutates-schedule",
+     "atomic_requirements": [
+      "ACC-044.4"
+     ],
+     "input": {
+      "schedule_hash_before": "sha256:fef9d8931907a4012f253d37db7af023a9cf498743d18639fb6813e815eddbc2",
+      "schedule_hash_after": "sha256:4be10e56a7e290e43058f8ca3bc43a8bc79cd09f6ccd9c98147cc72e3a3e5cf1"
+     },
+     "expect": {
+      "diagnostic": "allocation_schedule_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:c4346843a75850efc9446c558ca823630c2f1ca14a1521d89fbbea49991d29c5"
+    },
+    {
+     "id": "D12h-recognition-in-closed-period",
+     "atomic_requirements": [
+      "ACC-044.6"
+     ],
+     "input": {
+      "schedule_id": "SCHED-1",
+      "schedule_ordinal": 12,
+      "fiscal_period_status": "closed",
+      "reopen_present": false
+     },
+     "expect": {
+      "diagnostic": "fiscal_period_admission",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:9a72155431fe20ac29041e8051c74b41412972111b750cc2a2cf5e3acaa01257"
+    }
+   ]
+  },
+  {
+   "id": "D13-versioned-tax-determination",
+   "case_hash": "sha256:313d84397a34528fabd96a887e440371ff24e1f1e7b193dffa203db8761e054a",
+   "outcome": "admit",
+   "requirements": [
+    "ACC-045"
+   ],
+   "atomic_requirements": [
+    "ACC-045.1",
+    "ACC-045.2",
+    "ACC-045.3",
+    "ACC-045.4",
+    "ACC-045.5",
+    "ACC-045.6",
+    "ACC-045.7"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:d6aa6ad8d3e9e8072f8774f10eab41d36cef0566713ff93e505f006ed6fe4bf8"
+    },
+    "commands": [
+     {
+      "id": "CMD-TAX-001",
+      "kind": "postTaxedTransaction",
+      "expected_book_revision": 17,
+      "payload": "taxRequest"
+     }
+    ],
+    "expected_transactions": [
+     {
+      "id": "TX-TAX-001",
+      "postings": [
+       {
+        "ordinal": 1,
+        "account": "PURCHASE-EXPENSE",
+        "units": "10220/1",
+        "book_value_cents": 10220
+       },
+       {
+        "ordinal": 2,
+        "account": "INPUT-TAX",
+        "units": "1330/1",
+        "book_value_cents": 1330
+       },
+       {
+        "ordinal": 3,
+        "account": "ACCOUNTS-PAYABLE",
+        "units": "-11550/1",
+        "book_value_cents": -11550
+       }
+      ]
+     }
+    ],
+    "expected_diagnostics": [],
+    "state_delta": {
+     "book_revision": 1,
+     "posting_sequence": 1,
+     "tax_determinations": 1,
+     "tax_components": 2
+    }
+   },
+   "input": {
+    "tax_point": "2026-04-15T12:00:00Z",
+    "taxable_lines": [
+     {
+      "id": "LINE-1",
+      "stated_amount_cents": 10000,
+      "amount_includes_tax": false,
+      "applicable_policies": [
+       "TAX-A",
+       "TAX-B"
+      ]
+     }
+    ],
+    "components": [
+     {
+      "id": "TAX-A",
+      "rate": "1/10",
+      "inclusion": "exclusive",
+      "treatment": "inputTax",
+      "recoverability": "recoverable",
+      "compound_ordinal": 1,
+      "compounds_on": [],
+      "recoverable_share": "1/1",
+      "recoverable_account": "INPUT-TAX",
+      "liability_account": "TAX-PAYABLE"
+     },
+     {
+      "id": "TAX-B",
+      "rate": "1/20",
+      "inclusion": "exclusive",
+      "treatment": "inputTax",
+      "recoverability": "partiallyRecoverable",
+      "compound_ordinal": 2,
+      "compounds_on": [
+       "TAX-A"
+      ],
+      "recoverable_share": "3/5",
+      "recoverable_account": "INPUT-TAX",
+      "nonrecoverable_account": "PURCHASE-EXPENSE",
+      "liability_account": "TAX-PAYABLE"
+     }
+    ],
+    "quantization_scale": 2
+   },
+   "expect": {
+    "component_tax_cents": {
+     "TAX-A": 1000,
+     "TAX-B": 550
+    },
+    "total_tax_cents": 1550,
+    "tax_a_recoverable_cents": 1000,
+    "tax_b_recoverable_cents": 330,
+    "tax_b_nonrecoverable_cents": 220,
+    "gross_cents": 11550,
+    "single_atomic_intent": true
+   }
+  },
+  {
+   "id": "D14-ambiguous-tax-determination",
+   "case_hash": "sha256:b781a3ece5e838f2b96dea895cbbe5daf25e1c5f81d2af90bee91106fb410804",
+   "outcome": "reject",
+   "requirements": [
+    "ACC-045"
+   ],
+   "atomic_requirements": [
+    "ACC-045.1",
+    "ACC-045.2",
+    "ACC-045.3",
+    "ACC-045.4",
+    "ACC-045.5",
+    "ACC-045.6",
+    "ACC-045.7"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:59eace1f7aadfd28dbce35c2658879f394175cea270aa1d8088dc0d22e473c79"
+    },
+    "command": {
+     "id": "CMD-TAX-REJECT",
+     "kind": "postTaxedTransaction",
+     "expected_book_revision": 17,
+     "payload": "taxRequest"
+    },
+    "rejection_contract": {
+     "expected_transactions": [],
+     "book_revision_delta": 0,
+     "posting_sequence_delta": 0,
+     "resulting_state_hash": "unchanged"
+    }
+   },
+   "scenarios": [
+    {
+     "id": "D14a-tax-point-missing",
+     "atomic_requirements": [
+      "ACC-045.1"
+     ],
+     "input": {
+      "tax_point": null,
+      "stated_amount_cents": 10000,
+      "amount_includes_tax": false,
+      "policies": [
+       "TAX-A"
+      ]
+     },
+     "expect": {
+      "diagnostic": "tax_policy_ambiguity",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:3bff90538f2312a8be3ed552125303a1cbe2d9bd9b7b1519907fc44f121cb7fb"
+    },
+    {
+     "id": "D14b-compound-reference-missing",
+     "atomic_requirements": [
+      "ACC-045.2"
+     ],
+     "input": {
+      "tax_point": "2026-04-15T12:00:00Z",
+      "components": [
+       {
+        "id": "TAX-B",
+        "compound_ordinal": 2,
+        "compounds_on": [
+         "MISSING-TAX-A"
+        ]
+       }
+      ]
+     },
+     "expect": {
+      "diagnostic": "tax_policy_ambiguity",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:109f19a240a704264e4dc0246a8907adb5ccb47a117bade6cfc59224288f20bb"
+    },
+    {
+     "id": "D14c-invalid-recoverable-share",
+     "atomic_requirements": [
+      "ACC-045.5"
+     ],
+     "input": {
+      "tax_point": "2026-04-15T12:00:00Z",
+      "recoverability": "partiallyRecoverable",
+      "recoverable_share": "6/5"
+     },
+     "expect": {
+      "diagnostic": "tax_policy_ambiguity",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:a57e8db5b74ed7413498cc027555a2fd4777b25024b1e25de3c3b16279b689e0"
+    },
+    {
+     "id": "D14d-inclusive-amount-no-exact-solution",
+     "atomic_requirements": [
+      "ACC-045.3",
+      "ACC-045.4"
+     ],
+     "input": {
+      "tax_point": "2026-04-15T12:00:00Z",
+      "stated_amount_cents": 10000,
+      "amount_includes_tax": true,
+      "components": [
+       {
+        "id": "TAX-A",
+        "rate": "-1/1",
+        "inclusion": "inclusive"
+       }
+      ]
+     },
+     "expect": {
+      "diagnostic": "tax_policy_ambiguity",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:a014a59c2baf08826450591d54a9b318ed5f84949e8cbad34b97e63e3287c3ab"
+    },
+    {
+     "id": "D14e-overlapping-tax-policy",
+     "atomic_requirements": [
+      "ACC-045.1"
+     ],
+     "input": {
+      "tax_point": "2026-04-15T12:00:00Z",
+      "tax_code": "GST",
+      "applicable_policy_versions": [
+       "1.2.0",
+       "1.2.0"
+      ],
+      "requested_policy_version": "1.2.0"
+     },
+     "expect": {
+      "diagnostic": "tax_policy_ambiguity",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:ff1f8b477bdbad40c9fe7d33ef216c87136285ed3197dac2a60a98125c8096b9"
+    },
+    {
+     "id": "D14f-quantized-tax-residual-unassigned",
+     "atomic_requirements": [
+      "ACC-045.4"
+     ],
+     "input": {
+      "exact_components_cents": [
+       "1/2",
+       "1/2"
+      ],
+      "quantized_components_cents": [
+       1,
+       1
+      ],
+      "quantized_total_cents": 1,
+      "residual_assignment": null
+     },
+     "expect": {
+      "diagnostic": "tax_policy_ambiguity",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:ce05b0596a5cd12c1211c9368f0986ad90ddc9b834b423c3d97d7f78ae519bcd"
+    },
+    {
+     "id": "D14g-tax-journal-not-atomic-or-balanced",
+     "atomic_requirements": [
+      "ACC-045.6"
+     ],
+     "input": {
+      "intent_count": 2,
+      "posting_total_cents": 1
+     },
+     "expect": {
+      "diagnostic": "tax_policy_ambiguity",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:bdaad21af4e2a3c0e0b217dfceb61291eb73e98adef1d2ad29ef6a4cba681cc9"
+    },
+    {
+     "id": "D14h-jurisdiction-discovered-from-environment",
+     "atomic_requirements": [
+      "ACC-045.7"
+     ],
+     "input": {
+      "typed_jurisdiction_fact_present": false,
+      "environment_lookup_attempted": true
+     },
+     "expect": {
+      "diagnostic": "tax_policy_ambiguity",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:7f8ddc43f76a5f19ea7014e4013e8aa8a8aa059746045132425e68f80c22fb22"
+    }
+   ]
+  },
+  {
+   "id": "D15-reproducible-consolidation",
+   "case_hash": "sha256:a48ec85bc7c32359afd1a8edfde8144e75c7b1693b088eab1d6ec3d69707a66e",
+   "outcome": "admit",
+   "requirements": [
+    "ACC-046"
+   ],
+   "atomic_requirements": [
+    "ACC-046.1",
+    "ACC-046.2",
+    "ACC-046.3",
+    "ACC-046.4",
+    "ACC-046.5",
+    "ACC-046.6",
+    "ACC-046.7",
+    "ACC-046.8"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "GROUP-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:6e612b5cf1bb36b05037096b0310d17bcbdaa56e6b578355e1aa239d66768d58"
+    },
+    "commands": [
+     {
+      "id": "CMD-CONSOLIDATE-001",
+      "kind": "compileConsolidation",
+      "expected_book_revision": 17,
+      "payload": "consolidationRequest"
+     }
+    ],
+    "expected_transactions": [
+     {
+      "id": "TX-CONSOLIDATE-001",
+      "postings": [
+       {
+        "ordinal": 1,
+        "account": "GROUP-CASH",
+        "units": "18000/1",
+        "book_value_cents": 18000
+       },
+       {
+        "ordinal": 2,
+        "account": "GROUP-INTERCO-AR",
+        "units": "5000/1",
+        "book_value_cents": 5000
+       },
+       {
+        "ordinal": 3,
+        "account": "GROUP-INTERCO-AP",
+        "units": "-5000/1",
+        "book_value_cents": -5000
+       },
+       {
+        "ordinal": 4,
+        "account": "GROUP-EQUITY",
+        "units": "-18000/1",
+        "book_value_cents": -18000
+       },
+       {
+        "ordinal": 5,
+        "account": "GROUP-INTERCO-AR",
+        "units": "-5000/1",
+        "book_value_cents": -5000
+       },
+       {
+        "ordinal": 6,
+        "account": "GROUP-INTERCO-AP",
+        "units": "5000/1",
+        "book_value_cents": 5000
+       },
+       {
+        "ordinal": 7,
+        "account": "GROUP-EQUITY",
+        "units": "600/1",
+        "book_value_cents": 600
+       },
+       {
+        "ordinal": 8,
+        "account": "NONCONTROLLING-INTEREST",
+        "units": "-600/1",
+        "book_value_cents": -600
+       }
+      ]
+     }
+    ],
+    "expected_diagnostics": [],
+    "state_delta": {
+     "book_revision": 1,
+     "posting_sequence": 1,
+     "consolidation_compilations": 1,
+     "source_book_mutations": 0
+    }
+   },
+   "input": {
+    "target_book": "GROUP-USD",
+    "through_on": "2026-12-31",
+    "policy_effective_at": "2026-12-31T23:59:59Z",
+    "sources": [
+     {
+      "book": "ENTITY-A",
+      "revision": 41,
+      "posting_sequence": 38,
+      "population_hash": "sha256:01edf4875d259ca4d55c3d9c54934f572ef3031d414b8a43c8b7482817feeb4b",
+      "relationship": {
+       "control": "controlled",
+       "method": "full",
+       "ownership_share": "1/1",
+       "voting_share": "1/1",
+       "control_evidence": "BOARD-CONTROL-A"
+      },
+      "balances_cents": {
+       "CASH-A": 10000,
+       "INTERCO-AR-A": 5000,
+       "EQUITY-A": -15000
+      }
+     },
+     {
+      "book": "ENTITY-B",
+      "revision": 29,
+      "posting_sequence": 25,
+      "population_hash": "sha256:13aac7707537757c328fe454328773ca3e8d7d9e88bc259f14172b1a0b97a158",
+      "relationship": {
+       "control": "controlled",
+       "method": "full",
+       "ownership_share": "4/5",
+       "voting_share": "4/5",
+       "non_controlling_interest_method": "proportionateNetAssets",
+       "control_evidence": "SHARE-REGISTER-B"
+      },
+      "balances_cents": {
+       "CASH-B": 8000,
+       "INTERCO-AP-B": -5000,
+       "EQUITY-B": -3000
+      }
+     }
+    ],
+    "mapping": {
+     "CASH-A": "GROUP-CASH",
+     "CASH-B": "GROUP-CASH",
+     "INTERCO-AR-A": "GROUP-INTERCO-AR",
+     "INTERCO-AP-B": "GROUP-INTERCO-AP",
+     "EQUITY-A": "GROUP-EQUITY",
+     "EQUITY-B": "GROUP-EQUITY"
+    },
+    "valuation_paths": [
+     {
+      "from": "USD",
+      "to": "USD",
+      "effective_at": "2026-12-31T23:59:59Z",
+      "identity": true
+     }
+    ],
+    "elimination_evidence": {
+     "receivable_cents": 5000,
+     "payable_cents": -5000
+    }
+   },
+   "expect": {
+    "elimination_postings_cents": {
+     "GROUP-INTERCO-AR": -5000,
+     "GROUP-INTERCO-AP": 5000
+    },
+    "elimination_balance_cents": 0,
+    "parent_attributable_equity_cents": -17400,
+    "non_controlling_interest_cents": -600,
+    "consolidated_cash_cents": 18000,
+    "source_books_changed": false,
+    "target_journal_count": 1,
+    "target_journal_balanced": true
+   }
+  },
+  {
+   "id": "D16-invalid-consolidation-input",
+   "case_hash": "sha256:647d3dcfb6e460cc9c03ffe19d36ca598046418fca89aed301ffecfebbd0148c",
+   "outcome": "reject",
+   "requirements": [
+    "ACC-046"
+   ],
+   "atomic_requirements": [
+    "ACC-046.1",
+    "ACC-046.2",
+    "ACC-046.3",
+    "ACC-046.4",
+    "ACC-046.5",
+    "ACC-046.6",
+    "ACC-046.7",
+    "ACC-046.8"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "GROUP-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:07c89b42370aea5567be94c6983336c6fb05caa31a81fce028204ddb1f9b4661"
+    },
+    "command": {
+     "id": "CMD-CONSOLIDATE-REJECT",
+     "kind": "compileConsolidation",
+     "expected_book_revision": 17,
+     "payload": "consolidationRequest"
+    },
+    "rejection_contract": {
+     "expected_transactions": [],
+     "book_revision_delta": 0,
+     "posting_sequence_delta": 0,
+     "resulting_state_hash": "unchanged"
+    }
+   },
+   "scenarios": [
+    {
+     "id": "D16a-circular-source-book",
+     "atomic_requirements": [
+      "ACC-046.7",
+      "ACC-046.8"
+     ],
+     "input": {
+      "target_book": "GROUP-USD",
+      "source_books": [
+       "GROUP-USD"
+      ]
+     },
+     "expect": {
+      "diagnostic": "consolidation_input_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:880e5429451a1e1086af44f1445b23a1b2b7eb8ded9c1870dd7b4de4ada729b3"
+    },
+    {
+     "id": "D16b-stale-source-snapshot",
+     "atomic_requirements": [
+      "ACC-046.1",
+      "ACC-046.8"
+     ],
+     "input": {
+      "source_book": "ENTITY-A",
+      "requested_revision": 41,
+      "provided_revision": 40
+     },
+     "expect": {
+      "diagnostic": "consolidation_input_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:309325d8cd169bf5cbd5cfbd34a2e1a3ea1cefd0adb09d2e2faac71ae8e7bffe"
+    },
+    {
+     "id": "D16c-unmapped-source-account",
+     "atomic_requirements": [
+      "ACC-046.3",
+      "ACC-046.8"
+     ],
+     "input": {
+      "source_book": "ENTITY-A",
+      "source_accounts": [
+       "CASH-A",
+       "REVENUE-X"
+      ],
+      "mapped_accounts": [
+       "CASH-A"
+      ]
+     },
+     "expect": {
+      "diagnostic": "consolidation_input_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:be9e32e9d14afb7e4837f5517ac67d573612d4251836a5e0cf96537c75d23aad"
+    },
+    {
+     "id": "D16d-missing-translation-path",
+     "atomic_requirements": [
+      "ACC-046.4",
+      "ACC-046.8"
+     ],
+     "input": {
+      "source_functional_commodity": "EUR",
+      "target_functional_commodity": "USD",
+      "valuation_paths": []
+     },
+     "expect": {
+      "diagnostic": "consolidation_input_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:29801c849cda928010d06142a74bfd25bdffee2b4981195142153980cb1928b8"
+    },
+    {
+     "id": "D16e-unmatched-elimination",
+     "atomic_requirements": [
+      "ACC-046.5",
+      "ACC-046.8"
+     ],
+     "input": {
+      "receivable_cents": 5000,
+      "payable_cents": -4999,
+      "approved_difference_policy": null
+     },
+     "expect": {
+      "diagnostic": "consolidation_input_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:f5147e798d35069cc43c913a8c4840635a404cce067da26519973234d9ba21cb"
+    },
+    {
+     "id": "D16f-control-method-evidence-missing",
+     "atomic_requirements": [
+      "ACC-046.2",
+      "ACC-046.8"
+     ],
+     "input": {
+      "control_classification": "controlled",
+      "consolidation_method": null,
+      "control_evidence": []
+     },
+     "expect": {
+      "diagnostic": "consolidation_input_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:6d24ff0d42017ecfba083fde2d1859cb88386079fcd0ebbf848f2901e31250cf"
+    },
+    {
+     "id": "D16g-unbalanced-consolidation-adjustment",
+     "atomic_requirements": [
+      "ACC-046.6"
+     ],
+     "input": {
+      "target_book": "GROUP-USD",
+      "adjustment_postings_cents": [
+       5000,
+       -4999
+      ]
+     },
+     "expect": {
+      "diagnostic": "consolidation_input_violation",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:ae0725a39f78e6267c0a19109a5c4f5acd5bf8a1c92b155b5e8bd5871ad5afa9"
+    }
+   ]
+  },
+  {
+   "id": "D17-workflow-independent-command",
+   "case_hash": "sha256:8e04befb3249f89cc78160c89d114b7e277d7106238d305469b4aa13f4e8c799",
+   "outcome": "admit",
+   "requirements": [
+    "ACC-047"
+   ],
+   "atomic_requirements": [
+    "ACC-047.1",
+    "ACC-047.2",
+    "ACC-047.3",
+    "ACC-047.4",
+    "ACC-047.5"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:489e2a7a6c94bf65a6d121d4afebf17f859696467e250e34ddb7e6d1ffc4a700"
+    },
+    "commands": [
+     {
+      "id": "CMD-WORKFLOW-001",
+      "kind": "postJournal",
+      "expected_book_revision": 17,
+      "payload": "resolvedTransaction",
+      "origins": [
+       "invoice-ui",
+       "bank-feed",
+       "canonical-import"
+      ]
+     }
+    ],
+    "expected_transactions": [
+     {
+      "id": "TX-WORKFLOW-001",
+      "postings": [
+       {
+        "ordinal": 1,
+        "account": "CASH",
+        "units": "100/1",
+        "book_value_cents": 100
+       },
+       {
+        "ordinal": 2,
+        "account": "REVENUE",
+        "units": "-100/1",
+        "book_value_cents": -100
+       }
+      ]
+     }
+    ],
+    "expected_diagnostics": [],
+    "state_delta": {
+     "book_revision": 1,
+     "posting_sequence": 1,
+     "canonical_intents": 1,
+     "atomic_commits": 1
+    }
+   },
+   "input": {
+    "canonical_command_hash": "sha256:3155b38dbc9d071414be9c7e4054f97472122b4b7de42ce7bd318f104aa74439",
+    "policy_snapshot_hash": "sha256:cffb41c4b4f3d55a406a9ec98c0e14ffb029a4a38612387ce87c7f07e5d833cd",
+    "origins": [
+     "invoice-ui",
+     "bank-feed",
+     "canonical-import"
+    ],
+    "expected_book_revision": 17
+   },
+   "expect": {
+    "intent_hashes_identical": true,
+    "intent_factory": "EvaluateBookCommand",
+    "commit_authority": "SerializedBookAuthority"
+   }
+  },
+  {
+   "id": "D18-external-accounting-authority",
+   "case_hash": "sha256:029ac11670bebccd1253fffa5115065c8dd35a62510b2fc215f0ae1f0a67c16f",
+   "outcome": "reject",
+   "requirements": [
+    "ACC-047"
+   ],
+   "atomic_requirements": [
+    "ACC-047.1",
+    "ACC-047.2",
+    "ACC-047.3",
+    "ACC-047.4",
+    "ACC-047.5"
+   ],
+   "fixture": {
+    "state_before": {
+     "book": "BOOK-USD",
+     "book_revision": 17,
+     "posting_sequence": 21,
+     "content_hash": "sha256:8c336b64e587250ba2c9158cdd82a4a781414d799c9de1115d971f7fa08d4e86"
+    },
+    "command": {
+     "id": "CMD-WORKFLOW-REJECT",
+     "kind": "postJournal",
+     "expected_book_revision": 17,
+     "payload": "resolvedTransaction"
+    },
+    "rejection_contract": {
+     "expected_transactions": [],
+     "book_revision_delta": 0,
+     "posting_sequence_delta": 0,
+     "resulting_state_hash": "unchanged"
+    }
+   },
+   "scenarios": [
+    {
+     "id": "D18a-external-journal-factory",
+     "atomic_requirements": [
+      "ACC-047.1",
+      "ACC-047.5"
+     ],
+     "input": {
+      "origin": "tax-service",
+      "attempted_output": "ValidatedBookedJournal",
+      "book_command_present": false
+     },
+     "expect": {
+      "diagnostic": "external_accounting_authority",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:e12a265a6ef7a2646e761937eca7affa753b4d1050ac91941c463e94e8e94934"
+    },
+    {
+     "id": "D18b-external-policy-selection",
+     "atomic_requirements": [
+      "ACC-047.5"
+     ],
+     "input": {
+      "origin": "invoice-ui",
+      "typed_policy_reference_present": false,
+      "policy_selected_by_origin": true
+     },
+     "expect": {
+      "diagnostic": "external_accounting_authority",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:b423eafa68f13e9260a1f65e130bfd57c544b71f84fbf5593fe31651209dbc25"
+    },
+    {
+     "id": "D18c-external-book-order-assignment",
+     "atomic_requirements": [
+      "ACC-047.3",
+      "ACC-047.5"
+     ],
+     "input": {
+      "origin": "import-adapter",
+      "attempted_book_revision": 18,
+      "attempted_posting_sequence": 22
+     },
+     "expect": {
+      "diagnostic": "external_accounting_authority",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:f8e588ea85756c6038297182f5587167fb05ac602b8ea2a9078d3fb2f859adee"
+    },
+    {
+     "id": "D18d-specialized-calculator-emits-commit-intent",
+     "atomic_requirements": [
+      "ACC-047.2"
+     ],
+     "input": {
+      "origin": "CalculateTax",
+      "attempted_output": "BookCommitIntent",
+      "effect_draft_present": false
+     },
+     "expect": {
+      "diagnostic": "external_accounting_authority",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:3efd91d15711260722d650913389139ca8a41eeff69c0af86218c4a90ad793d8"
+    },
+    {
+     "id": "D18e-untyped-direct-persistence",
+     "atomic_requirements": [
+      "ACC-047.4"
+     ],
+     "input": {
+      "typed_book_command_present": false,
+      "attempted_persistence": "AtomicBookCommit"
+     },
+     "expect": {
+      "diagnostic": "external_accounting_authority",
+      "revision_delta": 0,
+      "posting_sequence_delta": 0
+     },
+     "case_hash": "sha256:c96186649a0696ca95869ea4a68c4eea9deca807c7f07ee4b277e4dbcc50cb97"
+    }
+   ]
+  }
+ ]
+}

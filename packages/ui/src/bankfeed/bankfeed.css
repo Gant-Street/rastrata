@@ -1,0 +1,263 @@
+/* Styles for the bankfeed lane's components. Tokens from base.css only; no one-off colors.
+   Structure comes from rules and space: a heavy rule above each section, hairlines between the
+   accounts and between facts, a double rule under an account's balance block. A state is always
+   words and an icon, never a color. */
+
+.rt-bankfeed-page {
+  display: grid;
+  gap: var(--rt-space-8);
+  max-width: 64rem;
+}
+
+/* The page's own gap sits between the header and the first section; the header's margin as well would push
+   the control down. */
+.rt-bankfeed-page > .rt-page-header {
+  margin-bottom: 0;
+}
+
+.rt-bankfeed-section {
+  display: grid;
+  gap: var(--rt-space-4);
+  padding-top: var(--rt-space-4);
+  border-top: var(--rt-rule);
+}
+
+/* The connection is the work the page opens with, directly under the header: no rule and no heading above
+   the state and the field (the heading is said to a screen reader). */
+.rt-bankfeed-section[data-lead] {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.rt-bankfeed-section > h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.rt-bankfeed-subtitle {
+  margin: 0 0 var(--rt-space-2);
+  font-size: 1rem;
+}
+
+.rt-bankfeed-state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rt-space-1);
+  margin: 0;
+  font-weight: 600;
+}
+
+.rt-bankfeed-state svg {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.rt-bankfeed-number {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* ---- Before connecting ------------------------------------------------------------------- */
+
+.rt-bankfeed-before {
+  display: grid;
+  gap: var(--rt-space-3);
+  padding: var(--rt-space-4);
+  border: 1px solid var(--rt-border);
+}
+
+.rt-bankfeed-before h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.rt-bankfeed-before ul,
+.rt-bankfeed-before ol {
+  display: grid;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+
+.rt-bankfeed-connect {
+  display: grid;
+  gap: var(--rt-space-3);
+  max-width: 40rem;
+}
+
+.rt-bankfeed-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-3);
+  align-items: center;
+}
+
+.rt-bankfeed-actions .rt-hint {
+  margin: 0;
+}
+
+/* ---- Accounts ---------------------------------------------------------------------------- */
+
+.rt-bankfeed-accounts {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-bankfeed-account {
+  display: grid;
+  gap: var(--rt-space-3);
+  padding: var(--rt-space-4) 0;
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-bankfeed-account:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.rt-bankfeed-account .rt-hint {
+  margin: 0;
+}
+
+.rt-bankfeed-account-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--rt-space-1) var(--rt-space-4);
+}
+
+.rt-bankfeed-account-head h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.rt-bankfeed-figure {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-bankfeed-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--rt-space-3) var(--rt-space-6);
+  margin: 0;
+}
+
+.rt-bankfeed-facts > div {
+  padding-bottom: var(--rt-space-2);
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-bankfeed-facts dt {
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-bankfeed-facts dd {
+  margin: var(--rt-space-1) 0 0;
+  overflow-wrap: anywhere;
+}
+
+.rt-bankfeed-facts [data-difference] dd {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.rt-bankfeed-balance {
+  display: grid;
+  gap: var(--rt-space-3);
+  padding: var(--rt-space-3) 0;
+  border-top: var(--rt-rule);
+  border-bottom: 6px double var(--rt-ink);
+}
+
+.rt-bankfeed-balance h4 {
+  margin: 0;
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-bankfeed-link {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--rt-space-4) var(--rt-space-6);
+  align-items: start;
+}
+
+.rt-bankfeed-link .rt-bankfeed-actions {
+  grid-column: 1 / -1;
+}
+
+.rt-bankfeed-link .rt-select-trigger,
+.rt-bankfeed-link input {
+  width: 100%;
+}
+
+.rt-bankfeed-notes {
+  display: grid;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+
+/* ---- Needs you --------------------------------------------------------------------------- */
+
+.rt-bankfeed-attention {
+  display: grid;
+  gap: var(--rt-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---- Sync -------------------------------------------------------------------------------- */
+
+.rt-bankfeed-result {
+  display: grid;
+  gap: var(--rt-space-3);
+}
+
+.rt-bankfeed-progress {
+  margin: 0;
+  font-weight: 600;
+}
+
+.rt-bankfeed-link-out {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rt-space-1);
+  font-weight: 600;
+}
+
+.rt-bankfeed-link-out svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.rt-bankfeed-section .rt-table tbody th {
+  white-space: nowrap;
+}
+
+/* ---- Daily sync -------------------------------------------------------------------------- */
+
+/* Stories only. */
+.rt-bankfeed-story {
+  padding: var(--rt-space-4);
+  background: var(--rt-paper);
+  color: var(--rt-text);
+}

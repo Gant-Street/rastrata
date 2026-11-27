@@ -1,0 +1,16 @@
+2025-01-01 open Assets:Stock UNIT
+2025-01-01 open Assets:Cash USD
+2025-01-01 open Income:Gain USD
+
+2025-01-02 * "Lot A"
+  Assets:Stock       1 UNIT {10 USD}
+  Assets:Cash      -10 USD
+
+2025-02-02 * "Lot B"
+  Assets:Stock       1 UNIT {20 USD}
+  Assets:Cash      -20 USD
+
+2025-03-02 * "Ambiguous sale"
+  Assets:Stock      -1 UNIT {} @ 30 USD
+  Assets:Cash       30 USD
+  Income:Gain

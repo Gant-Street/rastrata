@@ -1,0 +1,3996 @@
+{
+  "contract": "rastrata-application-v1",
+  "definitions": {
+    "AccessPrincipal": {
+      "additionalProperties": false,
+      "properties": {
+        "expiresAt": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "owner",
+            "token"
+          ],
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "tokenId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "type": "object"
+    },
+    "AccountActivity": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/$defs/ActivityAccount"
+        },
+        "asOf": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "balanceKind": {
+          "$ref": "#/$defs/BalanceKind"
+        },
+        "basis": {
+          "$ref": "#/$defs/ReportBasis"
+        },
+        "closingBalance": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "currency": {
+          "maxLength": 3,
+          "type": "string"
+        },
+        "from": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "netChange": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "openingBalance": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "page": {
+          "maximum": 100000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "pageSize": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "populationHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "reportFrom": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "revision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/$defs/ActivityRow"
+          },
+          "maxItems": 25,
+          "type": "array"
+        },
+        "to": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "totalCredit": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "totalDebit": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "account",
+        "currency",
+        "basis",
+        "asOf",
+        "from",
+        "to",
+        "reportFrom",
+        "revision",
+        "populationHash",
+        "balanceKind",
+        "openingBalance",
+        "closingBalance",
+        "totalDebit",
+        "totalCredit",
+        "netChange",
+        "count",
+        "page",
+        "pageSize",
+        "rows"
+      ],
+      "type": "object"
+    },
+    "AccountChangeInput": {
+      "additionalProperties": false,
+      "properties": {
+        "accountId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "close": {
+          "type": "boolean"
+        },
+        "effectiveOn": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "\\S",
+          "type": "string"
+        }
+      },
+      "required": [
+        "accountId",
+        "name",
+        "close",
+        "effectiveOn"
+      ],
+      "type": "object"
+    },
+    "AccountChoice": {
+      "additionalProperties": false,
+      "properties": {
+        "disabled": {
+          "type": "boolean"
+        },
+        "group": {
+          "enum": [
+            "asset",
+            "liability",
+            "equity",
+            "income",
+            "expense",
+            "gain",
+            "unrealizedGain"
+          ],
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 200,
+          "type": "string"
+        },
+        "path": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 120,
+          "type": "string"
+        },
+        "value": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "label",
+        "path",
+        "group"
+      ],
+      "type": "object"
+    },
+    "AccountCreateInput": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 20,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{1,19}$",
+          "type": "string"
+        },
+        "effectiveOn": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "parentId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "asset",
+            "liability",
+            "equity",
+            "income",
+            "expense",
+            "gain",
+            "unrealizedGain"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "name",
+        "role",
+        "effectiveOn"
+      ],
+      "type": "object"
+    },
+    "AccountList": {
+      "additionalProperties": false,
+      "properties": {
+        "accounts": {
+          "items": {
+            "$ref": "#/$defs/AccountRow"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "configurationRevision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "currency": {
+          "maxLength": 3,
+          "type": "string"
+        },
+        "suggestedEffectiveOn": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "tagsAsOf": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "tagsHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "tagsRevision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "currency",
+        "configurationRevision",
+        "suggestedEffectiveOn",
+        "accounts"
+      ],
+      "type": "object"
+    },
+    "AccountRow": {
+      "additionalProperties": false,
+      "properties": {
+        "balance": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "closedOn": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 120,
+          "type": "string"
+        },
+        "openedOn": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "parentId": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "role": {
+          "enum": [
+            "asset",
+            "liability",
+            "equity",
+            "income",
+            "expense",
+            "gain",
+            "unrealizedGain"
+          ],
+          "type": "string"
+        },
+        "tags": {
+          "$ref": "#/$defs/AccountTags"
+        }
+      },
+      "required": [
+        "id",
+        "code",
+        "name",
+        "role",
+        "parentId",
+        "openedOn",
+        "closedOn",
+        "balance"
+      ],
+      "type": "object"
+    },
+    "AccountTags": {
+      "additionalProperties": false,
+      "properties": {
+        "cashFlowClass": {
+          "enum": [
+            "cash",
+            "operating",
+            "investing",
+            "financing",
+            "noncash"
+          ],
+          "type": "string"
+        },
+        "roleKey": {
+          "maxLength": 40,
+          "minLength": 2,
+          "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)*$",
+          "type": "string"
+        },
+        "taxLine": {
+          "maxLength": 40,
+          "minLength": 7,
+          "pattern": "^[A-Za-z][A-Za-z0-9]{1,15}\\.line[0-9]{1,2}[a-z]?$",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "ActivityAccount": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 120,
+          "type": "string"
+        },
+        "normalSide": {
+          "enum": [
+            "debit",
+            "credit"
+          ],
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "asset",
+            "liability",
+            "equity",
+            "income",
+            "expense",
+            "gain",
+            "unrealizedGain"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "code",
+        "name",
+        "role",
+        "normalSide"
+      ],
+      "type": "object"
+    },
+    "ActivityInput": {
+      "additionalProperties": false,
+      "properties": {
+        "accountId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "asOf": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "from": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "page": {
+          "maximum": 100000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "populationHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "reportFrom": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "revision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "to": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "accountId",
+        "asOf",
+        "revision",
+        "populationHash",
+        "from",
+        "to"
+      ],
+      "type": "object"
+    },
+    "ActivityRow": {
+      "additionalProperties": false,
+      "properties": {
+        "credit": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "date": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "debit": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "journalId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "narration": {
+          "maxLength": 1000,
+          "type": "string"
+        },
+        "postingId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "runningBalance": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "journalId",
+        "postingId",
+        "date",
+        "narration",
+        "debit",
+        "credit",
+        "runningBalance"
+      ],
+      "type": "object"
+    },
+    "AgentToken": {
+      "additionalProperties": false,
+      "properties": {
+        "createdAt": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "createdBy": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "expiresAt": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string"
+        },
+        "lastUsedAt": {
+          "anyOf": [
+            {
+              "maxLength": 40,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "permissions": {
+          "items": {
+            "enum": [
+              "read",
+              "draft",
+              "post",
+              "configure",
+              "correct",
+              "close"
+            ],
+            "type": "string"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "type": "array"
+        },
+        "prefix": {
+          "maxLength": 24,
+          "type": "string"
+        },
+        "revokedAt": {
+          "anyOf": [
+            {
+              "maxLength": 40,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revokedReason": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "active",
+            "revoked",
+            "expired"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "prefix",
+        "label",
+        "permissions",
+        "status",
+        "createdAt",
+        "createdBy",
+        "expiresAt",
+        "revokedAt",
+        "revokedReason",
+        "lastUsedAt"
+      ],
+      "type": "object"
+    },
+    "AgentTokenActivity": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/$defs/AgentTokenEvent"
+          },
+          "maxItems": 25,
+          "type": "array"
+        },
+        "page": {
+          "maximum": 100000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "pageSize": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "count",
+        "page",
+        "pageSize",
+        "events"
+      ],
+      "type": "object"
+    },
+    "AgentTokenActivityInput": {
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "maximum": 100000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "tokenId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "AgentTokenCreateInput": {
+      "additionalProperties": false,
+      "properties": {
+        "expiresInDays": {
+          "maximum": 365,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "label": {
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string"
+        },
+        "permissions": {
+          "items": {
+            "enum": [
+              "read",
+              "draft",
+              "post",
+              "configure",
+              "correct",
+              "close"
+            ],
+            "type": "string"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "label",
+        "permissions"
+      ],
+      "type": "object"
+    },
+    "AgentTokenCreated": {
+      "additionalProperties": false,
+      "properties": {
+        "secret": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "token": {
+          "$ref": "#/$defs/AgentToken"
+        }
+      },
+      "required": [
+        "token",
+        "secret"
+      ],
+      "type": "object"
+    },
+    "AgentTokenEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "code": {
+          "anyOf": [
+            {
+              "maxLength": 60,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "label": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation": {
+          "maxLength": 100,
+          "type": "string"
+        },
+        "operationId": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outcome": {
+          "enum": [
+            "ok",
+            "denied",
+            "failed"
+          ],
+          "type": "string"
+        },
+        "seq": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "status": {
+          "maximum": 599,
+          "minimum": 100,
+          "type": "integer"
+        },
+        "tokenId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "seq",
+        "at",
+        "tokenId",
+        "label",
+        "operation",
+        "operationId",
+        "outcome",
+        "code",
+        "status"
+      ],
+      "type": "object"
+    },
+    "AgentTokenList": {
+      "additionalProperties": false,
+      "properties": {
+        "defaultExpiryDays": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "grantable": {
+          "items": {
+            "enum": [
+              "read",
+              "draft",
+              "post",
+              "configure",
+              "correct",
+              "close"
+            ],
+            "type": "string"
+          },
+          "maxItems": 6,
+          "type": "array"
+        },
+        "maxExpiryDays": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "ownerAccess": {
+          "enum": [
+            "open",
+            "key"
+          ],
+          "type": "string"
+        },
+        "tokens": {
+          "items": {
+            "$ref": "#/$defs/AgentToken"
+          },
+          "maxItems": 1000,
+          "type": "array"
+        }
+      },
+      "required": [
+        "tokens",
+        "grantable",
+        "defaultExpiryDays",
+        "maxExpiryDays",
+        "ownerAccess"
+      ],
+      "type": "object"
+    },
+    "AgentTokenListInput": {
+      "additionalProperties": false,
+      "properties": {
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "AgentTokenRevokeInput": {
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "maxLength": 200,
+          "type": "string"
+        },
+        "tokenId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "tokenId"
+      ],
+      "type": "object"
+    },
+    "BalanceKind": {
+      "enum": [
+        "cumulative",
+        "fiscalYearToDate"
+      ],
+      "type": "string"
+    },
+    "BalanceSheet": {
+      "additionalProperties": false,
+      "properties": {
+        "assets": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "balanced": {
+          "type": "boolean"
+        },
+        "contributedEquity": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "currentEarnings": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "difference": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "equity": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "liabilities": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "priorEarnings": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/$defs/StatementRow"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "totals": {
+          "items": {
+            "$ref": "#/$defs/StatementTotal"
+          },
+          "maxItems": 16,
+          "type": "array"
+        }
+      },
+      "required": [
+        "rows",
+        "assets",
+        "liabilities",
+        "equity",
+        "currentEarnings",
+        "balanced",
+        "contributedEquity",
+        "priorEarnings",
+        "difference",
+        "totals"
+      ],
+      "type": "object"
+    },
+    "BookContext": {
+      "additionalProperties": false,
+      "properties": {
+        "bookId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "head": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LedgerHead"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mode": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "ownerAccess": {
+          "enum": [
+            "open",
+            "key"
+          ],
+          "type": "string"
+        },
+        "permissions": {
+          "items": {
+            "maxLength": 40,
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "principal": {
+          "$ref": "#/$defs/AccessPrincipal"
+        },
+        "setup": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BookSetup"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "enabled",
+        "bookId",
+        "setup",
+        "mode",
+        "permissions",
+        "head"
+      ],
+      "type": "object"
+    },
+    "BookSetup": {
+      "additionalProperties": false,
+      "properties": {
+        "accounts": {
+          "items": {
+            "$ref": "#/$defs/InitialAccount"
+          },
+          "maxItems": 200,
+          "minItems": 2,
+          "type": "array"
+        },
+        "basis": {
+          "enum": [
+            "cash",
+            "accrual"
+          ],
+          "type": "string"
+        },
+        "currency": {
+          "enum": [
+            "USD",
+            "EUR",
+            "GBP"
+          ],
+          "type": "string"
+        },
+        "fiscalYear": {
+          "maximum": 2100,
+          "minimum": 2000,
+          "type": "integer"
+        },
+        "fiscalYearStartMonth": {
+          "maximum": 12,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "name": {
+          "maxLength": 120,
+          "minLength": 2,
+          "pattern": "\\S[\\s\\S]*\\S",
+          "type": "string"
+        },
+        "periodModel": {
+          "enum": [
+            "monthly",
+            "quarterly"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "currency",
+        "fiscalYear",
+        "periodModel",
+        "accounts"
+      ],
+      "type": "object"
+    },
+    "CalendarSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "canExtend": {
+          "type": "boolean"
+        },
+        "extendNote": {
+          "maxLength": 300,
+          "type": "string"
+        },
+        "firstDate": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "fiscalYearStartMonth": {
+          "maximum": 12,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "fiscalYears": {
+          "items": {
+            "$ref": "#/$defs/FiscalYearRow"
+          },
+          "maxItems": 101,
+          "type": "array"
+        },
+        "lastDate": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "nextEndsOn": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nextFiscalYear": {
+          "anyOf": [
+            {
+              "maximum": 2100,
+              "minimum": 2000,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nextStartsOn": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "periodModel": {
+          "enum": [
+            "monthly",
+            "quarterly"
+          ],
+          "type": "string"
+        },
+        "today": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "today",
+        "firstDate",
+        "lastDate",
+        "fiscalYearStartMonth",
+        "periodModel",
+        "fiscalYears",
+        "canExtend",
+        "nextFiscalYear",
+        "nextStartsOn",
+        "nextEndsOn",
+        "extendNote"
+      ],
+      "type": "object"
+    },
+    "Capabilities": {
+      "additionalProperties": false,
+      "properties": {
+        "bases": {
+          "items": {
+            "maxLength": 40,
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "basis": {
+          "enum": [
+            "cash",
+            "accrual"
+          ],
+          "type": "string"
+        },
+        "bookId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "currencies": {
+          "items": {
+            "maxLength": 3,
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "fiscalYearStartMonth": {
+          "maximum": 12,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "operations": {
+          "items": {
+            "$ref": "#/$defs/OperationDefinition"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "pageSize": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "periodModels": {
+          "items": {
+            "maxLength": 40,
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "permissions": {
+          "items": {
+            "maxLength": 40,
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "version": {
+          "maxLength": 100,
+          "type": "string"
+        }
+      },
+      "required": [
+        "version",
+        "bookId",
+        "currencies",
+        "bases",
+        "periodModels",
+        "pageSize",
+        "permissions",
+        "operations"
+      ],
+      "type": "object"
+    },
+    "CommitInput": {
+      "additionalProperties": false,
+      "properties": {
+        "planHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "planId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "planId",
+        "planHash"
+      ],
+      "type": "object"
+    },
+    "CoreReports": {
+      "additionalProperties": false,
+      "properties": {
+        "asOf": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "balanceSheet": {
+          "$ref": "#/$defs/BalanceSheet"
+        },
+        "basis": {
+          "$ref": "#/$defs/ReportBasis"
+        },
+        "bookRevision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "comparison": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReportComparison"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "compilerVersion": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "currency": {
+          "maxLength": 3,
+          "type": "string"
+        },
+        "fiscalYear": {
+          "$ref": "#/$defs/FiscalYear"
+        },
+        "periodStart": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "populationHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "postingSequence": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "profitAndLoss": {
+          "$ref": "#/$defs/ProfitLoss"
+        },
+        "trialBalance": {
+          "$ref": "#/$defs/TrialBalance"
+        },
+        "warnings": {
+          "items": {
+            "$ref": "#/$defs/ReportWarning"
+          },
+          "maxItems": 16,
+          "type": "array"
+        }
+      },
+      "required": [
+        "compilerVersion",
+        "populationHash",
+        "bookRevision",
+        "postingSequence",
+        "asOf",
+        "periodStart",
+        "currency",
+        "basis",
+        "fiscalYear",
+        "trialBalance",
+        "profitAndLoss",
+        "balanceSheet",
+        "comparison",
+        "warnings"
+      ],
+      "type": "object"
+    },
+    "Correction": {
+      "additionalProperties": false,
+      "properties": {
+        "correctionJournalId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "kind": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "originalJournalId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "originalJournalId",
+        "correctionJournalId"
+      ],
+      "type": "object"
+    },
+    "DiscardResult": {
+      "additionalProperties": false,
+      "properties": {
+        "disposition": {
+          "enum": [
+            "discarded"
+          ],
+          "type": "string"
+        },
+        "draftId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "disposition",
+        "draftId"
+      ],
+      "type": "object"
+    },
+    "DraftCreateInput": {
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "$ref": "#/$defs/JournalDraftData"
+        }
+      },
+      "required": [
+        "data"
+      ],
+      "type": "object"
+    },
+    "DraftIdInput": {
+      "additionalProperties": false,
+      "properties": {
+        "draftId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "draftId"
+      ],
+      "type": "object"
+    },
+    "DraftPage": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "drafts": {
+          "items": {
+            "$ref": "#/$defs/SavedDraft"
+          },
+          "maxItems": 25,
+          "type": "array"
+        },
+        "page": {
+          "maximum": 100000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "pageSize": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "count",
+        "page",
+        "pageSize",
+        "drafts"
+      ],
+      "type": "object"
+    },
+    "DraftRecoveryInput": {
+      "additionalProperties": false,
+      "properties": {
+        "draftId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "expectedVersion": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "postingOperationId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "draftId",
+        "expectedVersion",
+        "postingOperationId"
+      ],
+      "type": "object"
+    },
+    "DraftSaveInput": {
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "$ref": "#/$defs/JournalDraftData"
+        },
+        "draftId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "expectedVersion": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "draftId",
+        "expectedVersion",
+        "data"
+      ],
+      "type": "object"
+    },
+    "DraftSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "status": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "version": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "status"
+      ],
+      "type": "object"
+    },
+    "DraftVersionInput": {
+      "additionalProperties": false,
+      "properties": {
+        "draftId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "expectedVersion": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "draftId",
+        "expectedVersion"
+      ],
+      "type": "object"
+    },
+    "Empty": {
+      "additionalProperties": false,
+      "properties": {},
+      "required": [],
+      "type": "object"
+    },
+    "EntryLine": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "maxLength": 200,
+          "type": "string"
+        },
+        "accountId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "credit": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "debit": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "accountId",
+        "account",
+        "debit",
+        "credit"
+      ],
+      "type": "object"
+    },
+    "FiscalYear": {
+      "additionalProperties": false,
+      "properties": {
+        "endsOn": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "startsOn": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "year": {
+          "maximum": 9999,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "year",
+        "startsOn",
+        "endsOn"
+      ],
+      "type": "object"
+    },
+    "FiscalYearRow": {
+      "additionalProperties": false,
+      "properties": {
+        "closedCount": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "ended": {
+          "type": "boolean"
+        },
+        "endsOn": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "fiscalYear": {
+          "maximum": 2100,
+          "minimum": 2000,
+          "type": "integer"
+        },
+        "periodCount": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "startsOn": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "partlyClosed",
+            "closed"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "fiscalYear",
+        "startsOn",
+        "endsOn",
+        "periodCount",
+        "closedCount",
+        "status",
+        "ended"
+      ],
+      "type": "object"
+    },
+    "InitialAccount": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 20,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{1,19}$",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "parentCode": {
+          "maxLength": 20,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{1,19}$",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "asset",
+            "liability",
+            "equity",
+            "income",
+            "expense",
+            "gain",
+            "unrealizedGain"
+          ],
+          "type": "string"
+        },
+        "tags": {
+          "$ref": "#/$defs/AccountTags"
+        }
+      },
+      "required": [
+        "code",
+        "name",
+        "role"
+      ],
+      "type": "object"
+    },
+    "JournalDraftData": {
+      "additionalProperties": false,
+      "properties": {
+        "date": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "lines": {
+          "items": {
+            "$ref": "#/$defs/JournalLine"
+          },
+          "maxItems": 100,
+          "minItems": 2,
+          "type": "array"
+        },
+        "narration": {
+          "maxLength": 1000,
+          "type": "string"
+        },
+        "reference": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceEvent"
+        }
+      },
+      "required": [
+        "date",
+        "reference",
+        "narration",
+        "lines"
+      ],
+      "type": "object"
+    },
+    "JournalEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "bookRevision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "correction": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Correction"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "currency": {
+          "maxLength": 3,
+          "type": "string"
+        },
+        "date": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "kind": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "lines": {
+          "items": {
+            "$ref": "#/$defs/EntryLine"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "narration": {
+          "maxLength": 2000,
+          "type": "string"
+        },
+        "postingSequence": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "recordedAt": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/JournalSource"
+        },
+        "viewedAtRevision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "date",
+        "narration",
+        "recordedAt",
+        "postingSequence",
+        "bookRevision",
+        "viewedAtRevision",
+        "currency",
+        "correction",
+        "lines"
+      ],
+      "type": "object"
+    },
+    "JournalGetInput": {
+      "additionalProperties": false,
+      "properties": {
+        "asOf": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "journalId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "populationHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "reportFrom": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "revision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "journalId"
+      ],
+      "type": "object"
+    },
+    "JournalLine": {
+      "additionalProperties": false,
+      "properties": {
+        "accountId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "credit": {
+          "pattern": "^$|^(0|[1-9][0-9]{0,15})\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "debit": {
+          "pattern": "^$|^(0|[1-9][0-9]{0,15})\\.[0-9]{2}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "accountId",
+        "debit",
+        "credit"
+      ],
+      "type": "object"
+    },
+    "JournalPage": {
+      "additionalProperties": false,
+      "properties": {
+        "accounts": {
+          "items": {
+            "$ref": "#/$defs/AccountChoice"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "context": {
+          "$ref": "#/$defs/RegisterContext"
+        },
+        "corrections": {
+          "items": {
+            "$ref": "#/$defs/Correction"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "drafts": {
+          "items": {
+            "$ref": "#/$defs/DraftSummary"
+          },
+          "maxItems": 25,
+          "type": "array"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/RegisterEntry"
+          },
+          "maxItems": 25,
+          "type": "array"
+        },
+        "head": {
+          "$ref": "#/$defs/LedgerHead"
+        },
+        "page": {
+          "maximum": 100000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "pageSize": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "scope": {
+          "$ref": "#/$defs/RegisterScope"
+        }
+      },
+      "required": [
+        "head",
+        "scope",
+        "context",
+        "accounts",
+        "entries",
+        "count",
+        "page",
+        "pageSize",
+        "drafts",
+        "corrections"
+      ],
+      "type": "object"
+    },
+    "JournalQuery": {
+      "additionalProperties": false,
+      "properties": {
+        "accountId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "from": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "page": {
+          "maximum": 100000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "revision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "Posted",
+            "Draft"
+          ],
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 200,
+          "type": "string"
+        },
+        "to": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "JournalSource": {
+      "additionalProperties": false,
+      "properties": {
+        "contentHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "originalJournalId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "contentHash",
+        "originalJournalId"
+      ],
+      "type": "object"
+    },
+    "LedgerHead": {
+      "additionalProperties": false,
+      "properties": {
+        "bookRevision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "chainHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "sequence": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sequence",
+        "chainHash",
+        "bookRevision"
+      ],
+      "type": "object"
+    },
+    "MutationReceipt": {
+      "additionalProperties": false,
+      "properties": {
+        "diagnostics": {
+          "items": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "disposition": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "operationId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "outcomeSequence": {
+          "anyOf": [
+            {
+              "pattern": "^(0|[1-9][0-9]{0,18})$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "problems": {
+          "items": {
+            "$ref": "#/$defs/Problem"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        }
+      },
+      "required": [
+        "disposition",
+        "operationId",
+        "outcomeSequence",
+        "diagnostics",
+        "problems"
+      ],
+      "type": "object"
+    },
+    "OperationDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "maxLength": 2000,
+          "type": "string"
+        },
+        "input": {},
+        "name": {
+          "maxLength": 100,
+          "type": "string"
+        },
+        "output": {},
+        "permission": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "writes": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "permission",
+        "writes",
+        "input",
+        "output"
+      ],
+      "type": "object"
+    },
+    "OperationInput": {
+      "additionalProperties": false,
+      "properties": {
+        "operationId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "operationId"
+      ],
+      "type": "object"
+    },
+    "OperationStatus": {
+      "additionalProperties": false,
+      "properties": {
+        "diagnostics": {
+          "items": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "disposition": {
+          "enum": [
+            "prepared",
+            "unresolved",
+            "completed",
+            "committed",
+            "rejected"
+          ],
+          "type": "string"
+        },
+        "kind": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "operationId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "outcomeSequence": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "planHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "problems": {
+          "items": {
+            "$ref": "#/$defs/Problem"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "result": {}
+      },
+      "required": [
+        "operationId",
+        "kind",
+        "disposition"
+      ],
+      "type": "object"
+    },
+    "PageInput": {
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "maximum": 100000,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "PeriodHistory": {
+      "additionalProperties": false,
+      "properties": {
+        "bookRevision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "kind": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "periodId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 500,
+          "type": "string"
+        },
+        "recordedAt": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "supersededCloseIds": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "supersededPeriodIds": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        }
+      },
+      "required": [
+        "periodId",
+        "kind",
+        "reason",
+        "recordedAt",
+        "bookRevision",
+        "supersededCloseIds",
+        "supersededPeriodIds"
+      ],
+      "type": "object"
+    },
+    "PeriodInput": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "enum": [
+            "close",
+            "reopen"
+          ],
+          "type": "string"
+        },
+        "periodId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 500,
+          "minLength": 1,
+          "pattern": "\\S",
+          "type": "string"
+        }
+      },
+      "required": [
+        "periodId",
+        "operation",
+        "reason"
+      ],
+      "type": "object"
+    },
+    "PeriodList": {
+      "additionalProperties": false,
+      "properties": {
+        "bookRevision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "calendar": {
+          "$ref": "#/$defs/CalendarSummary"
+        },
+        "history": {
+          "items": {
+            "$ref": "#/$defs/PeriodHistory"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "periods": {
+          "items": {
+            "$ref": "#/$defs/PeriodRow"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        }
+      },
+      "required": [
+        "bookRevision",
+        "calendar",
+        "periods",
+        "history"
+      ],
+      "type": "object"
+    },
+    "PeriodRow": {
+      "additionalProperties": false,
+      "properties": {
+        "alsoReopens": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "closePackageId": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "closingRevision": {
+          "anyOf": [
+            {
+              "pattern": "^(0|[1-9][0-9]{0,18})$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ended": {
+          "type": "boolean"
+        },
+        "endsOn": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "fiscalYear": {
+          "maximum": 2100,
+          "minimum": 2000,
+          "type": "integer"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "ordinal": {
+          "maximum": 366,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "reportPopulationHash": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "startsOn": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "closed"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "startsOn",
+        "endsOn",
+        "status",
+        "closePackageId",
+        "reportPopulationHash",
+        "closingRevision",
+        "fiscalYear",
+        "ordinal",
+        "ended",
+        "alsoReopens"
+      ],
+      "type": "object"
+    },
+    "PlanWarning": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 500,
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "type": "object"
+    },
+    "PreparedAccount": {
+      "additionalProperties": false,
+      "properties": {
+        "closedOn": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 120,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "code",
+        "name",
+        "closedOn"
+      ],
+      "type": "object"
+    },
+    "PreparedCalendarPeriod": {
+      "additionalProperties": false,
+      "properties": {
+        "endsOn": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "fiscalYear": {
+          "maximum": 2100,
+          "minimum": 2000,
+          "type": "integer"
+        },
+        "label": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "periodId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "startsOn": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "periodId",
+        "fiscalYear",
+        "label",
+        "startsOn",
+        "endsOn"
+      ],
+      "type": "object"
+    },
+    "PreparedEffects": {
+      "additionalProperties": false,
+      "properties": {
+        "accounts": {
+          "items": {
+            "$ref": "#/$defs/PreparedAccount"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "calendar": {
+          "items": {
+            "$ref": "#/$defs/PreparedCalendarPeriod"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "journals": {
+          "items": {
+            "$ref": "#/$defs/PreparedJournal"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "periods": {
+          "items": {
+            "$ref": "#/$defs/PreparedPeriod"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        }
+      },
+      "required": [
+        "journals",
+        "accounts",
+        "periods"
+      ],
+      "type": "object"
+    },
+    "PreparedJournal": {
+      "additionalProperties": false,
+      "properties": {
+        "date": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "lines": {
+          "items": {
+            "$ref": "#/$defs/JournalLine"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "narration": {
+          "maxLength": 1000,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "date",
+        "narration",
+        "lines"
+      ],
+      "type": "object"
+    },
+    "PreparedOperation": {
+      "additionalProperties": false,
+      "properties": {
+        "bookRevision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "diagnostics": {
+          "items": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "disposition": {
+          "enum": [
+            "prepared"
+          ],
+          "type": "string"
+        },
+        "effects": {
+          "$ref": "#/$defs/PreparedEffects"
+        },
+        "kind": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "operationId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "outcomeSequence": {
+          "anyOf": [
+            {
+              "pattern": "^(0|[1-9][0-9]{0,18})$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "planHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "planId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "problems": {
+          "items": {
+            "$ref": "#/$defs/Problem"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "valid": {
+          "type": "boolean"
+        },
+        "warnings": {
+          "items": {
+            "$ref": "#/$defs/PlanWarning"
+          },
+          "maxItems": 50,
+          "type": "array"
+        }
+      },
+      "required": [
+        "disposition",
+        "operationId",
+        "outcomeSequence",
+        "diagnostics",
+        "problems",
+        "planId",
+        "planHash",
+        "bookRevision",
+        "kind",
+        "valid",
+        "effects"
+      ],
+      "type": "object"
+    },
+    "PreparedPeriod": {
+      "additionalProperties": false,
+      "properties": {
+        "closePackageId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "kind": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "periodId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 500,
+          "type": "string"
+        },
+        "reportPopulationHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "supersededPeriodIds": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        }
+      },
+      "required": [
+        "periodId",
+        "kind",
+        "reason"
+      ],
+      "type": "object"
+    },
+    "Problem": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 200,
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 2000,
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "type": "object"
+    },
+    "ProfitLoss": {
+      "additionalProperties": false,
+      "properties": {
+        "expenses": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "netIncome": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "revenue": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/$defs/StatementRow"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "totals": {
+          "items": {
+            "$ref": "#/$defs/StatementTotal"
+          },
+          "maxItems": 16,
+          "type": "array"
+        }
+      },
+      "required": [
+        "rows",
+        "revenue",
+        "expenses",
+        "netIncome",
+        "totals"
+      ],
+      "type": "object"
+    },
+    "RegisterContext": {
+      "additionalProperties": false,
+      "properties": {
+        "bookName": {
+          "maxLength": 120,
+          "type": "string"
+        },
+        "currency": {
+          "maxLength": 3,
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 200,
+          "type": "string"
+        },
+        "savedMessage": {
+          "maxLength": 200,
+          "type": "string"
+        }
+      },
+      "required": [
+        "bookName",
+        "currency",
+        "description",
+        "savedMessage"
+      ],
+      "type": "object"
+    },
+    "RegisterEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "maxLength": 100,
+          "type": "string"
+        },
+        "creditTotal": {
+          "maxLength": 100,
+          "type": "string"
+        },
+        "date": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "debitTotal": {
+          "maxLength": 100,
+          "type": "string"
+        },
+        "history": {
+          "items": {
+            "$ref": "#/$defs/RegisterHistory"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "isoDate": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "lines": {
+          "items": {
+            "$ref": "#/$defs/RegisterLine"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "reference": {
+          "maxLength": 2000,
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "Posted",
+            "Draft"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "date",
+        "isoDate",
+        "reference",
+        "amount",
+        "status",
+        "lines",
+        "debitTotal",
+        "creditTotal",
+        "history"
+      ],
+      "type": "object"
+    },
+    "RegisterHistory": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 2000,
+          "type": "string"
+        }
+      },
+      "required": [
+        "at",
+        "description"
+      ],
+      "type": "object"
+    },
+    "RegisterLine": {
+      "additionalProperties": false,
+      "properties": {
+        "accountId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "credit": {
+          "anyOf": [
+            {
+              "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "debit": {
+          "anyOf": [
+            {
+              "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "accountId",
+        "debit",
+        "credit"
+      ],
+      "type": "object"
+    },
+    "RegisterScope": {
+      "additionalProperties": false,
+      "properties": {
+        "asOf": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "basis": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "compilerVersion": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "currency": {
+          "maxLength": 3,
+          "type": "string"
+        },
+        "populationHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "revision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "revision",
+        "asOf",
+        "populationHash",
+        "basis",
+        "currency",
+        "compilerVersion"
+      ],
+      "type": "object"
+    },
+    "ReportBasis": {
+      "enum": [
+        "accrual",
+        "cash"
+      ],
+      "type": "string"
+    },
+    "ReportComparison": {
+      "additionalProperties": false,
+      "properties": {
+        "asOf": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "previousPeriod",
+            "previousYear"
+          ],
+          "type": "string"
+        },
+        "periodStart": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "populationHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "periodStart",
+        "asOf",
+        "populationHash"
+      ],
+      "type": "object"
+    },
+    "ReportComparisonKind": {
+      "enum": [
+        "none",
+        "previousPeriod",
+        "previousYear"
+      ],
+      "type": "string"
+    },
+    "ReportRow": {
+      "additionalProperties": false,
+      "properties": {
+        "accountId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "credit": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "debit": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 120,
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "asset",
+            "liability",
+            "equity",
+            "income",
+            "expense",
+            "gain",
+            "unrealizedGain"
+          ],
+          "type": "string"
+        },
+        "signedBalance": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "accountId",
+        "code",
+        "name",
+        "role",
+        "signedBalance",
+        "debit",
+        "credit"
+      ],
+      "type": "object"
+    },
+    "ReportWarning": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 80,
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 1000,
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "type": "object"
+    },
+    "ReportsInput": {
+      "additionalProperties": false,
+      "properties": {
+        "asOf": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "basis": {
+          "$ref": "#/$defs/ReportBasis"
+        },
+        "compare": {
+          "$ref": "#/$defs/ReportComparisonKind"
+        },
+        "from": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "revision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "asOf"
+      ],
+      "type": "object"
+    },
+    "ReverseInput": {
+      "additionalProperties": false,
+      "properties": {
+        "accountingDate": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "journalId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 500,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "journalId",
+        "accountingDate",
+        "reason"
+      ],
+      "type": "object"
+    },
+    "SavedDraft": {
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "$ref": "#/$defs/JournalDraftData"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "journalId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "outcomeSequence": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "postingOperationId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "recoveredFromOperationId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "posting",
+            "rejected",
+            "posted"
+          ],
+          "type": "string"
+        },
+        "version": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "status",
+        "data"
+      ],
+      "type": "object"
+    },
+    "SetupResult": {
+      "additionalProperties": false,
+      "properties": {
+        "outcomeSequence": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "setup": {
+          "$ref": "#/$defs/BookSetup"
+        }
+      },
+      "required": [
+        "setup",
+        "outcomeSequence"
+      ],
+      "type": "object"
+    },
+    "SourceDraft": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "posting",
+            "rejected",
+            "posted"
+          ],
+          "type": "string"
+        },
+        "version": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "status"
+      ],
+      "type": "object"
+    },
+    "SourceDraftPage": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "drafts": {
+          "items": {
+            "$ref": "#/$defs/SourceDraft"
+          },
+          "maxItems": 25,
+          "type": "array"
+        },
+        "page": {
+          "maximum": 100000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "pageSize": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "count",
+        "page",
+        "pageSize",
+        "drafts"
+      ],
+      "type": "object"
+    },
+    "SourceEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "evidenceReference": {
+          "maxLength": 1000,
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "description"
+      ],
+      "type": "object"
+    },
+    "SourceGetInput": {
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "maximum": 100000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "sourceId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sourceId"
+      ],
+      "type": "object"
+    },
+    "SourceListInput": {
+      "additionalProperties": false,
+      "properties": {
+        "page": {
+          "maximum": 100000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "text": {
+          "maxLength": 200,
+          "type": "string"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "SourcePage": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "page": {
+          "maximum": 100000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "pageSize": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/SourceSummary"
+          },
+          "maxItems": 25,
+          "type": "array"
+        }
+      },
+      "required": [
+        "count",
+        "page",
+        "pageSize",
+        "sources"
+      ],
+      "type": "object"
+    },
+    "SourceRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "bookRevision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "contentHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "corrections": {
+          "items": {
+            "$ref": "#/$defs/Correction"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        },
+        "drafts": {
+          "$ref": "#/$defs/SourceDraftPage"
+        },
+        "journalId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "outcomeSequence": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "postingOperationId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceEvent"
+        },
+        "status": {
+          "enum": [
+            "unposted",
+            "posting",
+            "rejected",
+            "posted"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "contentHash",
+        "journalId",
+        "bookRevision",
+        "status",
+        "drafts",
+        "corrections"
+      ],
+      "type": "object"
+    },
+    "SourceSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "bookRevision": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "contentHash": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "journalId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "outcomeSequence": {
+          "pattern": "^(0|[1-9][0-9]{0,18})$",
+          "type": "string"
+        },
+        "postingOperationId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceEvent"
+        },
+        "status": {
+          "enum": [
+            "unposted",
+            "posting",
+            "rejected",
+            "posted"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "contentHash",
+        "journalId",
+        "bookRevision",
+        "status"
+      ],
+      "type": "object"
+    },
+    "StatementRow": {
+      "additionalProperties": false,
+      "properties": {
+        "accountId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "amount": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "change": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$",
+          "type": "string"
+        },
+        "comparative": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 120,
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "asset",
+            "liability",
+            "equity",
+            "income",
+            "expense",
+            "gain",
+            "unrealizedGain"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "accountId",
+        "code",
+        "name",
+        "role",
+        "amount"
+      ],
+      "type": "object"
+    },
+    "StatementTotal": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "change": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "comparative": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "key": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 120,
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "amount"
+      ],
+      "type": "object"
+    },
+    "TrialBalance": {
+      "additionalProperties": false,
+      "properties": {
+        "balanced": {
+          "type": "boolean"
+        },
+        "credit": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "debit": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "fiscalYearStart": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "type": "string"
+        },
+        "retainedEarnings": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TrialBalanceEarnings"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/$defs/ReportRow"
+          },
+          "maxItems": 100000,
+          "type": "array"
+        }
+      },
+      "required": [
+        "rows",
+        "debit",
+        "credit",
+        "balanced",
+        "fiscalYearStart",
+        "retainedEarnings"
+      ],
+      "type": "object"
+    },
+    "TrialBalanceEarnings": {
+      "additionalProperties": false,
+      "properties": {
+        "credit": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "debit": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 120,
+          "type": "string"
+        },
+        "signedBalance": {
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "signedBalance",
+        "debit",
+        "credit"
+      ],
+      "type": "object"
+    }
+  },
+  "frozenOn": "2026-10-04",
+  "note": "The frozen operation contract. Generated by scripts/freeze-contract.ts; never edit by hand. See docs/reference/contract-policy.md.",
+  "operations": {
+    "accounts.list": {
+      "input": {
+        "$ref": "#/$defs/Empty"
+      },
+      "output": {
+        "$ref": "#/$defs/AccountList"
+      },
+      "permission": "read",
+      "writes": false
+    },
+    "accounts.prepareChange": {
+      "input": {
+        "$ref": "#/$defs/AccountChangeInput"
+      },
+      "output": {
+        "$ref": "#/$defs/PreparedOperation"
+      },
+      "permission": "configure",
+      "writes": true
+    },
+    "accounts.prepareCreate": {
+      "input": {
+        "$ref": "#/$defs/AccountCreateInput"
+      },
+      "output": {
+        "$ref": "#/$defs/PreparedOperation"
+      },
+      "permission": "configure",
+      "writes": true
+    },
+    "activity.get": {
+      "input": {
+        "$ref": "#/$defs/ActivityInput"
+      },
+      "output": {
+        "$ref": "#/$defs/AccountActivity"
+      },
+      "permission": "read",
+      "writes": false
+    },
+    "book.get": {
+      "input": {
+        "$ref": "#/$defs/Empty"
+      },
+      "output": {
+        "$ref": "#/$defs/BookContext"
+      },
+      "permission": "read",
+      "writes": false
+    },
+    "book.setup": {
+      "input": {
+        "$ref": "#/$defs/BookSetup"
+      },
+      "output": {
+        "$ref": "#/$defs/SetupResult"
+      },
+      "permission": "provision",
+      "writes": true
+    },
+    "capabilities.get": {
+      "input": {
+        "$ref": "#/$defs/Empty"
+      },
+      "output": {
+        "$ref": "#/$defs/Capabilities"
+      },
+      "permission": "read",
+      "writes": false
+    },
+    "drafts.create": {
+      "input": {
+        "$ref": "#/$defs/DraftCreateInput"
+      },
+      "output": {
+        "$ref": "#/$defs/SavedDraft"
+      },
+      "permission": "draft",
+      "writes": true
+    },
+    "drafts.discard": {
+      "input": {
+        "$ref": "#/$defs/DraftVersionInput"
+      },
+      "output": {
+        "$ref": "#/$defs/DiscardResult"
+      },
+      "permission": "draft",
+      "writes": true
+    },
+    "drafts.get": {
+      "input": {
+        "$ref": "#/$defs/DraftIdInput"
+      },
+      "output": {
+        "$ref": "#/$defs/SavedDraft"
+      },
+      "permission": "read",
+      "writes": false
+    },
+    "drafts.list": {
+      "input": {
+        "$ref": "#/$defs/PageInput"
+      },
+      "output": {
+        "$ref": "#/$defs/DraftPage"
+      },
+      "permission": "read",
+      "writes": false
+    },
+    "drafts.recover": {
+      "input": {
+        "$ref": "#/$defs/DraftRecoveryInput"
+      },
+      "output": {
+        "$ref": "#/$defs/SavedDraft"
+      },
+      "permission": "draft",
+      "writes": true
+    },
+    "drafts.save": {
+      "input": {
+        "$ref": "#/$defs/DraftSaveInput"
+      },
+      "output": {
+        "$ref": "#/$defs/SavedDraft"
+      },
+      "permission": "draft",
+      "writes": true
+    },
+    "journal.get": {
+      "input": {
+        "$ref": "#/$defs/JournalGetInput"
+      },
+      "output": {
+        "$ref": "#/$defs/JournalEntry"
+      },
+      "permission": "read",
+      "writes": false
+    },
+    "journal.list": {
+      "input": {
+        "$ref": "#/$defs/JournalQuery"
+      },
+      "output": {
+        "$ref": "#/$defs/JournalPage"
+      },
+      "permission": "read",
+      "writes": false
+    },
+    "journal.prepare": {
+      "input": {
+        "$ref": "#/$defs/DraftVersionInput"
+      },
+      "output": {
+        "$ref": "#/$defs/PreparedOperation"
+      },
+      "permission": "post",
+      "writes": true
+    },
+    "journal.prepareReverse": {
+      "input": {
+        "$ref": "#/$defs/ReverseInput"
+      },
+      "output": {
+        "$ref": "#/$defs/PreparedOperation"
+      },
+      "permission": "correct",
+      "writes": true
+    },
+    "operations.commit": {
+      "input": {
+        "$ref": "#/$defs/CommitInput"
+      },
+      "output": {
+        "$ref": "#/$defs/MutationReceipt"
+      },
+      "permission": "post",
+      "writes": true
+    },
+    "operations.get": {
+      "input": {
+        "$ref": "#/$defs/OperationInput"
+      },
+      "output": {
+        "$ref": "#/$defs/OperationStatus"
+      },
+      "permission": "read",
+      "writes": false
+    },
+    "periods.list": {
+      "input": {
+        "$ref": "#/$defs/Empty"
+      },
+      "output": {
+        "$ref": "#/$defs/PeriodList"
+      },
+      "permission": "read",
+      "writes": false
+    },
+    "periods.prepare": {
+      "input": {
+        "$ref": "#/$defs/PeriodInput"
+      },
+      "output": {
+        "$ref": "#/$defs/PreparedOperation"
+      },
+      "permission": "close",
+      "writes": true
+    },
+    "reports.get": {
+      "input": {
+        "$ref": "#/$defs/ReportsInput"
+      },
+      "output": {
+        "$ref": "#/$defs/CoreReports"
+      },
+      "permission": "read",
+      "writes": false
+    },
+    "sources.get": {
+      "input": {
+        "$ref": "#/$defs/SourceGetInput"
+      },
+      "output": {
+        "$ref": "#/$defs/SourceRecord"
+      },
+      "permission": "read",
+      "writes": false
+    },
+    "sources.list": {
+      "input": {
+        "$ref": "#/$defs/SourceListInput"
+      },
+      "output": {
+        "$ref": "#/$defs/SourcePage"
+      },
+      "permission": "read",
+      "writes": false
+    },
+    "tokens.activity": {
+      "input": {
+        "$ref": "#/$defs/AgentTokenActivityInput"
+      },
+      "output": {
+        "$ref": "#/$defs/AgentTokenActivity"
+      },
+      "permission": "provision",
+      "writes": false
+    },
+    "tokens.create": {
+      "input": {
+        "$ref": "#/$defs/AgentTokenCreateInput"
+      },
+      "output": {
+        "$ref": "#/$defs/AgentTokenCreated"
+      },
+      "permission": "provision",
+      "writes": true
+    },
+    "tokens.list": {
+      "input": {
+        "$ref": "#/$defs/AgentTokenListInput"
+      },
+      "output": {
+        "$ref": "#/$defs/AgentTokenList"
+      },
+      "permission": "provision",
+      "writes": false
+    },
+    "tokens.revoke": {
+      "input": {
+        "$ref": "#/$defs/AgentTokenRevokeInput"
+      },
+      "output": {
+        "$ref": "#/$defs/AgentToken"
+      },
+      "permission": "provision",
+      "writes": true
+    }
+  },
+  "preparedPermissions": {
+    "changeAccount": "configure",
+    "closePeriod": "close",
+    "createAccount": "configure",
+    "postDraft": "post",
+    "reopenPeriod": "close",
+    "reverseJournal": "correct"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "types": ["bun"], "lib": ["ESNext", "DOM"] },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "slow/**/*.ts",
+    "bench/cold-load.ts",
+    "bench/seed-books.ts",
+    "bench/support/**/*.ts"
+  ]
+}

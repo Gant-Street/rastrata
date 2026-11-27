@@ -1,0 +1,13 @@
+2025-01-02 Oldest
+    Assets:Stock  2 UNIT {$10} [2025-01-02]
+    Assets:Cash   -$20
+2025-02-02 Highest
+    Assets:Stock  2 UNIT {$30} [2025-02-02]
+    Assets:Cash   -$60
+2025-03-02 Newest
+    Assets:Stock  2 UNIT {$20} [2025-03-02]
+    Assets:Cash   -$40
+2025-04-02 Sell
+    Assets:Stock  -3 UNIT @ $40
+    Assets:Cash    $120
+    Income:Gain

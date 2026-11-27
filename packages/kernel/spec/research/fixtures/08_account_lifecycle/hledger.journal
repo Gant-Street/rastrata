@@ -1,0 +1,6 @@
+commodity 1.00 USD
+account assets:cash
+account equity:opening
+2025-01-05 Before declaration has economic meaning
+    assets:cash       1 USD
+    equity:opening   -1 USD

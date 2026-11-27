@@ -1,0 +1,333 @@
+{
+  "comment": "Cases for the data directory, read by apps/api/test/data-directory.test.ts and by the Go twin in apps/terminal/internal/service. The two must give the same answer for every case. A case with `error` must fail to resolve its paths, and the message must contain that text; otherwise every field of `expect` must match. `settings` is the service's config.json; `expectPort` is the port the service and the command line use, and `portError` a port that must be refused.",
+  "cases": [
+    {
+      "name": "macOS default",
+      "platform": "darwin",
+      "home": "/Users/ada",
+      "env": {},
+      "expect": {
+        "directory": "/Users/ada/Library/Application Support/Rastrata",
+        "database": "/Users/ada/Library/Application Support/Rastrata/book.sqlite",
+        "backups": "/Users/ada/Library/Application Support/Rastrata/backups/book",
+        "exports": "/Users/ada/Library/Application Support/Rastrata/exports/book",
+        "ownerKey": "/Users/ada/Library/Application Support/Rastrata/owner.key",
+        "logs": "/Users/ada/Library/Application Support/Rastrata/logs",
+        "serviceLog": "/Users/ada/Library/Application Support/Rastrata/logs/service.log",
+        "stdioLog": "/Users/ada/Library/Application Support/Rastrata/logs/service-stdio.log",
+        "config": "/Users/ada/Library/Application Support/Rastrata/config.json"
+      }
+    },
+    {
+      "name": "macOS ignores XDG_DATA_HOME",
+      "platform": "darwin",
+      "home": "/Users/ada",
+      "env": {
+        "XDG_DATA_HOME": "/somewhere/else"
+      },
+      "expect": {
+        "directory": "/Users/ada/Library/Application Support/Rastrata"
+      }
+    },
+    {
+      "name": "Linux default",
+      "platform": "linux",
+      "home": "/home/ada",
+      "env": {},
+      "expect": {
+        "directory": "/home/ada/.local/share/rastrata",
+        "database": "/home/ada/.local/share/rastrata/book.sqlite",
+        "backups": "/home/ada/.local/share/rastrata/backups/book",
+        "exports": "/home/ada/.local/share/rastrata/exports/book",
+        "ownerKey": "/home/ada/.local/share/rastrata/owner.key",
+        "logs": "/home/ada/.local/share/rastrata/logs",
+        "serviceLog": "/home/ada/.local/share/rastrata/logs/service.log",
+        "stdioLog": "/home/ada/.local/share/rastrata/logs/service-stdio.log",
+        "config": "/home/ada/.local/share/rastrata/config.json"
+      }
+    },
+    {
+      "name": "Linux with XDG_DATA_HOME",
+      "platform": "linux",
+      "home": "/home/ada",
+      "env": {
+        "XDG_DATA_HOME": "/data/xdg"
+      },
+      "expect": {
+        "directory": "/data/xdg/rastrata",
+        "database": "/data/xdg/rastrata/book.sqlite",
+        "ownerKey": "/data/xdg/rastrata/owner.key"
+      }
+    },
+    {
+      "name": "Linux ignores a relative XDG_DATA_HOME, as the XDG rules say",
+      "platform": "linux",
+      "home": "/home/ada",
+      "env": {
+        "XDG_DATA_HOME": "relative/share"
+      },
+      "expect": {
+        "directory": "/home/ada/.local/share/rastrata"
+      }
+    },
+    {
+      "name": "Linux ignores a blank XDG_DATA_HOME",
+      "platform": "linux",
+      "home": "/home/ada",
+      "env": {
+        "XDG_DATA_HOME": "  "
+      },
+      "expect": {
+        "directory": "/home/ada/.local/share/rastrata"
+      }
+    },
+    {
+      "name": "other platforms follow the Linux rule",
+      "platform": "freebsd",
+      "home": "/home/ada",
+      "env": {},
+      "expect": {
+        "directory": "/home/ada/.local/share/rastrata"
+      }
+    },
+    {
+      "name": "RASTRATA_DATA_DIR moves the whole directory",
+      "platform": "darwin",
+      "home": "/Users/ada",
+      "env": {
+        "RASTRATA_DATA_DIR": "/Volumes/Books/rastrata"
+      },
+      "expect": {
+        "directory": "/Volumes/Books/rastrata",
+        "database": "/Volumes/Books/rastrata/book.sqlite",
+        "backups": "/Volumes/Books/rastrata/backups/book",
+        "exports": "/Volumes/Books/rastrata/exports/book",
+        "ownerKey": "/Volumes/Books/rastrata/owner.key",
+        "logs": "/Volumes/Books/rastrata/logs",
+        "config": "/Volumes/Books/rastrata/config.json"
+      }
+    },
+    {
+      "name": "RASTRATA_DATA_DIR wins over XDG_DATA_HOME and is cleaned",
+      "platform": "linux",
+      "home": "/home/ada",
+      "env": {
+        "RASTRATA_DATA_DIR": "/srv//books/../rastrata/",
+        "XDG_DATA_HOME": "/data/xdg"
+      },
+      "expect": {
+        "directory": "/srv/rastrata"
+      }
+    },
+    {
+      "name": "each part can be moved on its own",
+      "platform": "linux",
+      "home": "/home/ada",
+      "env": {
+        "RASTRATA_LOCAL_DB": "/books/main.sqlite",
+        "RASTRATA_BACKUP_DIR": "/mnt/backups",
+        "RASTRATA_EXPORT_DIR": "/mnt/exports",
+        "RASTRATA_OWNER_KEY_FILE": "/keys/owner",
+        "RASTRATA_LOG_DIR": "/var/log/rastrata"
+      },
+      "expect": {
+        "directory": "/home/ada/.local/share/rastrata",
+        "database": "/books/main.sqlite",
+        "backups": "/mnt/backups",
+        "exports": "/mnt/exports",
+        "ownerKey": "/keys/owner",
+        "logs": "/var/log/rastrata",
+        "serviceLog": "/var/log/rastrata/service.log",
+        "stdioLog": "/var/log/rastrata/service-stdio.log",
+        "config": "/home/ada/.local/share/rastrata/config.json"
+      }
+    },
+    {
+      "name": "a book kept elsewhere brings its backups along, named after the file",
+      "platform": "linux",
+      "home": "/home/ada",
+      "env": {
+        "RASTRATA_LOCAL_DB": "/books/main.sqlite"
+      },
+      "expect": {
+        "database": "/books/main.sqlite",
+        "backups": "/books/backups/main",
+        "exports": "/books/exports/main"
+      }
+    },
+    {
+      "name": "blank overrides are the same as no override",
+      "platform": "linux",
+      "home": "/home/ada",
+      "env": {
+        "RASTRATA_DATA_DIR": "",
+        "RASTRATA_LOCAL_DB": "   ",
+        "RASTRATA_OWNER_KEY_FILE": ""
+      },
+      "expect": {
+        "directory": "/home/ada/.local/share/rastrata",
+        "database": "/home/ada/.local/share/rastrata/book.sqlite",
+        "ownerKey": "/home/ada/.local/share/rastrata/owner.key"
+      }
+    },
+    {
+      "name": "a relative data directory is refused",
+      "platform": "linux",
+      "home": "/home/ada",
+      "env": {
+        "RASTRATA_DATA_DIR": "books"
+      },
+      "error": "RASTRATA_DATA_DIR must be an absolute path"
+    },
+    {
+      "name": "a tilde is not expanded, so it is refused",
+      "platform": "darwin",
+      "home": "/Users/ada",
+      "env": {
+        "RASTRATA_DATA_DIR": "~/Books"
+      },
+      "error": "RASTRATA_DATA_DIR must be an absolute path"
+    },
+    {
+      "name": "a relative database path is refused",
+      "platform": "linux",
+      "home": "/home/ada",
+      "env": {
+        "RASTRATA_LOCAL_DB": "./book.sqlite"
+      },
+      "error": "RASTRATA_LOCAL_DB must be an absolute path"
+    },
+    {
+      "name": "a relative backup folder is refused",
+      "platform": "linux",
+      "home": "/home/ada",
+      "env": {
+        "RASTRATA_BACKUP_DIR": "backups"
+      },
+      "error": "RASTRATA_BACKUP_DIR must be an absolute path"
+    },
+    {
+      "name": "a relative owner key path is refused",
+      "platform": "linux",
+      "home": "/home/ada",
+      "env": {
+        "RASTRATA_OWNER_KEY_FILE": "owner.key"
+      },
+      "error": "RASTRATA_OWNER_KEY_FILE must be an absolute path"
+    },
+    {
+      "name": "a missing home is refused when nothing else says where to go",
+      "platform": "linux",
+      "home": "",
+      "env": {},
+      "error": "home directory"
+    },
+    {
+      "name": "a missing home does not matter when the data directory is named",
+      "platform": "linux",
+      "home": "",
+      "env": {
+        "RASTRATA_DATA_DIR": "/srv/rastrata"
+      },
+      "expect": {
+        "directory": "/srv/rastrata"
+      }
+    },
+    {
+      "name": "settings: backupDir moves the backups",
+      "platform": "linux",
+      "home": "/home/ada",
+      "env": {},
+      "settings": {
+        "backupDir": "/Volumes/Backup/rastrata"
+      },
+      "expect": {
+        "backups": "/Volumes/Backup/rastrata",
+        "exports": "/home/ada/.local/share/rastrata/exports/book",
+        "directory": "/home/ada/.local/share/rastrata"
+      }
+    },
+    {
+      "name": "the environment wins over the settings file for the backups",
+      "platform": "linux",
+      "home": "/home/ada",
+      "env": {
+        "RASTRATA_BACKUP_DIR": "/mnt/backups"
+      },
+      "settings": {
+        "backupDir": "/Volumes/Backup/rastrata"
+      },
+      "expect": {
+        "backups": "/mnt/backups"
+      }
+    },
+    {
+      "name": "the default port",
+      "platform": "darwin",
+      "home": "/Users/ada",
+      "env": {},
+      "expectPort": 7278
+    },
+    {
+      "name": "the port from the settings file",
+      "platform": "darwin",
+      "home": "/Users/ada",
+      "env": {},
+      "settings": {
+        "port": 7300
+      },
+      "expectPort": 7300
+    },
+    {
+      "name": "the environment's port wins over the settings file",
+      "platform": "darwin",
+      "home": "/Users/ada",
+      "env": {
+        "RASTRATA_API_PORT": "7400"
+      },
+      "settings": {
+        "port": 7300
+      },
+      "expectPort": 7400
+    },
+    {
+      "name": "a blank port in the environment is no port",
+      "platform": "darwin",
+      "home": "/Users/ada",
+      "env": {
+        "RASTRATA_API_PORT": " "
+      },
+      "settings": {
+        "port": 7300
+      },
+      "expectPort": 7300
+    },
+    {
+      "name": "port 0 asks the system to choose",
+      "platform": "darwin",
+      "home": "/Users/ada",
+      "env": {
+        "RASTRATA_API_PORT": "0"
+      },
+      "expectPort": 0
+    },
+    {
+      "name": "a port above 65535 is refused",
+      "platform": "darwin",
+      "home": "/Users/ada",
+      "env": {
+        "RASTRATA_API_PORT": "70000"
+      },
+      "portError": "RASTRATA_API_PORT"
+    },
+    {
+      "name": "a port that is not a number is refused",
+      "platform": "darwin",
+      "home": "/Users/ada",
+      "env": {
+        "RASTRATA_API_PORT": "72x8"
+      },
+      "portError": "RASTRATA_API_PORT"
+    }
+  ]
+}

@@ -1,0 +1,386 @@
+[
+  {
+    "file": "packages/kernel/src/accounting.ts",
+    "line": 1073,
+    "description": "<= → < (occurrence 1)",
+    "rationale": "The common identity/conservation guard at line 964 rejects exactSourceAmount.isZero() before this sign check. The only distinguishing value is zero, which cannot reach this predicate; positive direct costs and negative costs are unchanged. The zero-source regression exercises every adjustment kind."
+  },
+  {
+    "file": "packages/kernel/src/accounting.ts",
+    "line": 1073,
+    "description": ">= → > (occurrence 1)",
+    "rationale": "The preceding common guard rejects a zero exactSourceAmount. Changing the purchase-rebate sign check only at zero therefore cannot affect a reachable request; nonzero signs retain the same disposition. The zero-source regression includes purchase rebates."
+  },
+  {
+    "file": "packages/kernel/src/accounting.ts",
+    "line": 1098,
+    "description": "<= → < (occurrence 1)",
+    "rationale": "The common request guard already rejects a zero exactSourceAmount before write-down reversal sign validation. Zero is the sole distinguishing value, and every nonzero reversal amount is classified identically. The zero-source regression includes writeDownReversal."
+  },
+  {
+    "file": "packages/kernel/src/accounting.ts",
+    "line": 1098,
+    "description": ">= → > (occurrence 1)",
+    "rationale": "The common request guard already rejects a zero exactSourceAmount before write-down sign validation. Zero is the sole distinguishing value, and every nonzero write-down amount is classified identically. The zero-source regression includes writeDown."
+  },
+  {
+    "file": "packages/kernel/src/accounting.ts",
+    "line": 1706,
+    "description": ">= → > (occurrence 1)",
+    "rationale": "In the same disjunction, the earlier exactAdjustmentAmount.isZero() clause rejects an explicitly supplied zero adjustment. The impairment sign boundary can therefore never distinguish a request, while missing amounts and nonzero signs are unchanged."
+  },
+  {
+    "file": "packages/kernel/src/iana-timezones.ts",
+    "line": 468,
+    "description": "> → >= (occurrence 1)",
+    "rationale": "The pinned zone table's mechanically checked maximum identifier length is 30; therefore no admitted identifier exists at the sole distinguishing length of 64."
+  },
+  {
+    "file": "packages/kernel/src/numeric.ts",
+    "line": 21,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "The only distinguishing bigint is zero, and bigint negation preserves zero exactly, so both branches compute the identical magnitude."
+  },
+  {
+    "file": "packages/kernel/src/numeric.ts",
+    "line": 21,
+    "description": "0n → 1n (occurrence 1)",
+    "rationale": "For integral bigints the threshold change adds only zero to the negated branch, and negating zero produces the same exact magnitude."
+  },
+  {
+    "file": "packages/kernel/src/numeric.ts",
+    "line": 22,
+    "description": "0n → 1n (occurrence 1)",
+    "rationale": "The guard only bypasses bit-length evaluation for magnitude zero; magnitude one has one bit and cannot exceed the 16384-bit bound, so the result is identical."
+  },
+  {
+    "file": "packages/kernel/src/numeric.ts",
+    "line": 31,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "The only distinguishing bigint is zero, whose negation is zero, leaving the Euclidean algorithm's initial value unchanged."
+  },
+  {
+    "file": "packages/kernel/src/numeric.ts",
+    "line": 31,
+    "description": "0n → 1n (occurrence 1)",
+    "rationale": "With integral input the threshold adds only zero to the negated branch, and bigint negative zero is exactly zero."
+  },
+  {
+    "file": "packages/kernel/src/numeric.ts",
+    "line": 32,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "The only distinguishing bigint is zero, whose negation is zero, leaving the Euclidean algorithm's second value unchanged."
+  },
+  {
+    "file": "packages/kernel/src/numeric.ts",
+    "line": 32,
+    "description": "0n → 1n (occurrence 1)",
+    "rationale": "With integral input the threshold adds only zero to the negated branch, and bigint negative zero is exactly zero."
+  },
+  {
+    "file": "packages/kernel/src/numeric.ts",
+    "line": 172,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "The divisor numerator is rejected when zero and both denominators are positive, so the computed denominator can never be the distinguishing value zero."
+  },
+  {
+    "file": "packages/kernel/src/numeric.ts",
+    "line": 172,
+    "description": "0n → 1n (occurrence 1)",
+    "rationale": "The computed bigint denominator is nonzero; among integers, comparison with one differs from comparison with zero only at zero, which is unreachable here."
+  },
+  {
+    "file": "packages/kernel/src/numeric.ts",
+    "line": 188,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "The only differing input is canonical rational zero; negating it produces the same canonical rational value zero."
+  },
+  {
+    "file": "packages/kernel/src/numeric.ts",
+    "line": 188,
+    "description": "0n → 1n (occurrence 1)",
+    "rationale": "Integral numerators make the threshold change affect only zero, whose exact rational negation remains canonical zero."
+  },
+  {
+    "file": "packages/kernel/src/quantization.ts",
+    "line": 105,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "The preceding exact-remainder return makes numerator zero unreachable on this line, so the sign predicate receives only nonzero integers."
+  },
+  {
+    "file": "packages/kernel/src/quantization.ts",
+    "line": 105,
+    "description": "0n → 1n (occurrence 1)",
+    "rationale": "After the zero-remainder return, an integral numerator cannot be zero; the only added integer below one is zero, so sign is unchanged."
+  },
+  {
+    "file": "packages/kernel/src/quantization.ts",
+    "line": 106,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "The preceding return proves remainder is nonzero, eliminating the sole value that distinguishes less-than from less-than-or-equal zero."
+  },
+  {
+    "file": "packages/kernel/src/quantization.ts",
+    "line": 106,
+    "description": "0n → 1n (occurrence 1)",
+    "rationale": "The nonzero integral remainder cannot fall strictly between zero and one, so both magnitude branches compute the same value."
+  },
+  {
+    "file": "packages/kernel/src/quantization.ts",
+    "line": 109,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "The local sign is constructed as exactly negative one or positive one, never zero, making these predicates equivalent on its closed domain."
+  },
+  {
+    "file": "packages/kernel/src/quantization.ts",
+    "line": 109,
+    "description": "0n → 1n (occurrence 1)",
+    "rationale": "The local sign is restricted to negative one or positive one; both comparisons select only negative one on that domain."
+  },
+  {
+    "file": "packages/kernel/src/quantization.ts",
+    "line": 110,
+    "description": "> → >= (occurrence 1)",
+    "rationale": "The local sign is constructed as exactly negative one or positive one, never zero, making these predicates equivalent on its closed domain."
+  },
+  {
+    "file": "packages/kernel/src/quantization.ts",
+    "line": 114,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "The sole distinguishing quotient is zero, and negating bigint zero preserves zero before the parity calculation."
+  },
+  {
+    "file": "packages/kernel/src/quantization.ts",
+    "line": 114,
+    "description": "0n → 1n (occurrence 3)",
+    "rationale": "For integral quotients the threshold adds only zero to the negated branch; negative zero has the same parity and exact value."
+  },
+  {
+    "file": "packages/kernel/src/policy.ts",
+    "line": 315,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "The immediately following ordinal-uniqueness guard returns the same invalid_journal_structure diagnostic for every duplicate-ordinal input before comparing quantized values. Ties may sort differently but cannot produce a resolved transaction or change that diagnostic; distinct ordinals sort identically."
+  },
+  {
+    "file": "packages/kernel/src/policy.ts",
+    "line": 315,
+    "description": "> → >= (occurrence 1)",
+    "rationale": "The immediately following ordinal-uniqueness guard rejects duplicate ordinals independently of their tie order and before quantized-value matching. With unique ordinals this comparator is unchanged. Thus both valid and duplicate-ordinal inputs produce the same resolver result."
+  },
+  {
+    "file": "packages/kernel/src/lots.ts",
+    "line": 257,
+    "description": "<= → < (occurrence 1)",
+    "rationale": "At the sole distinguishing equality, holding remaining quantity and request remaining quantity are the same exact rational, so either ternary branch returns the identical value."
+  },
+  {
+    "file": "packages/kernel/src/codec.ts",
+    "line": 95,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "The additional loop iteration writes outside the fixed Uint8Array at index length; ECMAScript integer-indexed exotic assignment is ignored and the returned bytes are identical."
+  },
+  {
+    "file": "packages/kernel/src/codec.ts",
+    "line": 122,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "Object.entries supplies unique property keys, so equality can occur only when the sort implementation compares an entry with itself; returning negative instead of zero cannot alter output."
+  },
+  {
+    "file": "packages/kernel/src/codec.ts",
+    "line": 122,
+    "description": "> → >= (occurrence 1)",
+    "rationale": "Object.entries supplies unique property keys, so equality can occur only when the sort implementation compares an entry with itself; returning positive instead of zero cannot alter output."
+  },
+  {
+    "file": "packages/kernel/src/accounting.ts",
+    "line": 1593,
+    "description": "> → >= (occurrence 1)",
+    "rationale": "When calculated equals remainingAllocable, both branches of the conditional select the same ExactRational value, so the installment amount and all subsequent carrying values are identical."
+  },
+  {
+    "file": "packages/kernel/src/accounting.ts",
+    "line": 911,
+    "description": "> → >= (occurrence 1)",
+    "rationale": "At the sole distinguishing equality, requested quantity and available quantity are the same exact rational. Both branches select that identical ordinary quantity, leaving all allocations and provisional amounts unchanged."
+  },
+  {
+    "file": "packages/kernel/src/accounting.ts",
+    "line": 929,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "At the sole distinguishing equality, remaining requested quantity equals the layer quantity. Either branch selects the same exact rational, so allocated quantity, basis and all subsequent remaining values are identical."
+  },
+  {
+    "file": "packages/kernel/src/canonical.ts",
+    "line": 105,
+    "description": "=== → !== (occurrence 1)",
+    "rationale": "Flushing structural ASCII tokens byte-by-byte into the cryptographic sink produces the identical SHA-256 digest as buffering them up to 4096 bytes, as cryptographic hash update functions are strictly associative across byte boundaries."
+  },
+  {
+    "file": "packages/kernel/src/book.ts",
+    "line": 1215,
+    "description": "> → >= (occurrence 1)",
+    "rationale": "When configurationSnapshots.length is 0, the subsequent state.configurationSnapshots.at(-1)!.contentHash throws a TypeError inside the enclosing try block, which catches the exception and returns false. Both >= and > yield the identical boolean outcome false for length 0, and length > 0 evaluates to true for both."
+  },
+  {
+    "file": "packages/kernel/src/book.ts",
+    "line": 2718,
+    "description": "> → >= (occurrence 1)",
+    "rationale": "Canonical postings are strictly required to have nonzero book values by journal structure validation (journal.ts:757). A zero posted value is unreachable, so source.compare(0) > 0 and >= 0 partition all reachable nonzero posting amounts identically."
+  },
+  {
+    "file": "packages/kernel/src/book.ts",
+    "line": 2723,
+    "description": "> → >= (occurrence 1)",
+    "rationale": "Canonical postings must have nonzero book values by journal validation (journal.ts:757), and disposal postings must also match a strictly positive reducing quantity (book.ts:2648). A zero posting amount is unreachable, making > 0 and >= 0 equivalent on all admitted disposal postings."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 168,
+    "description": "<= → < (occurrence 2)",
+    "rationale": "The changed operand is origin.bookRevision. referenceValid(beforePosition) already requires a strictly positive revision, and this same rejection condition requires precedes(beforePosition, origin). An origin at revision zero cannot follow a positive revision, so permitting zero in this individual check still returns the identical lineage rejection."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 189,
+    "description": "<= → < (occurrence 1)",
+    "rationale": "Changing the anchor quantity check only admits zero to the rest of the same rejection condition. Consumed quantity must be nonnegative and no greater than the anchor; holding remaining quantity must equal their difference. With a zero anchor both are zero, so a strictly positive allocation necessarily exceeds the zero remaining holding. Both versions return the identical quantity rejection before division."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 189,
+    "description": "> → >= (occurrence 1)",
+    "rationale": "The added rejected case is consumedQuantity equal to anchor.quantity. This forces the exact remaining holding quantity to zero, and the same condition rejects either a nonpositive allocation or a positive allocation greater than the remaining quantity. Equality therefore already returns the identical quantity rejection."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 380,
+    "description": "0n → 1n (occurrence 1)",
+    "rationale": "This call is a quantization-policy preflight whose successful share is discarded. Zero and one are both exactly representable at every supported nonnegative target scale; both before and after fractions are zero. Unsupported policy metadata is rejected identically. The actual acquisition budget is calculated later from the admitted posting, never from this preflight result."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 380,
+    "description": "0n → 1n (occurrence 2)",
+    "rationale": "This changes only the scale of the zero decimal used by the discarded policy-preflight share. ExactDecimal.of(0,0) and ExactDecimal.of(0,1) both become the same exact rational zero, and quantizeCumulativePostedShare normalizes to the policy target scale before returning. Admission and all returned acquisition artifacts are unchanged."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1468,
+    "description": "> → >= (occurrence 2)",
+    "rationale": "Permitting originBookRevision zero cannot validate a position: referenceValid(position.anchor) requires a positive anchor revision and the following precedes(anchor, origin) requires a later origin revision or the same positive revision with a later ordinal. Both predicates therefore return false for origin revision zero."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1500,
+    "description": "<= → < (occurrence 1)",
+    "rationale": "The weakened check admits movement.bookRevision zero only temporarily. ownershipPositionValid(after) requires a positive origin revision, and the following equality requires after.originBookRevision === movement.bookRevision. These cannot both hold for a zero-revision movement, so the validator still returns false."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1500,
+    "description": "<= → < (occurrence 2)",
+    "rationale": "Permitting a movement artifactOrdinal of zero cannot pass the remaining checks: ownershipPositionValid(after) requires a strictly positive originArtifactOrdinal and the movement validator requires that origin ordinal to equal movement.artifactOrdinal. The validator therefore still returns false for the only newly permitted value."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1523,
+    "description": "<= → < (occurrence 1)",
+    "rationale": "A zero-revision acquisition movement cannot pass ownershipPositionValid(p), which requires a positive origin revision, together with p.originBookRevision === movement.bookRevision. Weakening the earlier movement-revision check does not change the final false result."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1523,
+    "description": "<= → < (occurrence 2)",
+    "rationale": "The added admitted ordinal is one. The position's anchor reference must have a positive ordinal, use the same effect and revision as the movement, and precede the position origin whose ordinal must equal the movement ordinal. No positive anchor ordinal is strictly less than one; ordinal-one acquisitions remain invalid."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1525,
+    "description": ">= → > (occurrence 1)",
+    "rationale": "Allowing equal anchor and movement ordinals here cannot pass ownershipPositionValid(p). The surrounding equalities bind anchor, position origin, and movement to the same effect/revision, while that validator's precedes(anchor, origin) already requires a strictly smaller anchor ordinal. Equality still returns false."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1546,
+    "description": "<= → < (occurrence 1)",
+    "rationale": "The reduction effect must be nonempty. Every child movement must pass ownershipMovementValid, which entails a positive revision, and must have exactly the effect revision. Consequently no zero-revision effect can pass even when this earlier check permits zero."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1546,
+    "description": "0n → 1n (occurrence 1)",
+    "rationale": "The stricter check newly rejects revision one. A reduction-only effect cannot create an anchor: each valid movement's positive anchor revision is required to be strictly less than effect.bookRevision. No positive revision predates one, so every revision-one reduction effect already returns false later. Mixed acquisition effects use a separate validator and can correctly use revision one."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1549,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "This only changes tie ordering in the combined movement sort. The subsequent loop requires each sorted artifactOrdinal to equal its distinct one-based index, rejecting every duplicate ordinal. For distinct ordinals the comparator is unchanged; for ties both versions return false before a valid effect can escape."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1549,
+    "description": "> → >= (occurrence 1)",
+    "rationale": "This changes only the equal-ordinal comparator result. Duplicate ordinals cannot satisfy the following artifactOrdinal === BigInt(index + 1) check for every movement. All distinct ordinals retain the same order, so both validator variants accept and reject the same effects."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1573,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "This final journal-linked subarray check runs only after the combined movement loop has proved globally distinct contiguous artifact ordinals. Equal adjacent ordinals are consequently unreachable here. Relaxing strict to non-strict order cannot admit any additional effect."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1574,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "The preceding combined movement loop already requires one unique contiguous ordinal per artifact. Thus two quantity-only movements cannot have equal ordinals when this final ordering predicate is reached; strict and non-strict comparisons give identical results."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1580,
+    "description": "<= → < (occurrence 1)",
+    "rationale": "A general ownership effect must contain a movement. Every acquisition/reduction movement must have a positive revision through its local validator and must exactly match effect.bookRevision. Permitting an effect revision of zero at this early guard therefore still yields false in the child validation loop."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1583,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "The comparator changes only equal-ordinal ties across anchors and movements. The next loop requires every sorted ordinal to equal its distinct one-based index. Any tie fails that global topology check, while all unequal ordinals sort identically."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1583,
+    "description": "> → >= (occurrence 1)",
+    "rationale": "This alters only sorting of equal artifact ordinals. Duplicate ordinals cannot satisfy the subsequent contiguous one-based index check, regardless of tie order; distinct ordinals have unchanged comparison results. The ownership integrity verdict is therefore unchanged."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1658,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "Before checking the original anchor subarray order, the combined artifact loop proves globally unique contiguous ordinals across anchors and movements. Equal adjacent anchor ordinals are already rejected, making the relaxed equality case unreachable."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1659,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "The combined anchor/movement loop has already rejected every duplicate ordinal before this final journal-linked ordering check. Equality cannot reach this predicate on an otherwise admitted artifact, so replacing strict with non-strict order is equivalent."
+  },
+  {
+    "file": "packages/kernel/src/inventory-ownership.ts",
+    "line": 1660,
+    "description": "< → <= (occurrence 1)",
+    "rationale": "Global contiguous artifact topology is established before the final quantity-only subarray ordering check. That topology entails distinct ordinals, excluding equality at this comparison and preserving the same acceptance result under the mutation."
+  },
+  {
+    "file": "packages/kernel/src/owned-inventory-command.ts",
+    "line": 236,
+    "description": ">= → > (occurrence 1)",
+    "rationale": "If journalOrdinal equals context.journals.length, the indexed booked journal is undefined. The same OR condition independently checks booked === undefined and returns exactly the same posting-link rejection. Greater, smaller, and negative ordinals are unchanged by this equality relaxation."
+  },
+  {
+    "file": "packages/kernel/src/owned-inventory-command.ts",
+    "line": 337,
+    "description": ">= → > (occurrence 1)",
+    "rationale": "At a destination journal ordinal equal to the journal array length, destBooked is undefined. The same rejection condition checks destBooked === undefined independently, so weakening the length comparison cannot admit that absent destination journal or change its diagnostic."
+  }
+]

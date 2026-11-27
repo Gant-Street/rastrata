@@ -1,0 +1,401 @@
+/* Styles for the payees lane's components. Tokens from base.css only; no one-off colors.
+   Structure comes from rules and space, as in the statements: a rule above each part, hairlines between
+   rows, a double rule under the figures the page exists to state. Meaning is never carried by color
+   alone: every state has words and, where it needs one, an icon. What a bank wrote, and every name a
+   person typed, is text that can be any length: it wraps wherever it must and never widens the page. */
+
+.app-payees {
+  display: grid;
+  max-width: 76rem;
+}
+
+/* The page header keeps the space under it that every page's header has; what follows is spaced by its
+   own parts. */
+.app-payees > :not(.rt-page-header) {
+  margin: 0;
+}
+
+.app-payees > .rt-report-controls {
+  padding-bottom: var(--rt-space-3);
+}
+
+/* ---- The report ---------------------------------------------------------------------------- */
+
+.rt-payees {
+  gap: var(--rt-space-6);
+}
+
+.rt-payees-figures {
+  display: grid;
+  gap: var(--rt-space-2);
+}
+
+/* The four numbers the rest of the page is read against, set like the statements' figure: a thin rule
+   above and a double rule below. */
+.rt-payees-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, auto));
+  justify-content: start;
+  gap: var(--rt-space-2) var(--rt-space-8);
+  margin: 0;
+  padding: var(--rt-space-3) 0;
+  border-top: 1px solid var(--rt-ink);
+  border-bottom: 6px double var(--rt-ink);
+}
+
+.rt-payees-summary > div {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.rt-payees-summary dt {
+  font: 500 0.6875rem / 1.5 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-payees-summary dd {
+  margin: 0;
+  font-size: clamp(1.25rem, 3.4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-payees-adds {
+  margin: 0;
+}
+
+/* A part of the report: its heading under a rule, a sentence about what it holds, and its table. */
+.rt-payees-part {
+  display: grid;
+  gap: var(--rt-space-3);
+  min-width: 0;
+}
+
+.rt-payees-part > h3 {
+  margin: 0;
+  padding-top: var(--rt-space-3);
+  border-top: 1px solid var(--rt-ink);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.rt-payees-part > p {
+  margin: 0;
+  max-width: 54rem;
+}
+
+.rt-payees-proof {
+  display: grid;
+  gap: var(--rt-space-2);
+}
+
+.rt-payees-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-2) var(--rt-space-4);
+}
+
+.rt-payees-pager .rt-hint {
+  margin: 0;
+}
+
+/* ---- The tables ---------------------------------------------------------------------------- */
+
+.rt-payees-table th,
+.rt-payees-table td {
+  vertical-align: top;
+}
+
+.rt-payees-table tbody th[scope="row"] {
+  min-width: 10rem;
+  max-width: 36rem;
+  font-weight: 500;
+}
+
+.rt-payees-table thead th.rt-number {
+  min-width: 5.5rem;
+}
+
+.rt-payees-table td.rt-number {
+  white-space: nowrap;
+}
+
+.rt-payees-table small {
+  max-width: 34rem;
+  font-weight: 400;
+  white-space: normal;
+}
+
+/* What a bank wrote, or a name a person typed: any length, with no spaces if it comes to that. */
+.rt-payees-text,
+.rt-payees-title {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.rt-payees-name {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--rt-space-1) var(--rt-space-2);
+}
+
+/* A name that opens the payee looks like a link and acts like a button. */
+.rt-payees-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  color: var(--rt-accent);
+  text-align: start;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.rt-payees-link:hover {
+  color: var(--rt-accent-hover);
+}
+
+.rt-payees-none {
+  color: var(--rt-muted);
+}
+
+.rt-payees-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-2);
+}
+
+/* On a narrow screen the buttons of a row sit under its text, so the figures keep their room and nothing
+   needs a sideways scroll to be reached; on a wide one they have a column of their own. */
+.rt-payees-narrow {
+  display: none;
+}
+
+.rt-payees-matched {
+  display: block;
+  margin-top: var(--rt-space-1);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--rt-muted);
+}
+
+.rt-payees-matched .rt-payees-link {
+  font-size: inherit;
+}
+
+/* ---- The sheets ---------------------------------------------------------------------------- */
+
+/* A side sheet is as wide as its content needs and never wider than the screen. Its padding is inside its
+   width, so on a phone it does not run off the edge. */
+.rt-payees-sheet {
+  box-sizing: border-box;
+  width: min(34rem, 100%);
+}
+
+.rt-payees-sheet-wide {
+  width: min(48rem, 100%);
+}
+
+/* The form's buttons stay at the foot of the screen while the form is taller than it, so Save is never below
+   the fold; and a field that takes focus is scrolled clear of them. */
+.rt-payees-formsheet {
+  padding-bottom: 0;
+}
+
+.rt-payees-formsheet .rt-dialog-actions {
+  position: sticky;
+  bottom: 0;
+  margin-top: var(--rt-space-4);
+  padding-bottom: var(--rt-space-4);
+  background: var(--rt-surface);
+}
+
+.rt-positioner:has(.rt-payees-formsheet) {
+  scroll-padding-bottom: 6rem;
+}
+
+.rt-payees-form,
+.rt-payees-sheetbody {
+  display: grid;
+  gap: var(--rt-space-4);
+  min-width: 0;
+}
+
+/* In a sheet the fields are as wide as the sheet, so the panels between them end where they end. */
+.rt-payees-form .rt-field {
+  max-width: none;
+}
+
+.rt-payees-from {
+  display: grid;
+  gap: var(--rt-space-1);
+  margin: 0;
+  padding: var(--rt-space-3) 0;
+  border-top: var(--rt-rule);
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-payees-from-label {
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+/* What the words typed so far would find: a short list of facts, each with its tone's mark. */
+.rt-payees-test {
+  display: grid;
+  gap: var(--rt-space-2);
+  padding: var(--rt-space-3);
+  border: 1px solid var(--rt-divider);
+}
+
+.rt-payees-test > h3 {
+  margin: 0;
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-payees-test .rt-hint {
+  margin: 0;
+}
+
+.rt-payees-sentences {
+  display: grid;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-payees-sentences li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--rt-space-2);
+  overflow-wrap: anywhere;
+}
+
+.rt-payees-retired {
+  display: grid;
+  gap: var(--rt-space-1);
+}
+
+.rt-payees-retired .rt-hint {
+  margin: 0;
+  padding-inline-start: 2rem;
+}
+
+.rt-payees-sheetactions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-2) var(--rt-space-3);
+  margin: 0;
+}
+
+.rt-payees-sheetactions .rt-hint {
+  margin: 0;
+}
+
+.rt-payees-record {
+  display: grid;
+  gap: var(--rt-space-2);
+  padding-top: var(--rt-space-3);
+  border-top: 1px solid var(--rt-ink);
+}
+
+.rt-payees-record > h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.rt-payees-record p {
+  margin: 0;
+}
+
+.rt-payees-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-payees-words li {
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--rt-ink);
+  font: 0.8125rem / 1.5 var(--rt-mono);
+  overflow-wrap: anywhere;
+}
+
+.rt-payees-date {
+  white-space: nowrap;
+}
+
+.rt-payees-history {
+  display: grid;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding-inline-start: 1.25rem;
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Narrow screens ------------------------------------------------------------------------ */
+
+@media (max-width: 40rem) {
+  .rt-payees-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rt-payees-table th,
+  .rt-payees-table td {
+    padding-inline: var(--rt-space-2);
+  }
+
+  .rt-payees-table tbody th[scope="row"] {
+    min-width: 7rem;
+  }
+
+  .rt-payees-table thead th.rt-number {
+    min-width: 4.5rem;
+  }
+
+  .rt-payees-narrow {
+    display: flex;
+    margin-top: var(--rt-space-2);
+  }
+
+  .rt-payees-wide {
+    display: none;
+  }
+
+  .rt-payees-sheet {
+    padding: var(--rt-space-4);
+  }
+}
+
+@media print {
+  .rt-payees-actions,
+  .rt-payees-narrow,
+  .rt-payees-wide {
+    display: none;
+  }
+}

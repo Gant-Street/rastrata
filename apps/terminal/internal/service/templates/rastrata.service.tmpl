@@ -1,0 +1,21 @@
+# Rastrata, started at login and restarted if it stops without being asked to. Made by
+# 'rastrata install'; edit it and the next install overwrites your change.
+[Unit]
+Description=Rastrata: accounting that runs on this computer
+
+[Service]
+Type=simple
+ExecStart={{systemdQuote .Executable}} serve
+{{- range .Environment}}
+Environment={{systemdQuote (printf "%s=%s" .Name .Value)}}
+{{- end}}
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=yes
+StandardOutput=append:{{systemdPercent .StdioLog}}
+StandardError=append:{{systemdPercent .StdioLog}}
+
+[Install]
+WantedBy=default.target

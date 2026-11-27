@@ -1,0 +1,1155 @@
+/* ==========================================================================
+   The UX kit: tones, Details, EmptyState, Toast, AccountPicker, DateRangeField.
+   Rules, not boxes. Orange is rationed; the tones have one meaning each (see kit/tones.ts).
+   ========================================================================== */
+
+/* ---- FilterFold ---------------------------------------------------------------------------------------
+   A list's "Filter" button: a quiet icon that belongs to the search box (the box that holds it places it at
+   its end), with how many filters are on, and the panel it opens under the list's tools. */
+.rt-filter-button {
+  position: relative;
+  gap: 0;
+}
+
+.rt-filter-button svg {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+}
+
+.rt-filter-count {
+  position: absolute;
+  inset-block-start: -0.25rem;
+  inset-inline-end: -0.25rem;
+  min-width: 1rem;
+  padding: 0 0.1875rem;
+  background: var(--rt-ink);
+  color: var(--rt-paper);
+  font: 700 0.625rem / 1.6 var(--rt-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.rt-filter-panel[hidden] {
+  display: none;
+}
+
+/* ---- A list's tools -----------------------------------------------------------------------------------
+   One line under the page's title: the views at the start, and at the end what narrows the list (a select
+   when there is more than one account, and the search box). A rule under it. Both views of Transactions
+   use it, so the page keeps one look as the view changes. */
+.rt-list-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  border-bottom: 1px solid var(--rt-ink);
+}
+
+.rt-list-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding-block-end: 0.375rem;
+}
+
+.rt-list-tools .rt-select-trigger,
+.rt-list-search .rt-input {
+  min-height: 2rem;
+  padding-block: 0.25rem;
+}
+
+/* The box has the width, and the field fills it: Safari sizes a flex box whose only width is its child's
+   percentage wider than the field, which left the Filter button outside the box (seen 2026-11-20). */
+.rt-list-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 15rem;
+  max-width: 100%;
+}
+
+/* Room at each end of the box: the magnifier at the start, the Filter button at the end. */
+.rt-list-search .rt-input {
+  width: 100%;
+  padding-inline: 2rem 2.25rem;
+}
+
+.rt-list-search-icon {
+  position: absolute;
+  inset-inline-start: 0.5rem;
+  width: 1rem;
+  height: 1rem;
+  color: var(--rt-muted);
+  pointer-events: none;
+}
+
+.rt-list-search .rt-filter-button {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0.1875rem;
+  width: 1.625rem;
+  min-width: 1.625rem;
+  height: 1.625rem;
+  min-height: 0;
+  margin-block: auto;
+}
+
+@media (max-width: 40rem) {
+  .rt-list-tools {
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+  }
+
+  .rt-list-tools > * {
+    flex: 1 1 50%;
+    min-width: 0;
+  }
+
+  .rt-list-tools .rt-field {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .rt-list-search {
+    flex: 1;
+  }
+
+  .rt-list-search .rt-input {
+    width: 100%;
+  }
+}
+
+/* ---- ToneMarker --------------------------------------------------------------------------------------
+   One shape and one colour per tone, so a marker means something without its colour: an orange square
+   asks for a decision, a red triangle says it failed, a blue circle is good to know, a tick is fine. The
+   slot is the same width for every tone, so labels line up whether or not a row has a marker. */
+.rt-tone-marker {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.rt-tone-marker svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--rt-ink);
+}
+
+.rt-tone-marker[data-tone="attention"]::before,
+.rt-tone-marker[data-tone="problem"]::before,
+.rt-tone-marker[data-tone="info"]::before {
+  content: "";
+  width: 0.625rem;
+  height: 0.625rem;
+}
+
+.rt-tone-marker[data-tone="attention"]::before {
+  background: var(--rt-tone-attention);
+}
+
+.rt-tone-marker[data-tone="problem"]::before {
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--rt-tone-problem);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.rt-tone-marker[data-tone="info"]::before {
+  background: var(--rt-tone-info);
+  border-radius: 50%;
+}
+
+/* ---- IndexList ---------------------------------------------------------------------------------------
+   Pages to open, one link a row, under a thin ink rule. The row is the link: the name in ink (not link
+   blue, which is for a link inside a sentence), a quieter line under it, a chevron at the end. */
+.rt-index {
+  max-width: 46rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rt-ink);
+}
+
+.rt-index > li {
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-theme .rt-index .rt-index-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9375rem 0.25rem;
+  color: var(--rt-text);
+  text-decoration: none;
+}
+
+.rt-theme .rt-index .rt-index-link:hover {
+  background: var(--rt-hover);
+}
+
+.rt-index .rt-index-text {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.rt-index .rt-index-name {
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.rt-index .rt-index-note {
+  color: var(--rt-muted);
+  font-size: 0.9375rem;
+}
+
+.rt-index .rt-index-link svg {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  color: var(--rt-muted);
+}
+
+/* ---- Copy -------------------------------------------------------------------------------------------- */
+.rt-copy {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.125rem 0.75rem;
+}
+
+.rt-copy .rt-button {
+  gap: 0.375rem;
+}
+
+.rt-copy .rt-button svg {
+  width: 0.9375rem;
+  height: 0.9375rem;
+}
+
+.rt-copy-failed {
+  color: var(--rt-error);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+/* ---- Details ----------------------------------------------------------------------------------------
+   A disclosure: a hairline, a button that says whether it is open, and the facts under it. */
+.rt-details {
+  /* In a grid or a row, a table inside scrolls in its own box and does not widen the page. */
+  min-width: 0;
+  border-top: 1px solid var(--rt-divider);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--rt-text);
+}
+
+.rt-details-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.125rem 1rem;
+}
+
+.rt-details-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.25rem;
+  margin: 0;
+  padding: 0.375rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--rt-text);
+  font: inherit;
+  font-weight: 700;
+  text-align: start;
+  cursor: pointer;
+}
+
+.rt-details-toggle:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.rt-details-toggle:focus-visible {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 3px;
+}
+
+.rt-details-chevron {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  transition: transform var(--rt-motion);
+}
+
+/* The button's own state, not the fold's: a closed fold inside an open one keeps its chevron pointing along. */
+.rt-details-toggle[data-state="open"] > .rt-details-chevron {
+  transform: rotate(90deg);
+}
+
+.rt-details-toggle[data-state="open"] > .rt-details-chevron:dir(rtl) {
+  transform: scaleX(-1) rotate(90deg);
+}
+
+/* The one fact people look for, beside the summary while it is closed. */
+.rt-details-preview {
+  min-width: 0;
+  color: var(--rt-muted);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.rt-details[data-state="open"] > .rt-details-head > .rt-details-preview {
+  display: none;
+}
+
+/* No display here: the closed body is the hidden attribute, and a display rule would show it. */
+.rt-details-body {
+  padding: 0.25rem 0 1rem 1.375rem;
+}
+
+/* A table needs the width: what opens starts at the edge, under the chevron. */
+.rt-details[data-flush] > .rt-details-body {
+  padding-inline: 0;
+}
+
+/* A sentence over what opens (a table, a form) stands clear of it. */
+.rt-details-body > .rt-hint:first-child:not(:last-child) {
+  margin-block-end: 0.75rem;
+}
+
+/* In a row of a table or a line of a list: the row's own text, and no hairline of its own. */
+.rt-details[data-plain] {
+  border-top: 0;
+  font-size: inherit;
+}
+
+.rt-details[data-plain] > .rt-details-head > .rt-details-toggle {
+  min-height: 1.5rem;
+  padding-block: 0;
+  font-weight: 600;
+}
+
+.rt-details[data-plain] > .rt-details-body {
+  padding-block: 0.375rem 0;
+}
+
+.rt-details-list {
+  container-type: inline-size;
+  margin: 0;
+}
+
+.rt-details-row {
+  display: grid;
+  grid-template-columns: minmax(7rem, 11rem) minmax(0, 1fr);
+  gap: 0.125rem 1rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-details-row:first-child {
+  border-top: 0;
+}
+
+.rt-details-row dt {
+  padding-top: 0.125rem;
+  color: var(--rt-muted);
+  font: 500 0.6875rem / 1.6 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+}
+
+/* The value and its Copy button sit on one line, and a long value shrinks and wraps beside the button
+   instead of pushing it down. */
+.rt-details-row dd {
+  display: flex;
+  align-items: baseline;
+  gap: 0.125rem 0.5rem;
+  min-width: 0;
+  margin: 0;
+}
+
+/* A long value wraps instead of widening the page, and one click selects all of it. */
+.rt-details-value {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.rt-details-value[data-mono] {
+  font-family: var(--rt-mono);
+  font-size: 0.8125rem;
+}
+
+.rt-details-row dd .rt-copy {
+  flex: none;
+}
+
+/* In a narrow column the label stacks over the value and the Copy button drops under it, lined up with
+   the text (a quiet button has padding, so it is pulled back by that much). */
+@container (max-width: 30rem) {
+  .rt-details-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rt-details-row dd {
+    flex-wrap: wrap;
+  }
+
+  .rt-details-row dd .rt-copy {
+    margin-inline-start: -0.625rem;
+  }
+}
+
+/* ---- AccountPicker ------------------------------------------------------------------------------------
+   The name first and the code muted after it; "New account…" ruled off at the foot of the list. */
+.rt-account-code {
+  margin-inline-start: 0.5rem;
+  color: var(--rt-muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A dense row's or a filter bar's: the box fills its cell, with nothing under it. The gap stays, so a label
+   that is shown (a filter's) keeps its distance from the box and lines up with the other filters' labels. */
+.rt-account-picker[data-compact] {
+  max-width: none;
+}
+
+/* The popup: a box (the shared .rt-popup), a status line when there is nothing to list ("No matching
+   accounts", "Loading accounts…"), and the list, which is the part that scrolls. */
+.rt-account-popup {
+  display: flex;
+  flex-direction: column;
+  max-height: none;
+  overflow: visible;
+}
+
+.rt-account-popup[hidden] {
+  display: none;
+}
+
+.rt-account-popup > p.rt-hint {
+  margin: 0;
+  padding: 0.5625rem 0.75rem;
+}
+
+.rt-account-list {
+  min-height: 0;
+  max-height: min(22rem, var(--available-height, 22rem));
+  overflow-y: auto;
+}
+
+.rt-account-create {
+  border-top: 1px solid var(--rt-ink);
+  font-weight: 700;
+}
+
+/* A filter's "All accounts" heads the list, ruled off from the accounts under it. */
+.rt-account-all {
+  border-bottom: 1px solid var(--rt-ink);
+  font-weight: 700;
+}
+
+.rt-account-create > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ---- DateRangeField -----------------------------------------------------------------------------------
+   The period list and, for Custom, From and To, on one row that wraps; the line under it says which dates
+   the period covers, or what is wrong with the ones typed. */
+.rt-daterange {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem 1rem;
+  /* A fieldset (the group's name is its legend), without the browser's border, padding and minimum width. */
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* The list and the date inputs are the same height, so the row lines up on its bottom edge, and the list's
+   text starts where a text field's does. */
+.rt-daterange .rt-input {
+  min-height: 2.75rem;
+}
+
+.rt-daterange-preset {
+  flex: 0 1 15rem;
+  min-width: min(15rem, 100%);
+}
+
+.rt-daterange-date {
+  flex: 0 1 11rem;
+  min-width: min(10rem, 100%);
+}
+
+/* A toolbar's: about 300 px, the list across the top and From and To side by side under it. */
+.rt-daterange[data-compact] {
+  width: min(100%, 18.75rem);
+}
+
+.rt-daterange[data-compact] .rt-daterange-preset {
+  flex: 1 1 100%;
+  max-width: none;
+}
+
+.rt-daterange[data-compact] .rt-daterange-date {
+  flex: 1 1 8rem;
+  min-width: 0;
+}
+
+/* A toolbar row's: the label beside the list and, for Custom, From and To beside that, each with its label
+   beside it, so the field reads like the other choices on the row. It comes after `compact` because it wins
+   when both are set. Under 40rem each takes a row of its own with its label above it: the list across the
+   top, then From and To side by side. */
+.rt-daterange[data-layout="row"] {
+  align-items: center;
+  width: auto;
+  gap: 0.5rem 1.25rem;
+}
+
+.rt-daterange[data-layout="row"] .rt-field {
+  display: inline-flex;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  max-width: none;
+}
+
+.rt-daterange[data-layout="row"] .rt-field label {
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.rt-daterange[data-layout="row"] .rt-input {
+  width: auto;
+  min-width: 0;
+  max-width: 17rem;
+}
+
+/* The list has one width whatever is chosen and whatever face the words are set in, so choosing Custom does
+   not pull From, To and the rest of the row toward it. */
+.rt-daterange[data-layout="row"] .rt-select-trigger {
+  width: 15rem;
+}
+
+@media (max-width: 40rem) {
+  .rt-daterange[data-layout="row"] {
+    flex: 1 1 100%;
+    align-items: flex-end;
+  }
+
+  .rt-daterange[data-layout="row"] .rt-field {
+    flex: 1 1 8rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+  }
+
+  .rt-daterange[data-layout="row"] .rt-daterange-preset {
+    flex-basis: 100%;
+  }
+
+  .rt-daterange[data-layout="row"] .rt-field label {
+    white-space: normal;
+  }
+
+  .rt-daterange[data-layout="row"] .rt-input {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* In a toolbar two dates share about 300 px: the box keeps less room at its ends and the calendar's button is
+   narrower, so a whole date shows. */
+.rt-daterange[data-compact] :where(.rt-date-field) .rt-input {
+  padding-inline: 0.625rem 2.25rem;
+}
+
+.rt-daterange[data-compact] .rt-date-open {
+  width: 2.375rem;
+}
+
+.rt-daterange-note {
+  flex: 1 0 100%;
+  min-width: 0;
+}
+
+.rt-daterange-note:empty {
+  display: none;
+}
+
+.rt-daterange-note > p {
+  margin: 0;
+}
+
+/* ---- EmptyState --------------------------------------------------------------------------------------
+   One sentence and one action. Not an illustration, not a celebration. */
+.rt-empty {
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+  min-width: 0;
+  max-width: 40rem;
+  padding: 2rem 0;
+  /* A long name in the title or the sentence wraps inside the page and never widens it. */
+  overflow-wrap: anywhere;
+}
+
+.rt-empty-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+}
+
+.rt-empty-text {
+  max-width: 36rem;
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.rt-empty-title + .rt-empty-text {
+  color: var(--rt-muted);
+  font-size: 0.9375rem;
+}
+
+.rt-empty-action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* ---- Toast -------------------------------------------------------------------------------------------
+   The region (Ark's group) places itself; each toast is a ruled strip with the tone as its bar, the
+   way a Notice is. Not overlapped: they stack in a column, newest nearest the corner. */
+.rt-toast {
+  --rt-toast-tone: var(--rt-tone-calm);
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  width: min(28rem, calc(100vw - 2rem));
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  border: 1px solid var(--rt-border-subtle);
+  border-radius: var(--rt-radius-overlay);
+  border-top: 2px solid var(--rt-toast-tone);
+  background: var(--rt-paper);
+  color: var(--rt-text);
+  font: 0.9375rem / 1.45 var(--rt-font);
+  box-shadow: var(--rt-shadow-popup);
+  translate: var(--x) var(--y);
+  z-index: var(--z-index);
+  height: var(--height);
+  opacity: var(--opacity);
+  transition:
+    translate 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 160ms linear;
+}
+
+.rt-toast[data-state="closed"] {
+  transition-duration: 160ms;
+}
+
+.rt-toast[data-tone="info"] {
+  --rt-toast-tone: var(--rt-tone-info);
+}
+
+.rt-toast[data-tone="attention"] {
+  --rt-toast-tone: var(--rt-tone-attention);
+}
+
+.rt-toast[data-tone="problem"] {
+  --rt-toast-tone: var(--rt-tone-problem);
+  border-color: var(--rt-error);
+}
+
+.rt-toast:focus-visible {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 3px;
+}
+
+.rt-toast-message {
+  flex: 1 1 10rem;
+  min-width: 0;
+  padding-block: 0.25rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.rt-toast-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.25rem;
+  margin-inline-start: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rt-toast,
+  .rt-details-chevron {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .rt-toast {
+    border-color: CanvasText;
+    border-inline-start-color: Highlight;
+  }
+}
+
+/* ---- AccountPicker in a row ---------------------------------------------------------------------------
+   Last in the file: these selectors name the box, the control and the part, and are the most specific. */
+/* One box, like every other list: the chevron is inside the field, 15 px from its end and in the middle, and is
+   the button that opens the list. (It was a box of its own beside the field, shorter than the field.) */
+.rt-account-picker .rt-control {
+  position: relative;
+  gap: 0;
+}
+
+.rt-account-picker .rt-control .rt-input {
+  padding-inline-end: 2.75rem;
+  text-overflow: ellipsis;
+}
+
+.rt-account-picker .rt-control .rt-button {
+  position: absolute;
+  inset-block: 1px 3px;
+  inset-inline-end: 1px;
+  width: 2.875rem;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  transform: none;
+  color: var(--rt-text);
+}
+
+/* A row's picker (a transaction's category): what is chosen is content, not a form, so it reads as text with
+   a chevron until it is pointed at or typed in; only a row with nothing chosen shows a field. The chevron
+   sits inside the box, and the box hangs into the cell's padding by its own, so the text keeps one left edge
+   (the column heading's) whether it is a field or not and does not move when the box takes focus. */
+.rt-account-picker[data-quiet] {
+  min-width: 0;
+  max-width: none;
+  margin-inline-start: -0.875rem;
+}
+
+.rt-account-picker[data-quiet] .rt-control {
+  position: relative;
+  gap: 0;
+}
+
+.rt-account-picker[data-quiet] .rt-control .rt-input {
+  min-width: 0;
+  padding-inline-end: 2.25rem;
+  text-overflow: ellipsis;
+}
+
+.rt-account-picker[data-quiet] .rt-control .rt-button {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: 2.25rem;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  transform: none;
+  color: var(--rt-text);
+}
+
+.rt-account-picker[data-quiet] .rt-control .rt-button svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.rt-account-picker[data-quiet]:not([data-empty]) .rt-control .rt-input:not(:focus) {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rt-account-picker[data-quiet]:not([data-empty]) .rt-control .rt-input:not(:focus):hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* ---- Groups of an index ------------------------------------------------------------------------------
+   Several lists of pages side by side, each under a small heading and a heavy rule (Help's topics). */
+.rt-index-groups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  align-items: start;
+}
+
+.rt-index-groups > section {
+  min-width: 0;
+  border-top: var(--rt-rule);
+  padding-top: 0.625rem;
+}
+
+.rt-index-groups-title {
+  margin: 0 0 0.625rem;
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-index-groups .rt-index {
+  max-width: none;
+}
+
+.rt-index-groups .rt-index .rt-index-name {
+  font-size: 1rem;
+}
+
+@media (max-width: 64rem) {
+  .rt-index-groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 40rem) {
+  .rt-index-groups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---- Prose ---------------------------------------------------------------------------------------------
+   A how-to to read: the product's type at a width a line can be read at. Headings are the display face
+   under a heavy rule; a command is set in mono on a quiet ground; a table scrolls inside its own region. */
+.rt-prose-page {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 44rem;
+  min-width: 0;
+}
+
+.rt-prose-page > * {
+  min-width: 0;
+}
+
+.rt-prose {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--rt-text);
+  overflow-wrap: break-word;
+}
+
+.rt-prose > :first-child {
+  margin-top: 0;
+}
+
+.rt-prose > :last-child {
+  margin-bottom: 0;
+}
+
+.rt-prose p,
+.rt-prose ul,
+.rt-prose ol,
+.rt-prose pre,
+.rt-prose .rt-prose-table {
+  max-width: none;
+  margin: 0 0 1rem;
+}
+
+.rt-prose h2 {
+  margin: 2.5rem 0 0.875rem;
+  padding-top: 0.75rem;
+  border-top: var(--rt-rule);
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.rt-prose h3 {
+  margin: 1.75rem 0 0.5rem;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.rt-prose h4 {
+  margin: 1.5rem 0 0.375rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.rt-prose :is(h2, h3, h4) {
+  scroll-margin-top: 1rem;
+}
+
+.rt-prose ul,
+.rt-prose ol {
+  padding-inline-start: 1.375rem;
+}
+
+.rt-prose ul {
+  list-style: disc;
+}
+
+.rt-prose ol {
+  list-style: decimal;
+}
+
+.rt-prose ul ul {
+  list-style: circle;
+}
+
+.rt-prose li {
+  margin: 0.375rem 0;
+}
+
+.rt-prose li > :is(ul, ol) {
+  margin: 0.375rem 0 0.5rem;
+}
+
+.rt-prose li > p {
+  margin: 0 0 0.5rem;
+}
+
+.rt-prose ol > li::marker {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.rt-prose strong {
+  font-weight: 700;
+}
+
+.rt-prose code {
+  font: 500 0.875em / 1.4 var(--rt-mono);
+  padding: 0.0625rem 0.3125rem;
+  background: var(--rt-surface-subtle);
+  border: 1px solid var(--rt-divider);
+  overflow-wrap: anywhere;
+}
+
+.rt-prose pre,
+.rt-prose-code pre {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  font: 500 0.8125rem / 1.6 var(--rt-mono);
+  tab-size: 2;
+}
+
+.rt-prose pre {
+  margin: 0 0 1rem;
+  border: 1px solid var(--rt-border-subtle);
+  background: var(--rt-surface-subtle);
+}
+
+.rt-prose pre code,
+.rt-prose-code pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  overflow-wrap: normal;
+}
+
+.rt-prose-code {
+  display: flex;
+  align-items: flex-start;
+  border: 1px solid var(--rt-border-subtle);
+  background: var(--rt-surface-subtle);
+}
+
+.rt-prose-code pre {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.rt-prose-copy {
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  max-width: 11rem;
+  padding: 0.3125rem 0.375rem;
+}
+
+/* On a phone the command has the whole width, and Copy sits under its end. */
+@media (max-width: 40rem) {
+  .rt-prose-code {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rt-prose-copy {
+    align-self: flex-end;
+    max-width: none;
+    padding-top: 0;
+  }
+}
+
+.rt-prose .rt-prose-table {
+  overflow-x: auto;
+  border-top: var(--rt-rule);
+}
+
+.rt-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.rt-prose th,
+.rt-prose td {
+  padding: 0.625rem 0.75rem;
+  text-align: start;
+  vertical-align: top;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-prose th:first-child,
+.rt-prose td:first-child {
+  padding-inline-start: 0.25rem;
+}
+
+.rt-prose thead th {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+  border-bottom: 1px solid var(--rt-ink);
+  white-space: nowrap;
+}
+
+.rt-prose blockquote {
+  margin: 0 0 1rem;
+  padding-inline-start: 1rem;
+  border-inline-start: var(--rt-rule);
+}
+
+/* ---- Steps: a task done a step at a time ------------------------------------------------------------- */
+
+.rt-steps {
+  border-top: var(--rt-rule);
+}
+
+.rt-step {
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-step-head {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.rt-step-trigger {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, auto) minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  width: 100%;
+  padding: 1rem 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.rt-step-number {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A step still to come is only named. */
+.rt-step:not([data-done]) .rt-step-trigger[data-state="closed"] {
+  color: var(--rt-muted);
+}
+
+.rt-step-said {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-width: 0;
+  color: var(--rt-muted);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.rt-step-tick {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+}
+
+.rt-step-change {
+  grid-column: 4;
+  color: var(--rt-accent);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.rt-step-trigger:hover .rt-step-title,
+.rt-step-trigger:hover .rt-step-change {
+  text-decoration: underline;
+}
+
+.rt-step-body {
+  padding: 0 0 1.5rem 2.75rem;
+}
+
+@media (max-width: 40rem) {
+  .rt-step-trigger {
+    grid-template-columns: 1.5rem minmax(0, 1fr);
+  }
+
+  .rt-step-said,
+  .rt-step-change {
+    grid-column: 2;
+  }
+
+  .rt-step-body {
+    padding-inline-start: 0;
+  }
+}

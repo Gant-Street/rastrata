@@ -1,0 +1,22 @@
+name = "rastrata"
+version = "0.1.0"
+defaultTargets = ["Rastrata"]
+
+[leanOptions]
+autoImplicit = false
+relaxedAutoImplicit = false
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.36.0"
+
+[[lean_lib]]
+name = "Rastrata"
+
+[[lean_lib]]
+name = "Oracle"
+
+[[lean_exe]]
+name = "oracle"
+root = "Oracle"

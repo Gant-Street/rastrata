@@ -1,0 +1,11 @@
+commodity UNIT  ; lots:
+account revenue:gains  ; type: G
+2025-01-02 Lot A
+    assets:stock       1 UNIT {10 USD}
+    assets:cash      -10 USD
+2025-02-02 Lot B
+    assets:stock       1 UNIT {20 USD}
+    assets:cash      -20 USD
+2025-03-02 Ambiguous sale
+    assets:stock      -1 UNIT {} @ 30 USD
+    assets:cash       30 USD

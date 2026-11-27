@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Apply the saved theme before first paint so dark mode never flashes white.
+      let theme = "system";
+      try {
+        const saved = localStorage.getItem("rastrata-theme");
+        if (saved === "light" || saved === "dark") theme = saved;
+      } catch {
+        // Blocked storage keeps following the system.
+      }
+      document.documentElement.dataset.theme = theme;
+    </script>
+    <script>
+      // Ask for what the page needs first before its code has arrived (src/early.ts; docs/reference/program/performance.md): whether the service has accounts, and, for a person who has a workspace open, the token for it, which the service also takes as the word to open its book. The page's code takes these answers when it starts and asks for what it did not get; nothing here waits.
+      try {
+        const early = {};
+        window.__rastrataEarly = early;
+        early.service = fetch("/health", {
+          headers: { accept: "application/json" },
+          cache: "no-store",
+        });
+        early.service.catch(() => {});
+        const workspace = localStorage.getItem("rastrata:workspace");
+        if (workspace) {
+          const response = fetch("/auth/workspace-token", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ workspace }),
+            cache: "no-store",
+          });
+          response.catch(() => {});
+          early.token = { workspace, response };
+        }
+      } catch {
+        // Blocked storage, or no fetch: the page's code asks for itself.
+      }
+    </script>
+    <title>Rastrata</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script type="module" src="./src/main.tsx"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Enable JavaScript to use Rastrata.</noscript>
+  </body>
+</html>

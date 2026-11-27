@@ -1,0 +1,6 @@
+[install]
+auto = "disable"
+
+[serve.static]
+plugins = ["./tooling/solid-plugin.ts", "bun-plugin-tailwind"]
+env = "disable"

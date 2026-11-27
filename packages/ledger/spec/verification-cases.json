@@ -1,0 +1,4580 @@
+{
+  "schema": "rastrata-ledger-design-v2",
+  "constraints": [
+    {
+      "id": "native-journal-confirmed",
+      "constraint": "NativeJournalPublication",
+      "inputs": {
+        "acknowledged": true,
+        "profileSupported": true,
+        "completeCurrentInputs": true,
+        "permanentIdentities": true,
+        "headAndAuthorityMatch": true,
+        "singleAtomicPublication": true,
+        "platformDurabilityConfirmed": true
+      },
+      "expected": true
+    },
+    {
+      "id": "native-journal-missing-profileSupported",
+      "constraint": "NativeJournalPublication",
+      "inputs": {
+        "acknowledged": true,
+        "profileSupported": false,
+        "completeCurrentInputs": true,
+        "permanentIdentities": true,
+        "headAndAuthorityMatch": true,
+        "singleAtomicPublication": true,
+        "platformDurabilityConfirmed": true
+      },
+      "expected": false
+    },
+    {
+      "id": "native-journal-missing-completeCurrentInputs",
+      "constraint": "NativeJournalPublication",
+      "inputs": {
+        "acknowledged": true,
+        "profileSupported": true,
+        "completeCurrentInputs": false,
+        "permanentIdentities": true,
+        "headAndAuthorityMatch": true,
+        "singleAtomicPublication": true,
+        "platformDurabilityConfirmed": true
+      },
+      "expected": false
+    },
+    {
+      "id": "native-journal-missing-permanentIdentities",
+      "constraint": "NativeJournalPublication",
+      "inputs": {
+        "acknowledged": true,
+        "profileSupported": true,
+        "completeCurrentInputs": true,
+        "permanentIdentities": false,
+        "headAndAuthorityMatch": true,
+        "singleAtomicPublication": true,
+        "platformDurabilityConfirmed": true
+      },
+      "expected": false
+    },
+    {
+      "id": "native-journal-missing-headAndAuthorityMatch",
+      "constraint": "NativeJournalPublication",
+      "inputs": {
+        "acknowledged": true,
+        "profileSupported": true,
+        "completeCurrentInputs": true,
+        "permanentIdentities": true,
+        "headAndAuthorityMatch": false,
+        "singleAtomicPublication": true,
+        "platformDurabilityConfirmed": true
+      },
+      "expected": false
+    },
+    {
+      "id": "native-journal-missing-singleAtomicPublication",
+      "constraint": "NativeJournalPublication",
+      "inputs": {
+        "acknowledged": true,
+        "profileSupported": true,
+        "completeCurrentInputs": true,
+        "permanentIdentities": true,
+        "headAndAuthorityMatch": true,
+        "singleAtomicPublication": false,
+        "platformDurabilityConfirmed": true
+      },
+      "expected": false
+    },
+    {
+      "id": "native-journal-missing-platformDurabilityConfirmed",
+      "constraint": "NativeJournalPublication",
+      "inputs": {
+        "acknowledged": true,
+        "profileSupported": true,
+        "completeCurrentInputs": true,
+        "permanentIdentities": true,
+        "headAndAuthorityMatch": true,
+        "singleAtomicPublication": true,
+        "platformDurabilityConfirmed": false
+      },
+      "expected": false
+    },
+    {
+      "id": "native-journal-unacknowledged",
+      "constraint": "NativeJournalPublication",
+      "inputs": {
+        "acknowledged": false,
+        "profileSupported": true,
+        "completeCurrentInputs": true,
+        "permanentIdentities": true,
+        "headAndAuthorityMatch": true,
+        "singleAtomicPublication": true,
+        "platformDurabilityConfirmed": false
+      },
+      "expected": true
+    },
+    {
+      "id": "warm-session-verified",
+      "constraint": "WarmSessionIntegrity",
+      "inputs": {
+        "sessionReused": true,
+        "verifiedBase": true,
+        "exactCurrentView": true,
+        "exactCatalogs": true,
+        "authorityLive": true,
+        "noUncertainWrite": true,
+        "confirmedDelta": true
+      },
+      "expected": true
+    },
+    {
+      "id": "warm-session-missing-verifiedBase",
+      "constraint": "WarmSessionIntegrity",
+      "inputs": {
+        "sessionReused": true,
+        "verifiedBase": false,
+        "exactCurrentView": true,
+        "exactCatalogs": true,
+        "authorityLive": true,
+        "noUncertainWrite": true,
+        "confirmedDelta": true
+      },
+      "expected": false
+    },
+    {
+      "id": "warm-session-missing-exactCurrentView",
+      "constraint": "WarmSessionIntegrity",
+      "inputs": {
+        "sessionReused": true,
+        "verifiedBase": true,
+        "exactCurrentView": false,
+        "exactCatalogs": true,
+        "authorityLive": true,
+        "noUncertainWrite": true,
+        "confirmedDelta": true
+      },
+      "expected": false
+    },
+    {
+      "id": "warm-session-missing-exactCatalogs",
+      "constraint": "WarmSessionIntegrity",
+      "inputs": {
+        "sessionReused": true,
+        "verifiedBase": true,
+        "exactCurrentView": true,
+        "exactCatalogs": false,
+        "authorityLive": true,
+        "noUncertainWrite": true,
+        "confirmedDelta": true
+      },
+      "expected": false
+    },
+    {
+      "id": "warm-session-missing-authorityLive",
+      "constraint": "WarmSessionIntegrity",
+      "inputs": {
+        "sessionReused": true,
+        "verifiedBase": true,
+        "exactCurrentView": true,
+        "exactCatalogs": true,
+        "authorityLive": false,
+        "noUncertainWrite": true,
+        "confirmedDelta": true
+      },
+      "expected": false
+    },
+    {
+      "id": "warm-session-missing-noUncertainWrite",
+      "constraint": "WarmSessionIntegrity",
+      "inputs": {
+        "sessionReused": true,
+        "verifiedBase": true,
+        "exactCurrentView": true,
+        "exactCatalogs": true,
+        "authorityLive": true,
+        "noUncertainWrite": false,
+        "confirmedDelta": true
+      },
+      "expected": false
+    },
+    {
+      "id": "warm-session-missing-confirmedDelta",
+      "constraint": "WarmSessionIntegrity",
+      "inputs": {
+        "sessionReused": true,
+        "verifiedBase": true,
+        "exactCurrentView": true,
+        "exactCatalogs": true,
+        "authorityLive": true,
+        "noUncertainWrite": true,
+        "confirmedDelta": false
+      },
+      "expected": false
+    },
+    {
+      "id": "warm-session-not-reused",
+      "constraint": "WarmSessionIntegrity",
+      "inputs": {
+        "sessionReused": false,
+        "verifiedBase": false,
+        "exactCurrentView": false,
+        "exactCatalogs": false,
+        "authorityLive": false,
+        "noUncertainWrite": false,
+        "confirmedDelta": false
+      },
+      "expected": true
+    },
+    {
+      "id": "indexed-kernel-complete-context",
+      "constraint": "IndexedKernelAdmission",
+      "inputs": {
+        "evaluated": true,
+        "profileSupported": true,
+        "completeCatalog": true,
+        "projectionVerified": true,
+        "completeReadSet": true,
+        "sourceRowsVerified": true,
+        "absenceAndRangesVerified": true,
+        "pinnedHeadMatches": true,
+        "publicationFenceMatches": true,
+        "requiredEvidenceAvailable": true
+      },
+      "expected": true
+    },
+    {
+      "id": "indexed-kernel-missing-profileSupported",
+      "constraint": "IndexedKernelAdmission",
+      "inputs": {
+        "evaluated": true,
+        "profileSupported": false,
+        "completeCatalog": true,
+        "projectionVerified": true,
+        "completeReadSet": true,
+        "sourceRowsVerified": true,
+        "absenceAndRangesVerified": true,
+        "pinnedHeadMatches": true,
+        "publicationFenceMatches": true,
+        "requiredEvidenceAvailable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "indexed-kernel-missing-completeCatalog",
+      "constraint": "IndexedKernelAdmission",
+      "inputs": {
+        "evaluated": true,
+        "profileSupported": true,
+        "completeCatalog": false,
+        "projectionVerified": true,
+        "completeReadSet": true,
+        "sourceRowsVerified": true,
+        "absenceAndRangesVerified": true,
+        "pinnedHeadMatches": true,
+        "publicationFenceMatches": true,
+        "requiredEvidenceAvailable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "indexed-kernel-missing-projectionVerified",
+      "constraint": "IndexedKernelAdmission",
+      "inputs": {
+        "evaluated": true,
+        "profileSupported": true,
+        "completeCatalog": true,
+        "projectionVerified": false,
+        "completeReadSet": true,
+        "sourceRowsVerified": true,
+        "absenceAndRangesVerified": true,
+        "pinnedHeadMatches": true,
+        "publicationFenceMatches": true,
+        "requiredEvidenceAvailable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "indexed-kernel-missing-completeReadSet",
+      "constraint": "IndexedKernelAdmission",
+      "inputs": {
+        "evaluated": true,
+        "profileSupported": true,
+        "completeCatalog": true,
+        "projectionVerified": true,
+        "completeReadSet": false,
+        "sourceRowsVerified": true,
+        "absenceAndRangesVerified": true,
+        "pinnedHeadMatches": true,
+        "publicationFenceMatches": true,
+        "requiredEvidenceAvailable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "indexed-kernel-missing-sourceRowsVerified",
+      "constraint": "IndexedKernelAdmission",
+      "inputs": {
+        "evaluated": true,
+        "profileSupported": true,
+        "completeCatalog": true,
+        "projectionVerified": true,
+        "completeReadSet": true,
+        "sourceRowsVerified": false,
+        "absenceAndRangesVerified": true,
+        "pinnedHeadMatches": true,
+        "publicationFenceMatches": true,
+        "requiredEvidenceAvailable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "indexed-kernel-missing-absenceAndRangesVerified",
+      "constraint": "IndexedKernelAdmission",
+      "inputs": {
+        "evaluated": true,
+        "profileSupported": true,
+        "completeCatalog": true,
+        "projectionVerified": true,
+        "completeReadSet": true,
+        "sourceRowsVerified": true,
+        "absenceAndRangesVerified": false,
+        "pinnedHeadMatches": true,
+        "publicationFenceMatches": true,
+        "requiredEvidenceAvailable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "indexed-kernel-missing-pinnedHeadMatches",
+      "constraint": "IndexedKernelAdmission",
+      "inputs": {
+        "evaluated": true,
+        "profileSupported": true,
+        "completeCatalog": true,
+        "projectionVerified": true,
+        "completeReadSet": true,
+        "sourceRowsVerified": true,
+        "absenceAndRangesVerified": true,
+        "pinnedHeadMatches": false,
+        "publicationFenceMatches": true,
+        "requiredEvidenceAvailable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "indexed-kernel-missing-publicationFenceMatches",
+      "constraint": "IndexedKernelAdmission",
+      "inputs": {
+        "evaluated": true,
+        "profileSupported": true,
+        "completeCatalog": true,
+        "projectionVerified": true,
+        "completeReadSet": true,
+        "sourceRowsVerified": true,
+        "absenceAndRangesVerified": true,
+        "pinnedHeadMatches": true,
+        "publicationFenceMatches": false,
+        "requiredEvidenceAvailable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "indexed-kernel-missing-requiredEvidenceAvailable",
+      "constraint": "IndexedKernelAdmission",
+      "inputs": {
+        "evaluated": true,
+        "profileSupported": true,
+        "completeCatalog": true,
+        "projectionVerified": true,
+        "completeReadSet": true,
+        "sourceRowsVerified": true,
+        "absenceAndRangesVerified": true,
+        "pinnedHeadMatches": true,
+        "publicationFenceMatches": true,
+        "requiredEvidenceAvailable": false
+      },
+      "expected": false
+    },
+    {
+      "id": "indexed-kernel-refused-incomplete-context",
+      "constraint": "IndexedKernelAdmission",
+      "inputs": {
+        "evaluated": false,
+        "profileSupported": false,
+        "completeCatalog": false,
+        "projectionVerified": false,
+        "completeReadSet": false,
+        "sourceRowsVerified": false,
+        "absenceAndRangesVerified": false,
+        "pinnedHeadMatches": false,
+        "publicationFenceMatches": false,
+        "requiredEvidenceAvailable": false
+      },
+      "expected": true
+    },
+    {
+      "id": "index-too-few-nonzero-hot-identities",
+      "constraint": "IndexedCoverage",
+      "inputs": {
+        "usable": true,
+        "coldThrough": "40",
+        "hotFrom": "41",
+        "hotThrough": "43",
+        "committedThrough": "43",
+        "coldCount": "200",
+        "hotCount": "1",
+        "expectedCount": "201",
+        "exactPopulationsVerified": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-covered-prefix-tail",
+      "constraint": "IndexedCoverage",
+      "inputs": {
+        "usable": true,
+        "coldThrough": "40",
+        "hotFrom": "41",
+        "hotThrough": "43",
+        "committedThrough": "43",
+        "coldCount": "200",
+        "hotCount": "15",
+        "expectedCount": "215",
+        "exactPopulationsVerified": true
+      },
+      "expected": true
+    },
+    {
+      "id": "index-empty-tail",
+      "constraint": "IndexedCoverage",
+      "inputs": {
+        "usable": true,
+        "coldThrough": "43",
+        "hotFrom": "44",
+        "hotThrough": "43",
+        "committedThrough": "43",
+        "coldCount": "215",
+        "hotCount": "0",
+        "expectedCount": "215",
+        "exactPopulationsVerified": true
+      },
+      "expected": true
+    },
+    {
+      "id": "index-genesis-empty",
+      "constraint": "IndexedCoverage",
+      "inputs": {
+        "usable": true,
+        "coldThrough": "0",
+        "hotFrom": "1",
+        "hotThrough": "0",
+        "committedThrough": "0",
+        "coldCount": "0",
+        "hotCount": "0",
+        "expectedCount": "0",
+        "exactPopulationsVerified": true
+      },
+      "expected": true
+    },
+    {
+      "id": "index-gap",
+      "constraint": "IndexedCoverage",
+      "inputs": {
+        "usable": true,
+        "coldThrough": "40",
+        "hotFrom": "42",
+        "hotThrough": "43",
+        "committedThrough": "43",
+        "coldCount": "200",
+        "hotCount": "15",
+        "expectedCount": "215",
+        "exactPopulationsVerified": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-overlap",
+      "constraint": "IndexedCoverage",
+      "inputs": {
+        "usable": true,
+        "coldThrough": "40",
+        "hotFrom": "40",
+        "hotThrough": "43",
+        "committedThrough": "43",
+        "coldCount": "200",
+        "hotCount": "15",
+        "expectedCount": "215",
+        "exactPopulationsVerified": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-lostRejectionTail",
+      "constraint": "IndexedCoverage",
+      "inputs": {
+        "usable": true,
+        "coldThrough": "40",
+        "hotFrom": "41",
+        "hotThrough": "42",
+        "committedThrough": "43",
+        "coldCount": "200",
+        "hotCount": "15",
+        "expectedCount": "215",
+        "exactPopulationsVerified": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-wrongCount",
+      "constraint": "IndexedCoverage",
+      "inputs": {
+        "usable": true,
+        "coldThrough": "40",
+        "hotFrom": "41",
+        "hotThrough": "43",
+        "committedThrough": "43",
+        "coldCount": "200",
+        "hotCount": "15",
+        "expectedCount": "214",
+        "exactPopulationsVerified": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-unverifiedPopulation",
+      "constraint": "IndexedCoverage",
+      "inputs": {
+        "usable": true,
+        "coldThrough": "40",
+        "hotFrom": "41",
+        "hotThrough": "43",
+        "committedThrough": "43",
+        "coldCount": "200",
+        "hotCount": "15",
+        "expectedCount": "215",
+        "exactPopulationsVerified": false
+      },
+      "expected": false
+    },
+    {
+      "id": "index-tooFewColdIdentities",
+      "constraint": "IndexedCoverage",
+      "inputs": {
+        "usable": true,
+        "coldThrough": "40",
+        "hotFrom": "41",
+        "hotThrough": "43",
+        "committedThrough": "43",
+        "coldCount": "39",
+        "hotCount": "176",
+        "expectedCount": "215",
+        "exactPopulationsVerified": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-futureCold",
+      "constraint": "IndexedCoverage",
+      "inputs": {
+        "usable": true,
+        "coldThrough": "44",
+        "hotFrom": "45",
+        "hotThrough": "43",
+        "committedThrough": "43",
+        "coldCount": "200",
+        "hotCount": "15",
+        "expectedCount": "215",
+        "exactPopulationsVerified": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-emptyTailWithKeys",
+      "constraint": "IndexedCoverage",
+      "inputs": {
+        "usable": true,
+        "coldThrough": "43",
+        "hotFrom": "44",
+        "hotThrough": "43",
+        "committedThrough": "43",
+        "coldCount": "214",
+        "hotCount": "1",
+        "expectedCount": "215",
+        "exactPopulationsVerified": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-nonemptyTailWithoutKeys",
+      "constraint": "IndexedCoverage",
+      "inputs": {
+        "usable": true,
+        "coldThrough": "40",
+        "hotFrom": "41",
+        "hotThrough": "43",
+        "committedThrough": "43",
+        "coldCount": "215",
+        "hotCount": "0",
+        "expectedCount": "215",
+        "exactPopulationsVerified": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-unusable-view-not-admitted",
+      "constraint": "IndexedCoverage",
+      "inputs": {
+        "usable": false,
+        "coldThrough": "40",
+        "hotFrom": "41",
+        "hotThrough": "43",
+        "committedThrough": "43",
+        "coldCount": "200",
+        "hotCount": "15",
+        "expectedCount": "215",
+        "exactPopulationsVerified": false
+      },
+      "expected": true
+    },
+    {
+      "id": "index-cutover-keeps-later-tail",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": true
+    },
+    {
+      "id": "index-cutover-after-concurrent-appends",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "11",
+        "currentViewRevision": "11",
+        "resultingViewRevision": "12",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "45",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "45",
+        "expectedHeadDigest": "full-head-45",
+        "beforeHeadDigest": "full-head-45",
+        "afterHeadDigest": "full-head-45",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": true
+    },
+    {
+      "id": "index-cutover-no-tail",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "42",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "42",
+        "expectedHeadDigest": "full-head-42",
+        "beforeHeadDigest": "full-head-42",
+        "afterHeadDigest": "full-head-42",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": true
+    },
+    {
+      "id": "index-cutover-large-exact-revision",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9007199254740993",
+        "currentViewRevision": "9007199254740993",
+        "resultingViewRevision": "9007199254740994",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": true
+    },
+    {
+      "id": "index-cutover-staleView",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "10",
+        "resultingViewRevision": "11",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-missingViewAdvance",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "9",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-jumpedViewAdvance",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "11",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-staleColdRoot",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "other-cold",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-backwardsFreeze",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "43",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-futureFreeze",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "44",
+        "resultingColdThrough": "44",
+        "currentThrough": "43",
+        "resultingHotFrom": "45",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-wrongColdPrefix",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "41",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-hotOverlap",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "42",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-hotGap",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "44",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-droppedTail",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "42",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-wrongExpectedHead",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-42",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-changedCanonicalHead",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-44",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-wrongAuthority",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": false,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-unverifiedFreeze",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": false,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-unverifiedReplacement",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": false,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-lostTail",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": false,
+        "postingResolved": true,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-unresolvedPosting",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": false,
+        "transactionDurable": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-notDurable",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": true,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": false
+      },
+      "expected": false
+    },
+    {
+      "id": "index-cutover-declined",
+      "constraint": "IndexCutover",
+      "inputs": {
+        "installed": false,
+        "expectedViewRevision": "9",
+        "currentViewRevision": "9",
+        "resultingViewRevision": "10",
+        "expectedColdDigest": "cold-40",
+        "currentColdDigest": "cold-40",
+        "currentColdThrough": "40",
+        "frozenThrough": "42",
+        "resultingColdThrough": "42",
+        "currentThrough": "43",
+        "resultingHotFrom": "43",
+        "resultingHotThrough": "43",
+        "expectedHeadDigest": "full-head-43",
+        "beforeHeadDigest": "full-head-43",
+        "afterHeadDigest": "full-head-43",
+        "identityAndFenceVerified": true,
+        "frozenPrefixVerified": true,
+        "replacementVerified": true,
+        "tailPreserved": true,
+        "postingResolved": true,
+        "transactionDurable": false
+      },
+      "expected": true
+    },
+    {
+      "id": "index-pin-current-view",
+      "constraint": "IndexPinAdmission",
+      "inputs": {
+        "admitted": true,
+        "authorityCurrent": true,
+        "contextAndCutoffVerified": true,
+        "currentView": true,
+        "existingPinActive": false,
+        "pinRetired": false,
+        "retirementSelected": false
+      },
+      "expected": true
+    },
+    {
+      "id": "index-pin-existing-older-reader",
+      "constraint": "IndexPinAdmission",
+      "inputs": {
+        "admitted": true,
+        "authorityCurrent": true,
+        "contextAndCutoffVerified": true,
+        "currentView": false,
+        "existingPinActive": true,
+        "pinRetired": false,
+        "retirementSelected": false
+      },
+      "expected": true
+    },
+    {
+      "id": "index-pin-wrongAuthority",
+      "constraint": "IndexPinAdmission",
+      "inputs": {
+        "admitted": true,
+        "authorityCurrent": false,
+        "contextAndCutoffVerified": true,
+        "currentView": true,
+        "existingPinActive": false,
+        "pinRetired": false,
+        "retirementSelected": false
+      },
+      "expected": false
+    },
+    {
+      "id": "index-pin-wrongCutoff",
+      "constraint": "IndexPinAdmission",
+      "inputs": {
+        "admitted": true,
+        "authorityCurrent": true,
+        "contextAndCutoffVerified": false,
+        "currentView": true,
+        "existingPinActive": false,
+        "pinRetired": false,
+        "retirementSelected": false
+      },
+      "expected": false
+    },
+    {
+      "id": "index-pin-expiredOldView",
+      "constraint": "IndexPinAdmission",
+      "inputs": {
+        "admitted": true,
+        "authorityCurrent": true,
+        "contextAndCutoffVerified": true,
+        "currentView": false,
+        "existingPinActive": false,
+        "pinRetired": false,
+        "retirementSelected": false
+      },
+      "expected": false
+    },
+    {
+      "id": "index-pin-retiredPin",
+      "constraint": "IndexPinAdmission",
+      "inputs": {
+        "admitted": true,
+        "authorityCurrent": true,
+        "contextAndCutoffVerified": true,
+        "currentView": true,
+        "existingPinActive": false,
+        "pinRetired": true,
+        "retirementSelected": false
+      },
+      "expected": false
+    },
+    {
+      "id": "index-pin-retiredLocation",
+      "constraint": "IndexPinAdmission",
+      "inputs": {
+        "admitted": true,
+        "authorityCurrent": true,
+        "contextAndCutoffVerified": true,
+        "currentView": true,
+        "existingPinActive": false,
+        "pinRetired": false,
+        "retirementSelected": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-pin-refused",
+      "constraint": "IndexPinAdmission",
+      "inputs": {
+        "admitted": false,
+        "authorityCurrent": true,
+        "contextAndCutoffVerified": true,
+        "currentView": true,
+        "existingPinActive": false,
+        "pinRetired": true,
+        "retirementSelected": false
+      },
+      "expected": true
+    },
+    {
+      "id": "index-reclaim-unprotected-derived",
+      "constraint": "IndexReclamation",
+      "inputs": {
+        "deleted": true,
+        "derivedOnly": true,
+        "retiredDurably": true,
+        "closureVerified": true,
+        "referenceBarrierHeld": true,
+        "replacementVerified": true,
+        "noProtectedReferences": true,
+        "identityAndFenceVerified": true,
+        "locationReusable": false,
+        "deletionMatchesRetirement": true
+      },
+      "expected": true
+    },
+    {
+      "id": "index-reclaim-derivedOnly",
+      "constraint": "IndexReclamation",
+      "inputs": {
+        "deleted": true,
+        "derivedOnly": false,
+        "retiredDurably": true,
+        "closureVerified": true,
+        "referenceBarrierHeld": true,
+        "replacementVerified": true,
+        "noProtectedReferences": true,
+        "identityAndFenceVerified": true,
+        "locationReusable": false,
+        "deletionMatchesRetirement": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-reclaim-retiredDurably",
+      "constraint": "IndexReclamation",
+      "inputs": {
+        "deleted": true,
+        "derivedOnly": true,
+        "retiredDurably": false,
+        "closureVerified": true,
+        "referenceBarrierHeld": true,
+        "replacementVerified": true,
+        "noProtectedReferences": true,
+        "identityAndFenceVerified": true,
+        "locationReusable": false,
+        "deletionMatchesRetirement": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-reclaim-closureVerified",
+      "constraint": "IndexReclamation",
+      "inputs": {
+        "deleted": true,
+        "derivedOnly": true,
+        "retiredDurably": true,
+        "closureVerified": false,
+        "referenceBarrierHeld": true,
+        "replacementVerified": true,
+        "noProtectedReferences": true,
+        "identityAndFenceVerified": true,
+        "locationReusable": false,
+        "deletionMatchesRetirement": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-reclaim-referenceBarrierHeld",
+      "constraint": "IndexReclamation",
+      "inputs": {
+        "deleted": true,
+        "derivedOnly": true,
+        "retiredDurably": true,
+        "closureVerified": true,
+        "referenceBarrierHeld": false,
+        "replacementVerified": true,
+        "noProtectedReferences": true,
+        "identityAndFenceVerified": true,
+        "locationReusable": false,
+        "deletionMatchesRetirement": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-reclaim-replacementVerified",
+      "constraint": "IndexReclamation",
+      "inputs": {
+        "deleted": true,
+        "derivedOnly": true,
+        "retiredDurably": true,
+        "closureVerified": true,
+        "referenceBarrierHeld": true,
+        "replacementVerified": false,
+        "noProtectedReferences": true,
+        "identityAndFenceVerified": true,
+        "locationReusable": false,
+        "deletionMatchesRetirement": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-reclaim-noProtectedReferences",
+      "constraint": "IndexReclamation",
+      "inputs": {
+        "deleted": true,
+        "derivedOnly": true,
+        "retiredDurably": true,
+        "closureVerified": true,
+        "referenceBarrierHeld": true,
+        "replacementVerified": true,
+        "noProtectedReferences": false,
+        "identityAndFenceVerified": true,
+        "locationReusable": false,
+        "deletionMatchesRetirement": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-reclaim-identityAndFenceVerified",
+      "constraint": "IndexReclamation",
+      "inputs": {
+        "deleted": true,
+        "derivedOnly": true,
+        "retiredDurably": true,
+        "closureVerified": true,
+        "referenceBarrierHeld": true,
+        "replacementVerified": true,
+        "noProtectedReferences": true,
+        "identityAndFenceVerified": false,
+        "locationReusable": false,
+        "deletionMatchesRetirement": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-reclaim-locationReusable",
+      "constraint": "IndexReclamation",
+      "inputs": {
+        "deleted": true,
+        "derivedOnly": true,
+        "retiredDurably": true,
+        "closureVerified": true,
+        "referenceBarrierHeld": true,
+        "replacementVerified": true,
+        "noProtectedReferences": true,
+        "identityAndFenceVerified": true,
+        "locationReusable": true,
+        "deletionMatchesRetirement": true
+      },
+      "expected": false
+    },
+    {
+      "id": "index-reclaim-deletionMatchesRetirement",
+      "constraint": "IndexReclamation",
+      "inputs": {
+        "deleted": true,
+        "derivedOnly": true,
+        "retiredDurably": true,
+        "closureVerified": true,
+        "referenceBarrierHeld": true,
+        "replacementVerified": true,
+        "noProtectedReferences": true,
+        "identityAndFenceVerified": true,
+        "locationReusable": false,
+        "deletionMatchesRetirement": false
+      },
+      "expected": false
+    },
+    {
+      "id": "index-reclaim-refused",
+      "constraint": "IndexReclamation",
+      "inputs": {
+        "deleted": false,
+        "derivedOnly": false,
+        "retiredDurably": true,
+        "closureVerified": true,
+        "referenceBarrierHeld": true,
+        "replacementVerified": true,
+        "noProtectedReferences": true,
+        "identityAndFenceVerified": true,
+        "locationReusable": false,
+        "deletionMatchesRetirement": true
+      },
+      "expected": true
+    },
+    {
+      "id": "classification-commit",
+      "constraint": "RetentionClassification",
+      "inputs": {
+        "retained": true,
+        "revisionPresent": true,
+        "committed": true,
+        "rejected": false
+      },
+      "expected": true
+    },
+    {
+      "id": "classification-rejection",
+      "constraint": "RetentionClassification",
+      "inputs": {
+        "retained": true,
+        "revisionPresent": false,
+        "committed": false,
+        "rejected": true
+      },
+      "expected": true
+    },
+    {
+      "id": "classification-replay",
+      "constraint": "RetentionClassification",
+      "inputs": {
+        "retained": false,
+        "revisionPresent": false,
+        "committed": false,
+        "rejected": false
+      },
+      "expected": true
+    },
+    {
+      "id": "classification-rejection-with-revision",
+      "constraint": "RetentionClassification",
+      "inputs": {
+        "retained": true,
+        "revisionPresent": true,
+        "committed": false,
+        "rejected": true
+      },
+      "expected": false
+    },
+    {
+      "id": "classification-unretained-commit",
+      "constraint": "RetentionClassification",
+      "inputs": {
+        "retained": false,
+        "revisionPresent": true,
+        "committed": true,
+        "rejected": false
+      },
+      "expected": false
+    },
+    {
+      "id": "commit-oseq",
+      "constraint": "OutcomeAdvance",
+      "inputs": {
+        "retained": true,
+        "before": "41",
+        "resulting": "42"
+      },
+      "expected": true
+    },
+    {
+      "id": "lost-rejection-oseq",
+      "constraint": "OutcomeAdvance",
+      "inputs": {
+        "retained": true,
+        "before": "41",
+        "resulting": "41"
+      },
+      "expected": false
+    },
+    {
+      "id": "replay-no-oseq",
+      "constraint": "OutcomeAdvance",
+      "inputs": {
+        "retained": false,
+        "before": "41",
+        "resulting": "41"
+      },
+      "expected": true
+    },
+    {
+      "id": "replay-new-oseq",
+      "constraint": "OutcomeAdvance",
+      "inputs": {
+        "retained": false,
+        "before": "41",
+        "resulting": "42"
+      },
+      "expected": false
+    },
+    {
+      "id": "large-exact-oseq",
+      "constraint": "OutcomeAdvance",
+      "inputs": {
+        "retained": true,
+        "before": "9007199254740993",
+        "resulting": "9007199254740994"
+      },
+      "expected": true
+    },
+    {
+      "id": "financial-advance",
+      "constraint": "RevisionAdvance",
+      "inputs": {
+        "committed": true,
+        "before": "7",
+        "resulting": "8"
+      },
+      "expected": true
+    },
+    {
+      "id": "rejection-no-financial",
+      "constraint": "RevisionAdvance",
+      "inputs": {
+        "committed": false,
+        "before": "7",
+        "resulting": "7"
+      },
+      "expected": true
+    },
+    {
+      "id": "rejection-financial-advance",
+      "constraint": "RevisionAdvance",
+      "inputs": {
+        "committed": false,
+        "before": "7",
+        "resulting": "8"
+      },
+      "expected": false
+    },
+    {
+      "id": "ack-durable",
+      "constraint": "Acknowledgement",
+      "inputs": {
+        "acknowledged": true,
+        "durable": true
+      },
+      "expected": true
+    },
+    {
+      "id": "ack-before-durable",
+      "constraint": "Acknowledgement",
+      "inputs": {
+        "acknowledged": true,
+        "durable": false
+      },
+      "expected": false
+    },
+    {
+      "id": "unknown-no-ack",
+      "constraint": "Acknowledgement",
+      "inputs": {
+        "acknowledged": false,
+        "durable": false
+      },
+      "expected": true
+    },
+    {
+      "id": "admitted",
+      "constraint": "Admission",
+      "inputs": {
+        "retained": true,
+        "identityMatches": true,
+        "authorized": true,
+        "decoded": true,
+        "withinCapacity": true
+      },
+      "expected": true
+    },
+    {
+      "id": "admission-identityMatches",
+      "constraint": "Admission",
+      "inputs": {
+        "retained": true,
+        "identityMatches": false,
+        "authorized": true,
+        "decoded": true,
+        "withinCapacity": true
+      },
+      "expected": false
+    },
+    {
+      "id": "admission-authorized",
+      "constraint": "Admission",
+      "inputs": {
+        "retained": true,
+        "identityMatches": true,
+        "authorized": false,
+        "decoded": true,
+        "withinCapacity": true
+      },
+      "expected": false
+    },
+    {
+      "id": "admission-decoded",
+      "constraint": "Admission",
+      "inputs": {
+        "retained": true,
+        "identityMatches": true,
+        "authorized": true,
+        "decoded": false,
+        "withinCapacity": true
+      },
+      "expected": false
+    },
+    {
+      "id": "admission-withinCapacity",
+      "constraint": "Admission",
+      "inputs": {
+        "retained": true,
+        "identityMatches": true,
+        "authorized": true,
+        "decoded": true,
+        "withinCapacity": false
+      },
+      "expected": false
+    },
+    {
+      "id": "atomic-publish",
+      "constraint": "Publication",
+      "inputs": {
+        "published": true,
+        "fullHeadMatches": true,
+        "transactionCommitted": true
+      },
+      "expected": true
+    },
+    {
+      "id": "stale-rejection-head",
+      "constraint": "Publication",
+      "inputs": {
+        "published": true,
+        "fullHeadMatches": false,
+        "transactionCommitted": true
+      },
+      "expected": false
+    },
+    {
+      "id": "partial-sql",
+      "constraint": "Publication",
+      "inputs": {
+        "published": true,
+        "fullHeadMatches": true,
+        "transactionCommitted": false
+      },
+      "expected": false
+    },
+    {
+      "id": "service-unclaimed",
+      "constraint": "NoServiceRetention",
+      "inputs": {
+        "serviceFailure": true,
+        "retained": false
+      },
+      "expected": true
+    },
+    {
+      "id": "service-retained",
+      "constraint": "NoServiceRetention",
+      "inputs": {
+        "serviceFailure": true,
+        "retained": true
+      },
+      "expected": false
+    },
+    {
+      "id": "rejection-state-stable",
+      "constraint": "RejectionFinancialIdentity",
+      "inputs": {
+        "rejected": true,
+        "before": "exact-financial-head:7/12/2",
+        "resulting": "exact-financial-head:7/12/2"
+      },
+      "expected": true
+    },
+    {
+      "id": "rejection-state-changed",
+      "constraint": "RejectionFinancialIdentity",
+      "inputs": {
+        "rejected": true,
+        "before": "exact-financial-head:7/12/2",
+        "resulting": "exact-financial-head:7/13/2"
+      },
+      "expected": false
+    },
+    {
+      "id": "restore-ready",
+      "constraint": "RestoreReadiness",
+      "inputs": {
+        "ready": true,
+        "fenced": true,
+        "independentPermit": true,
+        "expectedHeadMatches": true,
+        "completeReplay": true
+      },
+      "expected": true
+    },
+    {
+      "id": "restore-fenced",
+      "constraint": "RestoreReadiness",
+      "inputs": {
+        "ready": true,
+        "fenced": false,
+        "independentPermit": true,
+        "expectedHeadMatches": true,
+        "completeReplay": true
+      },
+      "expected": false
+    },
+    {
+      "id": "restore-independentPermit",
+      "constraint": "RestoreReadiness",
+      "inputs": {
+        "ready": true,
+        "fenced": true,
+        "independentPermit": false,
+        "expectedHeadMatches": true,
+        "completeReplay": true
+      },
+      "expected": false
+    },
+    {
+      "id": "restore-expectedHeadMatches",
+      "constraint": "RestoreReadiness",
+      "inputs": {
+        "ready": true,
+        "fenced": true,
+        "independentPermit": true,
+        "expectedHeadMatches": false,
+        "completeReplay": true
+      },
+      "expected": false
+    },
+    {
+      "id": "restore-completeReplay",
+      "constraint": "RestoreReadiness",
+      "inputs": {
+        "ready": true,
+        "fenced": true,
+        "independentPermit": true,
+        "expectedHeadMatches": true,
+        "completeReplay": false
+      },
+      "expected": false
+    },
+    {
+      "id": "checkpoint-visible",
+      "constraint": "CheckpointVisibility",
+      "inputs": {
+        "visible": true,
+        "chunksComplete": true,
+        "decoded": true,
+        "cutoffMatches": true
+      },
+      "expected": true
+    },
+    {
+      "id": "checkpoint-chunksComplete",
+      "constraint": "CheckpointVisibility",
+      "inputs": {
+        "visible": true,
+        "chunksComplete": false,
+        "decoded": true,
+        "cutoffMatches": true
+      },
+      "expected": false
+    },
+    {
+      "id": "checkpoint-decoded",
+      "constraint": "CheckpointVisibility",
+      "inputs": {
+        "visible": true,
+        "chunksComplete": true,
+        "decoded": false,
+        "cutoffMatches": true
+      },
+      "expected": false
+    },
+    {
+      "id": "checkpoint-cutoffMatches",
+      "constraint": "CheckpointVisibility",
+      "inputs": {
+        "visible": true,
+        "chunksComplete": true,
+        "decoded": true,
+        "cutoffMatches": false
+      },
+      "expected": false
+    },
+    {
+      "id": "page-at-cutoff",
+      "constraint": "PageCutoff",
+      "inputs": {
+        "cursor": "40",
+        "next": "42",
+        "cutoff": "42"
+      },
+      "expected": true
+    },
+    {
+      "id": "page-newer-than-snapshot",
+      "constraint": "PageCutoff",
+      "inputs": {
+        "cursor": "40",
+        "next": "43",
+        "cutoff": "42"
+      },
+      "expected": false
+    },
+    {
+      "id": "page-backward",
+      "constraint": "PageCutoff",
+      "inputs": {
+        "cursor": "40",
+        "next": "39",
+        "cutoff": "42"
+      },
+      "expected": false
+    },
+    {
+      "id": "recovery-ready",
+      "constraint": "RecoveryReadiness",
+      "inputs": {
+        "ready": true,
+        "identityMatches": true,
+        "versionsSupported": true,
+        "completeReplay": true,
+        "expectedHeadMatches": true,
+        "protocolMatches": true,
+        "catalogActive": true,
+        "fenceMatches": true
+      },
+      "expected": true
+    },
+    {
+      "id": "recovery-identityMatches",
+      "constraint": "RecoveryReadiness",
+      "inputs": {
+        "ready": true,
+        "identityMatches": false,
+        "versionsSupported": true,
+        "completeReplay": true,
+        "expectedHeadMatches": true,
+        "protocolMatches": true,
+        "catalogActive": true,
+        "fenceMatches": true
+      },
+      "expected": false
+    },
+    {
+      "id": "recovery-versionsSupported",
+      "constraint": "RecoveryReadiness",
+      "inputs": {
+        "ready": true,
+        "identityMatches": true,
+        "versionsSupported": false,
+        "completeReplay": true,
+        "expectedHeadMatches": true,
+        "protocolMatches": true,
+        "catalogActive": true,
+        "fenceMatches": true
+      },
+      "expected": false
+    },
+    {
+      "id": "recovery-completeReplay",
+      "constraint": "RecoveryReadiness",
+      "inputs": {
+        "ready": true,
+        "identityMatches": true,
+        "versionsSupported": true,
+        "completeReplay": false,
+        "expectedHeadMatches": true,
+        "protocolMatches": true,
+        "catalogActive": true,
+        "fenceMatches": true
+      },
+      "expected": false
+    },
+    {
+      "id": "recovery-expectedHeadMatches",
+      "constraint": "RecoveryReadiness",
+      "inputs": {
+        "ready": true,
+        "identityMatches": true,
+        "versionsSupported": true,
+        "completeReplay": true,
+        "expectedHeadMatches": false,
+        "protocolMatches": true,
+        "catalogActive": true,
+        "fenceMatches": true
+      },
+      "expected": false
+    },
+    {
+      "id": "recovery-protocolMatches",
+      "constraint": "RecoveryReadiness",
+      "inputs": {
+        "ready": true,
+        "identityMatches": true,
+        "versionsSupported": true,
+        "completeReplay": true,
+        "expectedHeadMatches": true,
+        "protocolMatches": false,
+        "catalogActive": true,
+        "fenceMatches": true
+      },
+      "expected": false
+    },
+    {
+      "id": "recovery-catalogActive",
+      "constraint": "RecoveryReadiness",
+      "inputs": {
+        "ready": true,
+        "identityMatches": true,
+        "versionsSupported": true,
+        "completeReplay": true,
+        "expectedHeadMatches": true,
+        "protocolMatches": true,
+        "catalogActive": false,
+        "fenceMatches": true
+      },
+      "expected": false
+    },
+    {
+      "id": "recovery-fenceMatches",
+      "constraint": "RecoveryReadiness",
+      "inputs": {
+        "ready": true,
+        "identityMatches": true,
+        "versionsSupported": true,
+        "completeReplay": true,
+        "expectedHeadMatches": true,
+        "protocolMatches": true,
+        "catalogActive": true,
+        "fenceMatches": false
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-ack-verified",
+      "constraint": "ArchiveAcknowledgement",
+      "inputs": {
+        "acknowledged": true,
+        "archiveRequired": true,
+        "sqliteDurable": true,
+        "archiveCanonical": true,
+        "payloadVerified": true,
+        "membershipVerified": true,
+        "fenceVerified": true
+      },
+      "expected": true
+    },
+    {
+      "id": "archive-ack-missing-sqliteDurable",
+      "constraint": "ArchiveAcknowledgement",
+      "inputs": {
+        "acknowledged": true,
+        "archiveRequired": true,
+        "sqliteDurable": false,
+        "archiveCanonical": true,
+        "payloadVerified": true,
+        "membershipVerified": true,
+        "fenceVerified": true
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-ack-missing-archiveCanonical",
+      "constraint": "ArchiveAcknowledgement",
+      "inputs": {
+        "acknowledged": true,
+        "archiveRequired": true,
+        "sqliteDurable": true,
+        "archiveCanonical": false,
+        "payloadVerified": true,
+        "membershipVerified": true,
+        "fenceVerified": true
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-ack-missing-payloadVerified",
+      "constraint": "ArchiveAcknowledgement",
+      "inputs": {
+        "acknowledged": true,
+        "archiveRequired": true,
+        "sqliteDurable": true,
+        "archiveCanonical": true,
+        "payloadVerified": false,
+        "membershipVerified": true,
+        "fenceVerified": true
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-ack-missing-membershipVerified",
+      "constraint": "ArchiveAcknowledgement",
+      "inputs": {
+        "acknowledged": true,
+        "archiveRequired": true,
+        "sqliteDurable": true,
+        "archiveCanonical": true,
+        "payloadVerified": true,
+        "membershipVerified": false,
+        "fenceVerified": true
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-ack-missing-fenceVerified",
+      "constraint": "ArchiveAcknowledgement",
+      "inputs": {
+        "acknowledged": true,
+        "archiveRequired": true,
+        "sqliteDurable": true,
+        "archiveCanonical": true,
+        "payloadVerified": true,
+        "membershipVerified": true,
+        "fenceVerified": false
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-unacknowledged",
+      "constraint": "ArchiveAcknowledgement",
+      "inputs": {
+        "acknowledged": false,
+        "archiveRequired": true,
+        "sqliteDurable": true,
+        "archiveCanonical": false,
+        "payloadVerified": true,
+        "membershipVerified": true,
+        "fenceVerified": true
+      },
+      "expected": true
+    },
+    {
+      "id": "sqlite-only-not-archive-guarantee",
+      "constraint": "ArchiveAcknowledgement",
+      "inputs": {
+        "acknowledged": true,
+        "archiveRequired": false,
+        "sqliteDurable": true,
+        "archiveCanonical": false,
+        "payloadVerified": false,
+        "membershipVerified": false,
+        "fenceVerified": false
+      },
+      "expected": true
+    },
+    {
+      "id": "sqlite-only-still-needs-sync",
+      "constraint": "ArchiveAcknowledgement",
+      "inputs": {
+        "acknowledged": true,
+        "archiveRequired": false,
+        "sqliteDurable": false,
+        "archiveCanonical": true,
+        "payloadVerified": true,
+        "membershipVerified": true,
+        "fenceVerified": true
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-publish-exact",
+      "constraint": "ArchivePublication",
+      "inputs": {
+        "published": true,
+        "selectedDurably": true,
+        "priorHeadMatches": true,
+        "fenceMatches": true,
+        "conditionalWriteSucceeded": true,
+        "candidateMatches": true,
+        "expectedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "expected": true
+    },
+    {
+      "id": "archive-publish-missing-selectedDurably",
+      "constraint": "ArchivePublication",
+      "inputs": {
+        "published": true,
+        "selectedDurably": false,
+        "priorHeadMatches": true,
+        "fenceMatches": true,
+        "conditionalWriteSucceeded": true,
+        "candidateMatches": true,
+        "expectedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-publish-missing-priorHeadMatches",
+      "constraint": "ArchivePublication",
+      "inputs": {
+        "published": true,
+        "selectedDurably": true,
+        "priorHeadMatches": false,
+        "fenceMatches": true,
+        "conditionalWriteSucceeded": true,
+        "candidateMatches": true,
+        "expectedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-publish-missing-fenceMatches",
+      "constraint": "ArchivePublication",
+      "inputs": {
+        "published": true,
+        "selectedDurably": true,
+        "priorHeadMatches": true,
+        "fenceMatches": false,
+        "conditionalWriteSucceeded": true,
+        "candidateMatches": true,
+        "expectedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-publish-missing-conditionalWriteSucceeded",
+      "constraint": "ArchivePublication",
+      "inputs": {
+        "published": true,
+        "selectedDurably": true,
+        "priorHeadMatches": true,
+        "fenceMatches": true,
+        "conditionalWriteSucceeded": false,
+        "candidateMatches": true,
+        "expectedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-publish-missing-candidateMatches",
+      "constraint": "ArchivePublication",
+      "inputs": {
+        "published": true,
+        "selectedDurably": true,
+        "priorHeadMatches": true,
+        "fenceMatches": true,
+        "conditionalWriteSucceeded": true,
+        "candidateMatches": false,
+        "expectedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-publish-payload-mismatch",
+      "constraint": "ArchivePublication",
+      "inputs": {
+        "published": true,
+        "selectedDurably": true,
+        "priorHeadMatches": true,
+        "fenceMatches": true,
+        "conditionalWriteSucceeded": true,
+        "candidateMatches": true,
+        "expectedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedPayloadHash": "2222222222222222222222222222222222222222222222222222222222222222"
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-orphan-not-published",
+      "constraint": "ArchivePublication",
+      "inputs": {
+        "published": false,
+        "selectedDurably": true,
+        "priorHeadMatches": true,
+        "fenceMatches": true,
+        "conditionalWriteSucceeded": false,
+        "candidateMatches": true,
+        "expectedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedPayloadHash": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "expected": true
+    },
+    {
+      "id": "archive-abandon-fenced",
+      "constraint": "ArchiveAbandonment",
+      "inputs": {
+        "abandoned": true,
+        "canonicalCommit": false,
+        "priorHeadMatches": true,
+        "fenceReplacementConfirmed": true,
+        "previousFence": "7",
+        "resultingFence": "8",
+        "selectionClearedDurably": true,
+        "catalogFenceMatches": true
+      },
+      "expected": true
+    },
+    {
+      "id": "archive-abandon-missing-priorHeadMatches",
+      "constraint": "ArchiveAbandonment",
+      "inputs": {
+        "abandoned": true,
+        "canonicalCommit": false,
+        "priorHeadMatches": false,
+        "fenceReplacementConfirmed": true,
+        "previousFence": "7",
+        "resultingFence": "8",
+        "selectionClearedDurably": true,
+        "catalogFenceMatches": true
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-abandon-missing-fenceReplacementConfirmed",
+      "constraint": "ArchiveAbandonment",
+      "inputs": {
+        "abandoned": true,
+        "canonicalCommit": false,
+        "priorHeadMatches": true,
+        "fenceReplacementConfirmed": false,
+        "previousFence": "7",
+        "resultingFence": "8",
+        "selectionClearedDurably": true,
+        "catalogFenceMatches": true
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-abandon-missing-selectionClearedDurably",
+      "constraint": "ArchiveAbandonment",
+      "inputs": {
+        "abandoned": true,
+        "canonicalCommit": false,
+        "priorHeadMatches": true,
+        "fenceReplacementConfirmed": true,
+        "previousFence": "7",
+        "resultingFence": "8",
+        "selectionClearedDurably": false,
+        "catalogFenceMatches": true
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-abandon-canonical-forbidden",
+      "constraint": "ArchiveAbandonment",
+      "inputs": {
+        "abandoned": true,
+        "canonicalCommit": true,
+        "priorHeadMatches": true,
+        "fenceReplacementConfirmed": true,
+        "previousFence": "7",
+        "resultingFence": "8",
+        "selectionClearedDurably": true,
+        "catalogFenceMatches": true
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-abandon-same-fence-unsafe",
+      "constraint": "ArchiveAbandonment",
+      "inputs": {
+        "abandoned": true,
+        "canonicalCommit": false,
+        "priorHeadMatches": true,
+        "fenceReplacementConfirmed": true,
+        "previousFence": "7",
+        "resultingFence": "7",
+        "selectionClearedDurably": true,
+        "catalogFenceMatches": true
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-abandon-older-fence-unsafe",
+      "constraint": "ArchiveAbandonment",
+      "inputs": {
+        "abandoned": true,
+        "canonicalCommit": false,
+        "priorHeadMatches": true,
+        "fenceReplacementConfirmed": true,
+        "previousFence": "7",
+        "resultingFence": "6",
+        "selectionClearedDurably": true,
+        "catalogFenceMatches": true
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-abandon-newer-fence",
+      "constraint": "ArchiveAbandonment",
+      "inputs": {
+        "abandoned": true,
+        "canonicalCommit": false,
+        "priorHeadMatches": true,
+        "fenceReplacementConfirmed": true,
+        "previousFence": "7",
+        "resultingFence": "9",
+        "selectionClearedDurably": true,
+        "catalogFenceMatches": true
+      },
+      "expected": true
+    },
+    {
+      "id": "archive-abandon-stays-uncertain",
+      "constraint": "ArchiveAbandonment",
+      "inputs": {
+        "abandoned": false,
+        "canonicalCommit": false,
+        "priorHeadMatches": true,
+        "fenceReplacementConfirmed": false,
+        "previousFence": "7",
+        "resultingFence": "8",
+        "selectionClearedDurably": true,
+        "catalogFenceMatches": true
+      },
+      "expected": true
+    },
+    {
+      "id": "archive-recover-exact",
+      "constraint": "ArchiveRecoveryIdentity",
+      "inputs": {
+        "recovered": true,
+        "canonicalCommit": true,
+        "payloadVerified": true,
+        "membershipVerified": true,
+        "expectedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "expectedOutcomeSequence": "42",
+        "observedOutcomeSequence": "42"
+      },
+      "expected": true
+    },
+    {
+      "id": "archive-recover-missing-canonicalCommit",
+      "constraint": "ArchiveRecoveryIdentity",
+      "inputs": {
+        "recovered": true,
+        "canonicalCommit": false,
+        "payloadVerified": true,
+        "membershipVerified": true,
+        "expectedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "expectedOutcomeSequence": "42",
+        "observedOutcomeSequence": "42"
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-recover-missing-payloadVerified",
+      "constraint": "ArchiveRecoveryIdentity",
+      "inputs": {
+        "recovered": true,
+        "canonicalCommit": true,
+        "payloadVerified": false,
+        "membershipVerified": true,
+        "expectedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "expectedOutcomeSequence": "42",
+        "observedOutcomeSequence": "42"
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-recover-missing-membershipVerified",
+      "constraint": "ArchiveRecoveryIdentity",
+      "inputs": {
+        "recovered": true,
+        "canonicalCommit": true,
+        "payloadVerified": true,
+        "membershipVerified": false,
+        "expectedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "expectedOutcomeSequence": "42",
+        "observedOutcomeSequence": "42"
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-recover-different-candidate",
+      "constraint": "ArchiveRecoveryIdentity",
+      "inputs": {
+        "recovered": true,
+        "canonicalCommit": true,
+        "payloadVerified": true,
+        "membershipVerified": true,
+        "expectedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedCandidateHash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "expectedOutcomeSequence": "42",
+        "observedOutcomeSequence": "42"
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-recover-missing-rejected-tail",
+      "constraint": "ArchiveRecoveryIdentity",
+      "inputs": {
+        "recovered": true,
+        "canonicalCommit": true,
+        "payloadVerified": true,
+        "membershipVerified": true,
+        "expectedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "expectedOutcomeSequence": "42",
+        "observedOutcomeSequence": "41"
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-recover-unexpected-successor",
+      "constraint": "ArchiveRecoveryIdentity",
+      "inputs": {
+        "recovered": true,
+        "canonicalCommit": true,
+        "payloadVerified": true,
+        "membershipVerified": true,
+        "expectedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "expectedOutcomeSequence": "42",
+        "observedOutcomeSequence": "43"
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-recover-unavailable-not-ready",
+      "constraint": "ArchiveRecoveryIdentity",
+      "inputs": {
+        "recovered": false,
+        "canonicalCommit": true,
+        "payloadVerified": false,
+        "membershipVerified": true,
+        "expectedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "observedCandidateHash": "1111111111111111111111111111111111111111111111111111111111111111",
+        "expectedOutcomeSequence": "42",
+        "observedOutcomeSequence": "42"
+      },
+      "expected": true
+    },
+    {
+      "id": "archive-ready-resolved",
+      "constraint": "ArchiveServiceReadiness",
+      "inputs": {
+        "publicReady": true,
+        "archiveRequired": true,
+        "archivePhase": "idle",
+        "pendingSelection": false
+      },
+      "expected": true
+    },
+    {
+      "id": "archive-ready-refused-selected",
+      "constraint": "ArchiveServiceReadiness",
+      "inputs": {
+        "publicReady": true,
+        "archiveRequired": true,
+        "archivePhase": "selected",
+        "pendingSelection": false
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-ready-refused-uploaded",
+      "constraint": "ArchiveServiceReadiness",
+      "inputs": {
+        "publicReady": true,
+        "archiveRequired": true,
+        "archivePhase": "uploaded",
+        "pendingSelection": false
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-ready-refused-archiveCommitted",
+      "constraint": "ArchiveServiceReadiness",
+      "inputs": {
+        "publicReady": true,
+        "archiveRequired": true,
+        "archivePhase": "archiveCommitted",
+        "pendingSelection": false
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-ready-refused-locallyPublished",
+      "constraint": "ArchiveServiceReadiness",
+      "inputs": {
+        "publicReady": true,
+        "archiveRequired": true,
+        "archivePhase": "locallyPublished",
+        "pendingSelection": false
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-ready-refused-uncertain",
+      "constraint": "ArchiveServiceReadiness",
+      "inputs": {
+        "publicReady": true,
+        "archiveRequired": true,
+        "archivePhase": "uncertain",
+        "pendingSelection": false
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-ready-refused-reconciling",
+      "constraint": "ArchiveServiceReadiness",
+      "inputs": {
+        "publicReady": true,
+        "archiveRequired": true,
+        "archivePhase": "reconciling",
+        "pendingSelection": false
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-ready-refused-quarantined",
+      "constraint": "ArchiveServiceReadiness",
+      "inputs": {
+        "publicReady": true,
+        "archiveRequired": true,
+        "archivePhase": "quarantined",
+        "pendingSelection": false
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-ready-pending-in-idle",
+      "constraint": "ArchiveServiceReadiness",
+      "inputs": {
+        "publicReady": true,
+        "archiveRequired": true,
+        "archivePhase": "idle",
+        "pendingSelection": true
+      },
+      "expected": false
+    },
+    {
+      "id": "archive-ready-sqlite-only",
+      "constraint": "ArchiveServiceReadiness",
+      "inputs": {
+        "publicReady": true,
+        "archiveRequired": false,
+        "archivePhase": "selected",
+        "pendingSelection": true
+      },
+      "expected": true
+    },
+    {
+      "id": "archive-ready-unavailable",
+      "constraint": "ArchiveServiceReadiness",
+      "inputs": {
+        "publicReady": false,
+        "archiveRequired": true,
+        "archivePhase": "uncertain",
+        "pendingSelection": true
+      },
+      "expected": true
+    },
+    {
+      "id": "archive-abandon-catalog-mismatch",
+      "constraint": "ArchiveAbandonment",
+      "inputs": {
+        "abandoned": true,
+        "canonicalCommit": false,
+        "priorHeadMatches": true,
+        "fenceReplacementConfirmed": true,
+        "previousFence": "7",
+        "resultingFence": "8",
+        "selectionClearedDurably": true,
+        "catalogFenceMatches": false
+      },
+      "expected": false
+    }
+  ],
+  "lifecycle": [
+    {
+      "id": "provision-post-replay",
+      "steps": [
+        {
+          "event": "EmptyReserved",
+          "facts": {
+            "reserveVerified": false
+          },
+          "expectedState": "recovering",
+          "allowed": false
+        },
+        {
+          "event": "EmptyReserved",
+          "facts": {
+            "reserveVerified": true
+          },
+          "expectedState": "unprovisioned",
+          "allowed": true
+        },
+        {
+          "event": "BeginProvision",
+          "facts": {
+            "provisionAuthorized": false
+          },
+          "expectedState": "unprovisioned",
+          "allowed": false
+        },
+        {
+          "event": "BeginProvision",
+          "facts": {
+            "provisionAuthorized": true
+          },
+          "expectedState": "provisioning",
+          "allowed": true
+        },
+        {
+          "event": "ProvisionDurable",
+          "facts": {
+            "genesisDurable": false
+          },
+          "expectedState": "provisioning",
+          "allowed": false
+        },
+        {
+          "event": "ProvisionDurable",
+          "facts": {
+            "genesisDurable": true
+          },
+          "expectedState": "recovering",
+          "allowed": true
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": false
+          },
+          "expectedState": "recovering",
+          "allowed": false
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        },
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": false
+          },
+          "expectedState": "ready",
+          "allowed": false
+        },
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": true
+          },
+          "expectedState": "evaluating",
+          "allowed": true
+        },
+        {
+          "event": "CandidateReady",
+          "facts": {
+            "candidateValidated": false
+          },
+          "expectedState": "evaluating",
+          "allowed": false
+        },
+        {
+          "event": "CandidateReady",
+          "facts": {
+            "candidateValidated": true
+          },
+          "expectedState": "committing",
+          "allowed": true
+        },
+        {
+          "event": "SqlCommitted",
+          "facts": {
+            "atomicCommitConfirmed": false
+          },
+          "expectedState": "committing",
+          "allowed": false
+        },
+        {
+          "event": "SqlCommitted",
+          "facts": {
+            "atomicCommitConfirmed": true
+          },
+          "expectedState": "awaitingDurability",
+          "allowed": true
+        },
+        {
+          "event": "DurabilityConfirmed",
+          "facts": {
+            "durabilityConfirmed": false
+          },
+          "expectedState": "awaitingDurability",
+          "allowed": false
+        },
+        {
+          "event": "DurabilityConfirmed",
+          "facts": {
+            "durabilityConfirmed": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        },
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": false
+          },
+          "expectedState": "ready",
+          "allowed": false
+        },
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": true
+          },
+          "expectedState": "evaluating",
+          "allowed": true
+        },
+        {
+          "event": "ExistingOutcome",
+          "facts": {
+            "replayVerified": false
+          },
+          "expectedState": "evaluating",
+          "allowed": false
+        },
+        {
+          "event": "ExistingOutcome",
+          "facts": {
+            "replayVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        },
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": false
+          },
+          "expectedState": "ready",
+          "allowed": false
+        },
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": true
+          },
+          "expectedState": "evaluating",
+          "allowed": true
+        },
+        {
+          "event": "NotRetained",
+          "facts": {
+            "unretainedConfirmed": false
+          },
+          "expectedState": "evaluating",
+          "allowed": false
+        },
+        {
+          "event": "NotRetained",
+          "facts": {
+            "unretainedConfirmed": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        }
+      ],
+      "machine": "BookLifecycle"
+    },
+    {
+      "id": "unknown-provision",
+      "steps": [
+        {
+          "event": "EmptyReserved",
+          "facts": {
+            "reserveVerified": false
+          },
+          "expectedState": "recovering",
+          "allowed": false
+        },
+        {
+          "event": "EmptyReserved",
+          "facts": {
+            "reserveVerified": true
+          },
+          "expectedState": "unprovisioned",
+          "allowed": true
+        },
+        {
+          "event": "BeginProvision",
+          "facts": {
+            "provisionAuthorized": false
+          },
+          "expectedState": "unprovisioned",
+          "allowed": false
+        },
+        {
+          "event": "BeginProvision",
+          "facts": {
+            "provisionAuthorized": true
+          },
+          "expectedState": "provisioning",
+          "allowed": true
+        },
+        {
+          "event": "StorageUncertain",
+          "facts": {},
+          "expectedState": "uncertain",
+          "allowed": true
+        },
+        {
+          "event": "Recover",
+          "facts": {},
+          "expectedState": "recovering",
+          "allowed": true
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": false
+          },
+          "expectedState": "recovering",
+          "allowed": false
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        }
+      ],
+      "machine": "BookLifecycle"
+    },
+    {
+      "id": "unknown-commit",
+      "steps": [
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": false
+          },
+          "expectedState": "recovering",
+          "allowed": false
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        },
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": false
+          },
+          "expectedState": "ready",
+          "allowed": false
+        },
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": true
+          },
+          "expectedState": "evaluating",
+          "allowed": true
+        },
+        {
+          "event": "CandidateReady",
+          "facts": {
+            "candidateValidated": false
+          },
+          "expectedState": "evaluating",
+          "allowed": false
+        },
+        {
+          "event": "CandidateReady",
+          "facts": {
+            "candidateValidated": true
+          },
+          "expectedState": "committing",
+          "allowed": true
+        },
+        {
+          "event": "StorageUncertain",
+          "facts": {},
+          "expectedState": "uncertain",
+          "allowed": true
+        },
+        {
+          "event": "Recover",
+          "facts": {},
+          "expectedState": "recovering",
+          "allowed": true
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": false
+          },
+          "expectedState": "recovering",
+          "allowed": false
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        }
+      ],
+      "machine": "BookLifecycle"
+    },
+    {
+      "id": "unknown-durability",
+      "steps": [
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": false
+          },
+          "expectedState": "recovering",
+          "allowed": false
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        },
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": false
+          },
+          "expectedState": "ready",
+          "allowed": false
+        },
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": true
+          },
+          "expectedState": "evaluating",
+          "allowed": true
+        },
+        {
+          "event": "CandidateReady",
+          "facts": {
+            "candidateValidated": false
+          },
+          "expectedState": "evaluating",
+          "allowed": false
+        },
+        {
+          "event": "CandidateReady",
+          "facts": {
+            "candidateValidated": true
+          },
+          "expectedState": "committing",
+          "allowed": true
+        },
+        {
+          "event": "SqlCommitted",
+          "facts": {
+            "atomicCommitConfirmed": false
+          },
+          "expectedState": "committing",
+          "allowed": false
+        },
+        {
+          "event": "SqlCommitted",
+          "facts": {
+            "atomicCommitConfirmed": true
+          },
+          "expectedState": "awaitingDurability",
+          "allowed": true
+        },
+        {
+          "event": "StorageUncertain",
+          "facts": {},
+          "expectedState": "uncertain",
+          "allowed": true
+        },
+        {
+          "event": "Recover",
+          "facts": {},
+          "expectedState": "recovering",
+          "allowed": true
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": false
+          },
+          "expectedState": "recovering",
+          "allowed": false
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        }
+      ],
+      "machine": "BookLifecycle"
+    },
+    {
+      "id": "stale-head",
+      "steps": [
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": false
+          },
+          "expectedState": "recovering",
+          "allowed": false
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        },
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": false
+          },
+          "expectedState": "ready",
+          "allowed": false
+        },
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": true
+          },
+          "expectedState": "evaluating",
+          "allowed": true
+        },
+        {
+          "event": "CandidateReady",
+          "facts": {
+            "candidateValidated": false
+          },
+          "expectedState": "evaluating",
+          "allowed": false
+        },
+        {
+          "event": "CandidateReady",
+          "facts": {
+            "candidateValidated": true
+          },
+          "expectedState": "committing",
+          "allowed": true
+        },
+        {
+          "event": "HeadConflict",
+          "facts": {},
+          "expectedState": "recovering",
+          "allowed": true
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": false
+          },
+          "expectedState": "recovering",
+          "allowed": false
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        }
+      ],
+      "machine": "BookLifecycle"
+    },
+    {
+      "id": "controlled-restore",
+      "steps": [
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": false
+          },
+          "expectedState": "recovering",
+          "allowed": false
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        },
+        {
+          "event": "FenceForMaintenance",
+          "facts": {
+            "maintenanceAuthorized": false
+          },
+          "expectedState": "ready",
+          "allowed": false
+        },
+        {
+          "event": "FenceForMaintenance",
+          "facts": {
+            "maintenanceAuthorized": true
+          },
+          "expectedState": "maintenance",
+          "allowed": true
+        },
+        {
+          "event": "RestoreRequested",
+          "facts": {
+            "restorePermitted": false
+          },
+          "expectedState": "maintenance",
+          "allowed": false
+        },
+        {
+          "event": "RestoreRequested",
+          "facts": {
+            "restorePermitted": true
+          },
+          "expectedState": "recovering",
+          "allowed": true
+        },
+        {
+          "event": "DamageDetected",
+          "facts": {},
+          "expectedState": "quarantined",
+          "allowed": true
+        },
+        {
+          "event": "FenceForMaintenance",
+          "facts": {
+            "maintenanceAuthorized": false
+          },
+          "expectedState": "quarantined",
+          "allowed": false
+        },
+        {
+          "event": "FenceForMaintenance",
+          "facts": {
+            "maintenanceAuthorized": true
+          },
+          "expectedState": "maintenance",
+          "allowed": true
+        },
+        {
+          "event": "RestoreRequested",
+          "facts": {
+            "restorePermitted": false
+          },
+          "expectedState": "maintenance",
+          "allowed": false
+        },
+        {
+          "event": "RestoreRequested",
+          "facts": {
+            "restorePermitted": true
+          },
+          "expectedState": "recovering",
+          "allowed": true
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": false
+          },
+          "expectedState": "recovering",
+          "allowed": false
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        }
+      ],
+      "machine": "BookLifecycle"
+    },
+    {
+      "id": "forbidden-startup-operations",
+      "steps": [
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": true
+          },
+          "expectedState": "recovering",
+          "allowed": false
+        },
+        {
+          "event": "DurabilityConfirmed",
+          "facts": {
+            "durabilityConfirmed": true
+          },
+          "expectedState": "recovering",
+          "allowed": false
+        }
+      ],
+      "machine": "BookLifecycle"
+    },
+    {
+      "id": "unavailable-before-publication",
+      "steps": [
+        {
+          "event": "StorageUnavailable",
+          "facts": {},
+          "expectedState": "uncertain",
+          "allowed": true
+        },
+        {
+          "event": "Recover",
+          "facts": {},
+          "expectedState": "recovering",
+          "allowed": true
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        },
+        {
+          "event": "StorageUnavailable",
+          "facts": {},
+          "expectedState": "uncertain",
+          "allowed": true
+        },
+        {
+          "event": "Recover",
+          "facts": {},
+          "expectedState": "recovering",
+          "allowed": true
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        },
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": true
+          },
+          "expectedState": "evaluating",
+          "allowed": true
+        },
+        {
+          "event": "StorageUnavailable",
+          "facts": {},
+          "expectedState": "uncertain",
+          "allowed": true
+        },
+        {
+          "event": "Recover",
+          "facts": {},
+          "expectedState": "recovering",
+          "allowed": true
+        },
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        }
+      ],
+      "machine": "BookLifecycle"
+    },
+    {
+      "id": "damage-during-read",
+      "steps": [
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        },
+        {
+          "event": "DamageDetected",
+          "facts": {},
+          "expectedState": "quarantined",
+          "allowed": true
+        }
+      ],
+      "machine": "BookLifecycle"
+    },
+    {
+      "id": "damage-during-evaluation",
+      "steps": [
+        {
+          "event": "HistoryVerified",
+          "facts": {
+            "recoveryVerified": true
+          },
+          "expectedState": "ready",
+          "allowed": true
+        },
+        {
+          "event": "BeginCommand",
+          "facts": {
+            "commandAdmitted": true
+          },
+          "expectedState": "evaluating",
+          "allowed": true
+        },
+        {
+          "event": "DamageDetected",
+          "facts": {},
+          "expectedState": "quarantined",
+          "allowed": true
+        }
+      ],
+      "machine": "BookLifecycle"
+    },
+    {
+      "id": "archive-happy-and-gate-negatives",
+      "machine": "ArchivePublicationLifecycle",
+      "steps": [
+        {
+          "event": "Select",
+          "facts": {
+            "selectionConfirmed": false
+          },
+          "expectedState": "idle",
+          "allowed": false
+        },
+        {
+          "event": "Select",
+          "facts": {
+            "selectionConfirmed": true
+          },
+          "expectedState": "selected",
+          "allowed": true
+        },
+        {
+          "event": "Select",
+          "facts": {},
+          "expectedState": "selected",
+          "allowed": false
+        },
+        {
+          "event": "PayloadStored",
+          "facts": {
+            "payloadConfirmed": false
+          },
+          "expectedState": "selected",
+          "allowed": false
+        },
+        {
+          "event": "PayloadStored",
+          "facts": {
+            "payloadConfirmed": true
+          },
+          "expectedState": "uploaded",
+          "allowed": true
+        },
+        {
+          "event": "Select",
+          "facts": {},
+          "expectedState": "uploaded",
+          "allowed": false
+        },
+        {
+          "event": "ArchivePublished",
+          "facts": {
+            "archivePublicationConfirmed": false
+          },
+          "expectedState": "uploaded",
+          "allowed": false
+        },
+        {
+          "event": "ArchivePublished",
+          "facts": {
+            "archivePublicationConfirmed": true
+          },
+          "expectedState": "archiveCommitted",
+          "allowed": true
+        },
+        {
+          "event": "Select",
+          "facts": {},
+          "expectedState": "archiveCommitted",
+          "allowed": false
+        },
+        {
+          "event": "LocalPublished",
+          "facts": {
+            "localPublicationConfirmed": false
+          },
+          "expectedState": "archiveCommitted",
+          "allowed": false
+        },
+        {
+          "event": "LocalPublished",
+          "facts": {
+            "localPublicationConfirmed": true
+          },
+          "expectedState": "locallyPublished",
+          "allowed": true
+        },
+        {
+          "event": "Select",
+          "facts": {},
+          "expectedState": "locallyPublished",
+          "allowed": false
+        },
+        {
+          "event": "ReceiptReady",
+          "facts": {
+            "receiptConfirmed": false
+          },
+          "expectedState": "locallyPublished",
+          "allowed": false
+        },
+        {
+          "event": "ReceiptReady",
+          "facts": {
+            "receiptConfirmed": true
+          },
+          "expectedState": "idle",
+          "allowed": true
+        }
+      ]
+    },
+    {
+      "id": "archive-uncertain-after-phase-0",
+      "machine": "ArchivePublicationLifecycle",
+      "steps": [
+        {
+          "event": "WriteUncertain",
+          "facts": {},
+          "expectedState": "uncertain",
+          "allowed": true
+        },
+        {
+          "event": "Resume",
+          "facts": {
+            "authorityRechecked": false
+          },
+          "expectedState": "uncertain",
+          "allowed": false
+        },
+        {
+          "event": "Resume",
+          "facts": {
+            "authorityRechecked": true
+          },
+          "expectedState": "reconciling",
+          "allowed": true
+        },
+        {
+          "event": "CanonicalFound",
+          "facts": {
+            "canonicalMembershipVerified": false
+          },
+          "expectedState": "reconciling",
+          "allowed": false
+        },
+        {
+          "event": "FencedUnpublished",
+          "facts": {
+            "abandonmentVerified": false
+          },
+          "expectedState": "reconciling",
+          "allowed": false
+        },
+        {
+          "event": "CanonicalFound",
+          "facts": {
+            "canonicalMembershipVerified": true
+          },
+          "expectedState": "archiveCommitted",
+          "allowed": true
+        },
+        {
+          "event": "LocalPublished",
+          "facts": {
+            "localPublicationConfirmed": true
+          },
+          "expectedState": "locallyPublished",
+          "allowed": true
+        },
+        {
+          "event": "ReceiptReady",
+          "facts": {
+            "receiptConfirmed": true
+          },
+          "expectedState": "idle",
+          "allowed": true
+        }
+      ]
+    },
+    {
+      "id": "archive-uncertain-after-phase-1",
+      "machine": "ArchivePublicationLifecycle",
+      "steps": [
+        {
+          "event": "Select",
+          "facts": {
+            "selectionConfirmed": true
+          },
+          "expectedState": "selected",
+          "allowed": true
+        },
+        {
+          "event": "WriteUncertain",
+          "facts": {},
+          "expectedState": "uncertain",
+          "allowed": true
+        },
+        {
+          "event": "Resume",
+          "facts": {
+            "authorityRechecked": false
+          },
+          "expectedState": "uncertain",
+          "allowed": false
+        },
+        {
+          "event": "Resume",
+          "facts": {
+            "authorityRechecked": true
+          },
+          "expectedState": "reconciling",
+          "allowed": true
+        },
+        {
+          "event": "CanonicalFound",
+          "facts": {
+            "canonicalMembershipVerified": false
+          },
+          "expectedState": "reconciling",
+          "allowed": false
+        },
+        {
+          "event": "FencedUnpublished",
+          "facts": {
+            "abandonmentVerified": false
+          },
+          "expectedState": "reconciling",
+          "allowed": false
+        },
+        {
+          "event": "CanonicalFound",
+          "facts": {
+            "canonicalMembershipVerified": true
+          },
+          "expectedState": "archiveCommitted",
+          "allowed": true
+        },
+        {
+          "event": "LocalPublished",
+          "facts": {
+            "localPublicationConfirmed": true
+          },
+          "expectedState": "locallyPublished",
+          "allowed": true
+        },
+        {
+          "event": "ReceiptReady",
+          "facts": {
+            "receiptConfirmed": true
+          },
+          "expectedState": "idle",
+          "allowed": true
+        }
+      ]
+    },
+    {
+      "id": "archive-uncertain-after-phase-2",
+      "machine": "ArchivePublicationLifecycle",
+      "steps": [
+        {
+          "event": "Select",
+          "facts": {
+            "selectionConfirmed": true
+          },
+          "expectedState": "selected",
+          "allowed": true
+        },
+        {
+          "event": "PayloadStored",
+          "facts": {
+            "payloadConfirmed": true
+          },
+          "expectedState": "uploaded",
+          "allowed": true
+        },
+        {
+          "event": "WriteUncertain",
+          "facts": {},
+          "expectedState": "uncertain",
+          "allowed": true
+        },
+        {
+          "event": "Resume",
+          "facts": {
+            "authorityRechecked": false
+          },
+          "expectedState": "uncertain",
+          "allowed": false
+        },
+        {
+          "event": "Resume",
+          "facts": {
+            "authorityRechecked": true
+          },
+          "expectedState": "reconciling",
+          "allowed": true
+        },
+        {
+          "event": "CanonicalFound",
+          "facts": {
+            "canonicalMembershipVerified": false
+          },
+          "expectedState": "reconciling",
+          "allowed": false
+        },
+        {
+          "event": "FencedUnpublished",
+          "facts": {
+            "abandonmentVerified": false
+          },
+          "expectedState": "reconciling",
+          "allowed": false
+        },
+        {
+          "event": "CanonicalFound",
+          "facts": {
+            "canonicalMembershipVerified": true
+          },
+          "expectedState": "archiveCommitted",
+          "allowed": true
+        },
+        {
+          "event": "LocalPublished",
+          "facts": {
+            "localPublicationConfirmed": true
+          },
+          "expectedState": "locallyPublished",
+          "allowed": true
+        },
+        {
+          "event": "ReceiptReady",
+          "facts": {
+            "receiptConfirmed": true
+          },
+          "expectedState": "idle",
+          "allowed": true
+        }
+      ]
+    },
+    {
+      "id": "archive-uncertain-after-phase-3",
+      "machine": "ArchivePublicationLifecycle",
+      "steps": [
+        {
+          "event": "Select",
+          "facts": {
+            "selectionConfirmed": true
+          },
+          "expectedState": "selected",
+          "allowed": true
+        },
+        {
+          "event": "PayloadStored",
+          "facts": {
+            "payloadConfirmed": true
+          },
+          "expectedState": "uploaded",
+          "allowed": true
+        },
+        {
+          "event": "ArchivePublished",
+          "facts": {
+            "archivePublicationConfirmed": true
+          },
+          "expectedState": "archiveCommitted",
+          "allowed": true
+        },
+        {
+          "event": "WriteUncertain",
+          "facts": {},
+          "expectedState": "uncertain",
+          "allowed": true
+        },
+        {
+          "event": "Resume",
+          "facts": {
+            "authorityRechecked": false
+          },
+          "expectedState": "uncertain",
+          "allowed": false
+        },
+        {
+          "event": "Resume",
+          "facts": {
+            "authorityRechecked": true
+          },
+          "expectedState": "reconciling",
+          "allowed": true
+        },
+        {
+          "event": "CanonicalFound",
+          "facts": {
+            "canonicalMembershipVerified": false
+          },
+          "expectedState": "reconciling",
+          "allowed": false
+        },
+        {
+          "event": "FencedUnpublished",
+          "facts": {
+            "abandonmentVerified": false
+          },
+          "expectedState": "reconciling",
+          "allowed": false
+        },
+        {
+          "event": "CanonicalFound",
+          "facts": {
+            "canonicalMembershipVerified": true
+          },
+          "expectedState": "archiveCommitted",
+          "allowed": true
+        },
+        {
+          "event": "LocalPublished",
+          "facts": {
+            "localPublicationConfirmed": true
+          },
+          "expectedState": "locallyPublished",
+          "allowed": true
+        },
+        {
+          "event": "ReceiptReady",
+          "facts": {
+            "receiptConfirmed": true
+          },
+          "expectedState": "idle",
+          "allowed": true
+        }
+      ]
+    },
+    {
+      "id": "archive-uncertain-after-phase-4",
+      "machine": "ArchivePublicationLifecycle",
+      "steps": [
+        {
+          "event": "Select",
+          "facts": {
+            "selectionConfirmed": true
+          },
+          "expectedState": "selected",
+          "allowed": true
+        },
+        {
+          "event": "PayloadStored",
+          "facts": {
+            "payloadConfirmed": true
+          },
+          "expectedState": "uploaded",
+          "allowed": true
+        },
+        {
+          "event": "ArchivePublished",
+          "facts": {
+            "archivePublicationConfirmed": true
+          },
+          "expectedState": "archiveCommitted",
+          "allowed": true
+        },
+        {
+          "event": "LocalPublished",
+          "facts": {
+            "localPublicationConfirmed": true
+          },
+          "expectedState": "locallyPublished",
+          "allowed": true
+        },
+        {
+          "event": "WriteUncertain",
+          "facts": {},
+          "expectedState": "uncertain",
+          "allowed": true
+        },
+        {
+          "event": "Resume",
+          "facts": {
+            "authorityRechecked": false
+          },
+          "expectedState": "uncertain",
+          "allowed": false
+        },
+        {
+          "event": "Resume",
+          "facts": {
+            "authorityRechecked": true
+          },
+          "expectedState": "reconciling",
+          "allowed": true
+        },
+        {
+          "event": "CanonicalFound",
+          "facts": {
+            "canonicalMembershipVerified": false
+          },
+          "expectedState": "reconciling",
+          "allowed": false
+        },
+        {
+          "event": "FencedUnpublished",
+          "facts": {
+            "abandonmentVerified": false
+          },
+          "expectedState": "reconciling",
+          "allowed": false
+        },
+        {
+          "event": "CanonicalFound",
+          "facts": {
+            "canonicalMembershipVerified": true
+          },
+          "expectedState": "archiveCommitted",
+          "allowed": true
+        },
+        {
+          "event": "LocalPublished",
+          "facts": {
+            "localPublicationConfirmed": true
+          },
+          "expectedState": "locallyPublished",
+          "allowed": true
+        },
+        {
+          "event": "ReceiptReady",
+          "facts": {
+            "receiptConfirmed": true
+          },
+          "expectedState": "idle",
+          "allowed": true
+        }
+      ]
+    },
+    {
+      "id": "archive-fence-before-abandonment",
+      "machine": "ArchivePublicationLifecycle",
+      "steps": [
+        {
+          "event": "Select",
+          "facts": {
+            "selectionConfirmed": true
+          },
+          "expectedState": "selected",
+          "allowed": true
+        },
+        {
+          "event": "PayloadStored",
+          "facts": {
+            "payloadConfirmed": true
+          },
+          "expectedState": "uploaded",
+          "allowed": true
+        },
+        {
+          "event": "ReceiptReady",
+          "facts": {},
+          "expectedState": "uploaded",
+          "allowed": false
+        },
+        {
+          "event": "WriteUncertain",
+          "facts": {},
+          "expectedState": "uncertain",
+          "allowed": true
+        },
+        {
+          "event": "Resume",
+          "facts": {
+            "authorityRechecked": true
+          },
+          "expectedState": "reconciling",
+          "allowed": true
+        },
+        {
+          "event": "WriteUncertain",
+          "facts": {},
+          "expectedState": "uncertain",
+          "allowed": true
+        },
+        {
+          "event": "Resume",
+          "facts": {
+            "authorityRechecked": true
+          },
+          "expectedState": "reconciling",
+          "allowed": true
+        },
+        {
+          "event": "FencedUnpublished",
+          "facts": {
+            "abandonmentVerified": false
+          },
+          "expectedState": "reconciling",
+          "allowed": false
+        },
+        {
+          "event": "FencedUnpublished",
+          "facts": {
+            "abandonmentVerified": true
+          },
+          "expectedState": "idle",
+          "allowed": true
+        }
+      ]
+    },
+    {
+      "id": "archive-quarantine-authorized-repair",
+      "machine": "ArchivePublicationLifecycle",
+      "steps": [
+        {
+          "event": "Select",
+          "facts": {
+            "selectionConfirmed": true
+          },
+          "expectedState": "selected",
+          "allowed": true
+        },
+        {
+          "event": "WriteUncertain",
+          "facts": {},
+          "expectedState": "uncertain",
+          "allowed": true
+        },
+        {
+          "event": "Resume",
+          "facts": {
+            "authorityRechecked": true
+          },
+          "expectedState": "reconciling",
+          "allowed": true
+        },
+        {
+          "event": "ConflictingEvidence",
+          "facts": {},
+          "expectedState": "quarantined",
+          "allowed": true
+        },
+        {
+          "event": "Select",
+          "facts": {},
+          "expectedState": "quarantined",
+          "allowed": false
+        },
+        {
+          "event": "AuthorizedRepair",
+          "facts": {
+            "maintenanceAuthorized": false
+          },
+          "expectedState": "quarantined",
+          "allowed": false
+        },
+        {
+          "event": "AuthorizedRepair",
+          "facts": {
+            "maintenanceAuthorized": true
+          },
+          "expectedState": "reconciling",
+          "allowed": true
+        },
+        {
+          "event": "CanonicalFound",
+          "facts": {
+            "canonicalMembershipVerified": true
+          },
+          "expectedState": "archiveCommitted",
+          "allowed": true
+        },
+        {
+          "event": "LocalPublished",
+          "facts": {
+            "localPublicationConfirmed": true
+          },
+          "expectedState": "locallyPublished",
+          "allowed": true
+        },
+        {
+          "event": "ReceiptReady",
+          "facts": {
+            "receiptConfirmed": true
+          },
+          "expectedState": "idle",
+          "allowed": true
+        }
+      ]
+    }
+  ],
+  "obligations": [
+    {
+      "verification": "L25NativeJournal",
+      "requirements": ["PL-022", "PL-004", "PL-003"],
+      "given": [
+        "An explicitly provisioned native-book-commands-owned-inventory-v1 book with supported policies, complete transactional current facts and the exact original kernel command bytes"
+      ],
+      "when": [
+        "Compare canonical journal, configuration and correction commits/rejections; race duplicate and distinct writers; interrupt outcome/fact/head writes and durability confirmation; recreate the actual Workers runtime",
+        "Reexecute a bounded paginated outcome stream into explicit empty staging and compare every projection; inject gaps, rehashed changes, extra facts and concurrent source/target writes"
+      ],
+      "then": [
+        "One SQL transaction publishes outcome, current facts and head or none; immutable journal/posting identities cannot be replaced",
+        "Retained rejections only advance Oseq; exact retries after restart return the original canonical receipt and sequence",
+        "Missing current facts, invalid heads, unsupported profile, authority changes and uncertain durability cannot acknowledge",
+        "Genuine growing-book measurements report full local save latency, SQL count, CPU and storage size; remote replication and backup costs are not inferred",
+        "Configuration date watermarks never move backward; immutable correction identity prevents a second correction across restart; original period status must be resolved even if retired from the current calendar",
+        "Staging verification compares canonical accounting bytes and every fact with its origin sequence; scoped physical hashes may differ; failure never selects staging as a production authority",
+        "Full recovery, backup, general capability admission and public readiness remain open"
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L24IndexedKernelContext",
+      "requirements": ["PL-021", "PL-006", "PL-008", "PL-009"],
+      "given": [
+        "An exact pinned book/profile/head and full legacy-replayed reference state covering all seventeen command variants, including rejection-only outcomes and the immutable pre-repair fixtures",
+        "A complete logical collection catalog, physical execution view and explicit field-by-field economic comparison projection"
+      ],
+      "when": [
+        "Execute each command with a valid context, then independently remove or substitute each required row, collection, negative proof and range-completion witness",
+        "Race positive, negative and range dependencies; change head or fence; remove archived source evidence; attempt an unknown profile and automatic legacy adoption",
+        "Rebuild logical state under different physical page allocation and hot/cold merge layouts"
+      ],
+      "then": [
+        "Only complete supported contexts reach semantic evaluation; missing storage evidence produces a service failure without a fictional retained rejection",
+        "New-profile economic effects, diagnostics and chronology match the bounded reference evaluator under the explicit projection; every representation-hash difference is accounted for",
+        "Old-profile original receipts remain byte-identical; stale contexts cannot publish and unsupported adoption cannot reinterpret old hashes",
+        "Logical state commitments remain invariant under physical rearrangement; incremental logical updates equal independent complete rebuild",
+        "Capacity evidence includes fixed live populations with increasing history, original retries and complete large folds; scalar fixture success alone does not close this runtime obligation"
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L20CompleteIndexedCoverage",
+      "requirements": ["PL-017", "PL-007", "PL-008"],
+      "given": [
+        "Canonical Oseq 1..43 includes retained rejection 43; cold covers 1..40, frozen hot covers 41..42, and every identity family is independently enumerated",
+        "An existing reader and a pending construction pin protect the previous view; an unrelated retired derived page shares no live references"
+      ],
+      "when": [
+        "Remove one hot identity or a cold child, forge an empty range, swap equal-count identity sets or collide digest locators"
+      ],
+      "then": [
+        "Verify exact namespaced membership and original identity/content, not just population counts; missing evidence is unavailability and cannot admit duplicate IDs",
+        "Existing complete-recovery and fail-closed history obligations remain unchanged; bounded scalar design cases do not certify runtime conformance"
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L21AtomicIndexCutover",
+      "requirements": ["PL-018", "PL-007", "PL-008"],
+      "given": [
+        "Canonical Oseq 1..43 includes retained rejection 43; cold covers 1..40, frozen hot covers 41..42, and every identity family is independently enumerated",
+        "An existing reader and a pending construction pin protect the previous view; an unrelated retired derived page shares no live references"
+      ],
+      "when": [
+        "Freeze through 42, append rejection 43 and later outcomes, then interrupt preparation, cutover CAS, durability and recovery; race a second cutover"
+      ],
+      "then": [
+        "Retain every newer tail outcome with identical canonical head and receipts; advance only the derived view revision, and reconcile the exact durable view on restart",
+        "Existing complete-recovery and fail-closed history obligations remain unchanged; bounded scalar design cases do not certify runtime conformance"
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L22PinnedIndexReads",
+      "requirements": ["PL-019", "PL-007", "PL-008"],
+      "given": [
+        "Canonical Oseq 1..43 includes retained rejection 43; cold covers 1..40, frozen hot covers 41..42, and every identity family is independently enumerated",
+        "An existing reader and a pending construction pin protect the previous view; an unrelated retired derived page shares no live references"
+      ],
+      "when": [
+        "Race pin acquisition/renewal/expiry with cutover and retirement; request an old cutoff using both active and expired cursors"
+      ],
+      "then": [
+        "Active pins keep their original verified cutoff and pages; new admission cannot resurrect retired views or locations, and expired cursors fail explicitly",
+        "Existing complete-recovery and fail-closed history obligations remain unchanged; bounded scalar design cases do not certify runtime conformance"
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L23SafeIndexReclamation",
+      "requirements": ["PL-020", "PL-007", "PL-008"],
+      "given": [
+        "Canonical Oseq 1..43 includes retained rejection 43; cold covers 1..40, frozen hot covers 41..42, and every identity family is independently enumerated",
+        "An existing reader and a pending construction pin protect the previous view; an unrelated retired derived page shares no live references"
+      ],
+      "when": [
+        "Interrupt mark, barrier, retirement and deletion; introduce a concurrent new reference, shared live child, stale fence, canonical location and same-content retired location reuse"
+      ],
+      "then": [
+        "Delete only the exact durable derived-only unprotected set after a valid reference barrier; protect canonical history, active/pending roots and fresh epoch pages; a lost reply cannot expand deletion scope",
+        "Existing complete-recovery and fail-closed history obligations remain unchanged; bounded scalar design cases do not certify runtime conformance"
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L01Provision",
+      "requirements": ["PL-001"],
+      "given": [
+        "Catalog reserves tenant-A/book-A/object-A/generation-1 and genesis G0; Oseq=0, revision=0."
+      ],
+      "when": [
+        "Provision G0 twice; retry G1 under same identity; reopen an active catalog entry with empty SQL."
+      ],
+      "then": [
+        "G0 is idempotent; G1 cannot overwrite; active-plus-empty quarantines; unauthorized request never reads outcomes."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L02CommittedRetry",
+      "requirements": ["PL-004", "PL-003"],
+      "given": ["Activation at Oseq=1/revision=1; post command C1 has expectedRevision=1."],
+      "when": ["Commit C1; restart; retry identical C1."],
+      "then": [
+        "One retained C1 at Oseq=2/revision=2; replay returns exact original result/hash and Oseq=2; no second posting."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L03RejectedRetry",
+      "requirements": ["PL-004", "PL-005"],
+      "given": ["Oseq=2/revision=2; C2 is a validly encoded unbalanced +100/-99 journal."],
+      "when": ["Retain C2; later commit C3; restart and retry C2."],
+      "then": [
+        "C2 retains Oseq=3, revision stays 2; C3 reaches Oseq=4/revision=3; retry C2 returns original diagnostics/result hash at Oseq=3."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L04IdentityRace",
+      "requirements": ["PL-004", "PL-001"],
+      "given": [
+        "Two callers submit same ID C1, first identical, then differing canonical content; third caller lacks book access."
+      ],
+      "when": ["Race submissions; revoke permission before retry admission."],
+      "then": [
+        "Only one C1 retained; changed content unclaimed; unauthorized retry discloses no receipt; latest admitted authorization scope binds actor."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L05FinancialRace",
+      "requirements": ["PL-006", "PL-002"],
+      "given": [
+        "Two distinct commands expect revision=7; Oseq=11; one closes January, another posts into January."
+      ],
+      "when": ["Run both possible serial orders through real kernel and ledger."],
+      "then": [
+        "At most one reaches revision=8 on expectedRevision=7; loser retains kernel stale-revision rejection; results match serial kernel oracle; no partial close/post effects."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L06RejectionRace",
+      "requirements": ["PL-006", "PL-005"],
+      "given": ["Oseq=11/revision=7; both candidate rejections evaluated at that same full head."],
+      "when": [
+        "Publish first; attempt stale second; reload and reevaluate unchanged second command."
+      ],
+      "then": [
+        "First Oseq=12, second Oseq=13, both revision=7; stale CAS fails despite same financial revision."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L07InterruptedTransaction",
+      "requirements": ["PL-002", "PL-008"],
+      "given": ["Durable head Oseq=11/revision=7; next candidate has three payload chunks."],
+      "when": [
+        "Interrupt after header, each chunk, revision index, command index and head update; also interrupt after SQL commit."
+      ],
+      "then": [
+        "Before commit, entire transition rolls back; after commit, complete transition recovers or durability remains uncertain; never a partial authoritative record."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L08LostReply",
+      "requirements": ["PL-003", "PL-004"],
+      "given": ["C1 is durable at Oseq=12/revision=8."],
+      "when": [
+        "Drop response without graceful client completion; kill runtime; retry persisted client ID and content."
+      ],
+      "then": [
+        "C1 replays once at Oseq=12 with original exact result; no promise that network replies are delivered exactly once."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L09UnknownWrite",
+      "requirements": ["PL-003", "PL-007"],
+      "given": ["SQL transaction may have committed but storage.sync fails."],
+      "when": [
+        "Try read/new command before recovery; restart with each of the two valid atomic histories."
+      ],
+      "then": [
+        "No candidate cache or receipt is published; recover either prior history and safely retry or committed outcome and replay; errors never become accounting rejections."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L10HistoryDamage",
+      "requirements": ["PL-008", "PL-007"],
+      "given": ["Valid outcomes 1..13 and persisted head=13, including rejection-only outcome 13."],
+      "when": [
+        "Delete middle 7; delete suffix 13 with chunks; reorder chunks; inject foreign book bytes; alter command/result/protocol hashes."
+      ],
+      "then": [
+        "Each damaged canonical history refuses readiness; suffix cannot silently become head=12; same-database complete rollback is outside local hash detection."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L11MixedRecovery",
+      "requirements": ["PL-007"],
+      "given": [
+        "Use each supported command kind in imported kernel Semantics::BookCommandKind; policies and exact accounting outputs come from kernel design fixtures."
+      ],
+      "when": [
+        "Persist accepted and rejected cases plus sequences combining configuration, inventory, settlements, tax, allocations, currency, consolidation, correction and close; restart at each position."
+      ],
+      "then": [
+        "Exact durable state/protocol bytes, all retained result hashes and financial/outcome heads equal direct pinned-kernel execution. Existing 19 prototype tests do not close this obligation."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L12FormatCapacity",
+      "requirements": ["PL-009"],
+      "given": [
+        "Profile P has explicit byte/depth/node/chunk/history/queue limits; retained C1 exists before capacity."
+      ],
+      "when": [
+        "Test every limit and limit+1, duplicate JSON keys, unknown fields/tags/version, decimal counter 9007199254740993, invalid 01 and numeric JSON counter, malformed UTF-8 split across chunks; retry C1 at capacity."
+      ],
+      "then": [
+        "Exact large decimal counter preserved; malformed/oversize unclaimed; valid replay at capacity succeeds; queue admission overload has no accounting outcome; full encoded size includes framing."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L13Checkpoint",
+      "requirements": ["PL-010"],
+      "given": ["Canonical head=13; complete checkpoint at Oseq=10; tail=11..13."],
+      "when": [
+        "Interrupt each staged chunk and publication; damage checkpoint; attempt tail with duplicate overlap or missing 12."
+      ],
+      "then": [
+        "Only verified full state/protocol manifest becomes visible; fallback must reconstruct same head=13; canonical gap quarantines; no log/identity pruning."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L14RestoreUpgrade",
+      "requirements": ["PL-011", "PL-001"],
+      "given": [
+        "External maintenance fence generation=4 is active; drained durable head=13 captured in independent permit; backup head=10."
+      ],
+      "when": [
+        "Restore backup plus 11..13 tail; separately omit 13, alter identity, reuse old fence, or request unsupported semantic/codec migration."
+      ],
+      "then": [
+        "Exact head=13 permits reopening only under current fence; all other cases remain unavailable; neither expected cutoff nor original receipts may be rewritten."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L15Workload",
+      "requirements": ["PL-012"],
+      "given": [
+        "Evaluation matrix includes small/medium/large books, same-book concurrency and many-book concurrency; launch targets need owner approval."
+      ],
+      "when": [
+        "Measure encode/evaluate/write/recover costs, p50/p95/p99, peak memory, storage growth and queue behavior; exceed limits; run restore drills in approved remote environment."
+      ],
+      "then": [
+        "Publish raw measurements and versioned supported profile; failures enforce limits without partial outcomes; no SLA or production status derives from design checker success."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L16ReadCursor",
+      "requirements": ["PL-013", "PL-001"],
+      "given": [
+        "First page pins book generation=1 and Oseq=13; consumer cursor=10; new writes reach Oseq=15."
+      ],
+      "when": [
+        "Fetch remaining pages; retry page; use foreign-book or altered cursor; revoke read access."
+      ],
+      "then": [
+        "Return only 11..13 under pinned head, including rejected outcomes; repeated page has stable IDs; reject altered/foreign/unauthorized requests; consumer effects stay outside book transaction."
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L17ArchiveAcknowledgement",
+      "requirements": ["PL-014", "PL-003"],
+      "given": [
+        "A pinned archive-required policy and exact selected committed or rejected command at Oseq 42",
+        "Archive-required genesis at Oseq zero under reserved catalog identity, with interruption before and after conditional archive-root creation"
+      ],
+      "when": [
+        "Interrupt each selection, payload, anchor, local finalization and receipt boundary; destroy only the primary store after each possible acknowledgement"
+      ],
+      "then": [
+        "Every acknowledged Oseq/result is reconstructible from surviving archive and restore authority",
+        "Payload-only upload, missing membership, local sync failure or fence mismatch cannot acknowledge",
+        "SQLite-only mode is disclosed as a different, weaker policy and never counted as independent recovery evidence",
+        "Public reads cannot expose a candidate before the declared publication gate",
+        "Acknowledged genesis preserves exact policy and identity independently; mismatch, uncertain root creation or premature catalog activation cannot return ready"
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L18ArchivePublication",
+      "requirements": ["PL-015", "PL-006"],
+      "given": [
+        "Two distinct candidate hashes at the same complete prior head and archive fence generation 7"
+      ],
+      "when": [
+        "Race full-anchor conditional publication, force a failed precondition and lose a successful reply"
+      ],
+      "then": [
+        "Only the exact selected candidate with successful matching anchor CAS is canonical",
+        "Orphan bytes and null conditional-write results never count as success",
+        "No next candidate can bypass unresolved selection; an anchor/fence conflict requires exact reconciliation, not blind reevaluation"
+      ],
+      "runtimeStatus": "not-closed"
+    },
+    {
+      "verification": "L19ArchiveReconciliation",
+      "requirements": ["PL-016", "PL-007", "PL-008"],
+      "given": [
+        "An uncertain candidate, retained rejection at Oseq 42, and possible delayed archive publication under generation 7"
+      ],
+      "when": [
+        "Recover with a valid canonical manifest, or conditionally replace the unchanged prior anchor with generation 8 before abandoning; inject missing/corrupt evidence"
+      ],
+      "then": [
+        "A canonical decision finishes the exact original result and Oseq without reevaluating current policy",
+        "A delayed generation-7 CAS fails after confirmed generation-8 replacement; otherwise candidate remains unresolved",
+        "A missing rejection tail or middle payload quarantines under the existing complete-recovery contract",
+        "Primary loss without a pending local record discovers canonical membership from the independently verified archive; archive/authority loss is not claimed recoverable"
+      ],
+      "runtimeStatus": "not-closed"
+    }
+  ]
+}

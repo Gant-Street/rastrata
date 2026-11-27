@@ -1,0 +1,45 @@
+{
+  "name": "@rastrata/web",
+  "private": true,
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "dev": "bun tooling/dev.ts",
+    "build": "bun tooling/build.ts",
+    "preview": "bun tooling/preview.ts",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.tooling.json",
+    "test": "bun test tests/unit && bun test --conditions browser --preload ./tests/support/browser-preload.ts tests/registry",
+    "test:browser:install": "bun --bun node_modules/@playwright/test/cli.js install --with-deps chromium firefox webkit",
+    "test:browser": "bun run build && bun --bun node_modules/@playwright/test/cli.js test",
+    "test:browser:cross": "bun run build && bun tooling/cross-browser.ts"
+  },
+  "dependencies": {
+    "@rastrata/telemetry": "workspace:*",
+    "@rastrata/ui": "workspace:*",
+    "@ark-ui/solid": "5.40.0",
+    "@tanstack/solid-router": "1.170.43",
+    "solid-js": "1.9.18",
+    "web-vitals": "6.2.3"
+  },
+  "devDependencies": {
+    "@babel/core": "8.1.0",
+    "@happy-dom/global-registrator": "21.0.4",
+    "@playwright/test": "1.64.1",
+    "@rastrata/application": "workspace:*",
+    "@rastrata/kernel": "workspace:*",
+    "@rastrata/ledger": "workspace:*",
+    "@solidjs/testing-library": "0.8.10",
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/user-event": "14.6.8",
+    "@types/bun": "1.4.4",
+    "axe-core": "4.14.0",
+    "babel-preset-solid": "1.9.16",
+    "bun-plugin-tailwind": "0.1.2",
+    "dom-accessibility-api": "0.7.1",
+    "jose": "6.2.15",
+    "marked": "18.2.1",
+    "tailwindcss": "4.3.4",
+    "typescript": "7.0.2"
+  }
+}

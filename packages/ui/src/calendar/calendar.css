@@ -1,0 +1,389 @@
+/* Styles for the calendar lane's components. Tokens from base.css only; no one-off colors. Structure
+   comes from rules and space: a heavy rule above a section, hairlines between rows, a double rule
+   under the figures. Orange is for "needs a human": a review, a close that no longer matches. */
+
+.rt-cal-label {
+  margin: 0 0 var(--rt-space-1);
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-cal-note {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--rt-muted);
+}
+
+.rt-cal-lead {
+  max-width: 42rem;
+  color: var(--rt-muted);
+}
+
+.rt-cal-form {
+  display: grid;
+  gap: var(--rt-space-3);
+}
+
+.rt-cal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-3);
+}
+
+/* ---- The screen ----------------------------------------------------------------------------------- */
+
+.rt-cal-page {
+  display: grid;
+  gap: var(--rt-space-4);
+}
+
+.rt-cal-page > h1,
+.rt-cal-page > p {
+  margin: 0;
+}
+
+.rt-cal-message {
+  padding: var(--rt-space-3) var(--rt-space-4);
+  border-top: 2px solid var(--rt-ink);
+  background: var(--rt-surface-subtle);
+  font-weight: 600;
+}
+
+.rt-cal-message:focus {
+  outline: none;
+}
+
+/* ---- Calendar and year --------------------------------------------------------------------------- */
+
+.rt-cal-summary,
+.rt-cal-year {
+  display: grid;
+  gap: var(--rt-space-2);
+  padding: var(--rt-space-4) 0;
+  border-top: var(--rt-rule);
+}
+
+.rt-cal-summary h2,
+.rt-cal-year h2 {
+  margin: 0;
+}
+
+.rt-cal-summary p,
+.rt-cal-year p {
+  margin: 0;
+}
+
+/* Each option names its year, its dates and how far along it is, so the box is wider than a field. */
+.rt-cal-picker .rt-field {
+  max-width: min(100%, 38rem);
+}
+
+.rt-cal-extend,
+.rt-cal-year-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-3);
+}
+
+.rt-cal-year-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-3);
+}
+
+.rt-cal-year-dates {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* ---- Tables --------------------------------------------------------------------------------------- */
+
+.rt-cal-table {
+  min-width: 36rem;
+}
+
+.rt-cal-table th[scope="row"] {
+  font-weight: 700;
+}
+
+.rt-cal-closing {
+  max-width: 26rem;
+}
+
+.rt-cal-closing > * + * {
+  margin-inline-start: var(--rt-space-3);
+}
+
+.rt-cal-action {
+  text-align: end;
+  white-space: nowrap;
+}
+
+.rt-cal-plan td:nth-child(2) {
+  white-space: nowrap;
+}
+
+.rt-cal-plan tr[data-keep] {
+  color: var(--rt-muted);
+}
+
+/* ---- Review and the guided flow ------------------------------------------------------------------ */
+
+/* Reviewing a change is the moment a person decides, so it is marked as one. */
+.rt-cal-review {
+  display: grid;
+  gap: var(--rt-space-3);
+  padding: var(--rt-space-4) 0;
+  border-top: 2px solid var(--rt-penguin-orange);
+}
+
+.rt-cal-review h2,
+.rt-cal-review h3 {
+  margin: 0;
+}
+
+.rt-cal-review p {
+  margin: 0;
+}
+
+.rt-cal-review h2:focus,
+.rt-cal-flow h2:focus,
+.rt-cal-flow h3:focus {
+  outline: none;
+}
+
+.rt-cal-flow {
+  display: grid;
+  gap: var(--rt-space-4);
+  max-width: 62rem;
+}
+
+.rt-cal-flow h2 {
+  margin: 0;
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+}
+
+.rt-cal-flow p {
+  margin: 0;
+}
+
+.rt-cal-step {
+  display: grid;
+  gap: var(--rt-space-3);
+  padding-top: var(--rt-space-4);
+  border-top: var(--rt-rule);
+}
+
+.rt-cal-step.rt-cal-review {
+  border-top: 2px solid var(--rt-penguin-orange);
+}
+
+.rt-cal-step h3 {
+  margin: 0;
+}
+
+/* ---- Checklist ------------------------------------------------------------------------------------ */
+
+.rt-cal-checklist {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rt-ink);
+}
+
+.rt-cal-checklist > li {
+  display: grid;
+  grid-template-columns: minmax(10rem, 12rem) minmax(0, 1fr);
+  gap: var(--rt-space-3) var(--rt-space-4);
+  padding: var(--rt-space-3) 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-cal-check-body {
+  display: grid;
+  gap: var(--rt-space-1);
+}
+
+.rt-cal-check-body p {
+  margin: 0;
+}
+
+.rt-cal-check-label {
+  font-weight: 700;
+}
+
+.rt-cal-check-detail {
+  color: var(--rt-muted);
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Figures -------------------------------------------------------------------------------------- */
+
+.rt-cal-statements {
+  display: grid;
+  gap: var(--rt-space-2);
+  padding-top: var(--rt-space-3);
+}
+
+.rt-cal-statements h3,
+.rt-cal-statements p {
+  margin: 0;
+}
+
+.rt-cal-figures {
+  display: grid;
+  max-width: 34rem;
+  margin: 0;
+  font-variant-numeric: tabular-nums lining-nums;
+  border-top: 1px solid var(--rt-ink);
+}
+
+.rt-cal-figures > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--rt-space-4);
+  padding: var(--rt-space-2) 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-cal-figures > div:nth-child(3) {
+  border-bottom: 3px double var(--rt-ink);
+  font-weight: 700;
+}
+
+.rt-cal-figures dt,
+.rt-cal-figures dd {
+  margin: 0;
+}
+
+.rt-cal-figures dd {
+  text-align: end;
+  white-space: nowrap;
+}
+
+.rt-cal-currency {
+  color: var(--rt-muted);
+  font-size: 0.8125rem;
+}
+
+/* ---- History -------------------------------------------------------------------------------------- */
+
+.rt-cal-history {
+  margin-top: var(--rt-space-6);
+}
+
+.rt-cal-history ol,
+.rt-cal-history-list ol {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+
+.rt-cal-history li,
+.rt-cal-history-list li {
+  padding: var(--rt-space-1) 0;
+  overflow-wrap: anywhere;
+}
+
+.rt-cal-history small,
+.rt-cal-history-list small {
+  display: block;
+  color: var(--rt-muted);
+}
+
+/* ---- In a posting flow ---------------------------------------------------------------------------- */
+
+/* ---- Smaller parts of a table cell -------------------------------------------------------------- */
+/* Last, so the more specific selectors come after the plainer ones that share an element. */
+
+.rt-cal-table td small,
+.rt-cal-table th small {
+  display: block;
+}
+
+.rt-cal-notes {
+  margin: 0;
+  padding-inline-start: 1.125rem;
+  font-size: 0.8125rem;
+}
+
+.rt-cal-notes li + li {
+  margin-top: var(--rt-space-1);
+}
+
+/* ---- Narrow screens ------------------------------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  /* A period is a short row with a button in it, so on a phone each row is a stacked block and the
+     button is in view, rather than a table that has to be scrolled sideways to reach it. */
+  .rt-cal-scroll {
+    overflow-x: visible;
+  }
+
+  .rt-cal-table {
+    min-width: 0;
+  }
+
+  .rt-cal-table,
+  .rt-cal-table tbody,
+  .rt-cal-table tbody tr,
+  .rt-cal-table tbody th,
+  .rt-cal-table tbody td {
+    display: block;
+  }
+
+  .rt-cal-table thead {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .rt-cal-table tbody tr {
+    display: grid;
+    gap: var(--rt-space-1);
+    padding: var(--rt-space-3) 0;
+    border-bottom: 1px solid var(--rt-divider);
+  }
+
+  .rt-cal-table tbody th,
+  .rt-cal-table tbody td {
+    padding: 0;
+    border: 0;
+  }
+
+  .rt-cal-action {
+    padding-top: var(--rt-space-2);
+    text-align: start;
+    white-space: normal;
+  }
+
+  .rt-cal-plan td:nth-child(2) {
+    white-space: normal;
+  }
+
+  .rt-cal-checklist > li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rt-cal-closing {
+    max-width: none;
+  }
+
+  .rt-cal-closing > * + * {
+    display: block;
+    margin-inline-start: 0;
+  }
+
+  .rt-cal-figures > div {
+    flex-wrap: wrap;
+  }
+}

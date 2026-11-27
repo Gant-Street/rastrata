@@ -1,0 +1,11 @@
+{
+  "data": {
+    "date": "2026-01-16",
+    "reference": "REV-1",
+    "narration": "Income received",
+    "lines": [
+      { "accountId": "1000", "debit": "200.00", "credit": "" },
+      { "accountId": "4000", "debit": "", "credit": "200.00" }
+    ]
+  }
+}

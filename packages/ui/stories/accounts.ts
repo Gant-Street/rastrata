@@ -1,0 +1,52 @@
+export const accounts = [
+  { label: "1000 · Cash", value: "cash", path: "Assets / Current assets", group: "Assets" },
+  {
+    label: "1100 · Accounts receivable",
+    value: "receivable",
+    path: "Assets / Current assets",
+    group: "Assets",
+  },
+  { label: "1500 · Equipment", value: "equipment", path: "Assets / Fixed assets", group: "Assets" },
+  {
+    label: "2000 · Accounts payable",
+    value: "payable",
+    path: "Liabilities / Current liabilities",
+    group: "Liabilities",
+  },
+  { label: "3000 · Opening equity", value: "equity", path: "Equity", group: "Equity" },
+  { label: "4000 · Sales", value: "sales", path: "Income", group: "Income" },
+  {
+    label: "6000 · Operating expenses",
+    value: "expenses",
+    path: "Expenses",
+    group: "Expenses",
+    disabled: true,
+    reason: "Group only · Choose a child account",
+  },
+  {
+    label: "6100 · Office expenses",
+    value: "office",
+    path: "Expenses / Operating expenses",
+    group: "Expenses",
+  },
+  {
+    label: "6200 · Professional services",
+    value: "services",
+    path: "Expenses / Domestic operations",
+    group: "Expenses",
+  },
+  {
+    label: "6210 · Professional services",
+    value: "international-services",
+    path: "Expenses / International operations",
+    group: "Expenses",
+  },
+  {
+    label: "6900 · Legacy expenses (archived)",
+    value: "archived",
+    path: "Expenses / Operating expenses",
+    group: "Expenses",
+    disabled: true,
+    reason: "Archived · Not available for new entries",
+  },
+];

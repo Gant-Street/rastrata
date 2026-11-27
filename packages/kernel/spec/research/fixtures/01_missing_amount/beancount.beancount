@@ -1,0 +1,6 @@
+2025-01-01 open Assets:Cash USD
+2025-01-01 open Equity:Opening USD
+
+2025-01-02 * "Opening cash"
+  Assets:Cash       123.450 USD
+  Equity:Opening

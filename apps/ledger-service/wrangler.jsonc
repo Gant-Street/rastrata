@@ -1,0 +1,24 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "rastrata-ledger",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-30",
+  "compatibility_flags": ["nodejs_compat"],
+  "limits": { "cpu_ms": 300000 },
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": false },
+  "vars": {
+    "LEDGER_NAMESPACE_ID": "rastrata-ledger-v1",
+    "BOOK_AUTHORIZATION": { "issuer": "", "audience": "", "publicKeys": { "keys": [] } },
+    "RECOVERY_AUTHORIZATION": { "issuer": "", "audience": "", "publicKeys": { "keys": [] } }
+  },
+  "durable_objects": {
+    "bindings": [
+      { "name": "BOOKS", "class_name": "LedgerBook" },
+      { "name": "CATALOGS", "class_name": "LedgerCatalog" }
+    ]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["LedgerBook", "LedgerCatalog"] }],
+  "r2_buckets": [{ "binding": "ARCHIVE", "bucket_name": "rastrata-ledger-archive" }]
+}

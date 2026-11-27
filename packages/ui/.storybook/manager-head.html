@@ -1,0 +1,21 @@
+<style>
+  @font-face {
+    font-family: "Inter Variable";
+    font-style: normal;
+    font-display: swap;
+    font-weight: 100 900;
+    src: url("./fonts/inter-latin-wght-normal.woff2") format("woff2-variations");
+  }
+  /* Rules instead of cards: the manager frame uses hard black lines and an orange selection. */
+  #storybook-explorer-menu a[data-selected="true"],
+  #storybook-explorer-menu [data-selected="true"] {
+    /* biome-ignore lint/complexity/noImportantStyles: must beat Storybook's generated emotion styles */
+    background: #000 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: must beat Storybook's generated emotion styles */
+    color: #fff !important;
+    box-shadow: inset 6px 0 0 #ff6600;
+  }
+  body {
+    font-feature-settings: "cv11", "ss03";
+  }
+</style>

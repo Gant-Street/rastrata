@@ -1,0 +1,11 @@
+commodity UNIT  ; lots: SPECID
+account revenue:gains  ; type: G
+2025-01-02 First
+    assets:stock       1 UNIT {10 USD}
+    assets:cash      -10 USD
+2025-02-02 Second
+    assets:stock       1 UNIT {20 USD}
+    assets:cash      -20 USD
+2025-03-02 Missing selector
+    assets:stock      -1 UNIT @ 30 USD
+    assets:cash       30 USD

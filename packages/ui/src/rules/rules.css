@@ -1,0 +1,1021 @@
+/* Styles for the rules lane's components. Tokens from base.css only; no one-off colors.
+   Structure comes from rules and space, not from color: a heavy rule above each part, hairlines
+   between lines, a double rule under the figures. The order of the rules is the point of the list
+   screen, so position is the first thing in each row; the live check is the point of the editor,
+   so it stays beside the form. */
+
+.rt-rules-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-6);
+}
+
+.rt-rules-page > p,
+.rt-rules-page > h1 {
+  margin: 0;
+}
+
+.rt-rules-page > h1 {
+  max-width: none;
+}
+
+.rt-rules-page > h1:focus,
+.rt-rules-form > h1:focus {
+  outline: none;
+}
+
+.rt-rules-page > .rt-rules-lede {
+  max-width: 46rem;
+  font-size: 1rem;
+  letter-spacing: normal;
+}
+
+.rt-rules-label {
+  display: block;
+  margin-bottom: var(--rt-space-1);
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-rules-amount {
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+/* Links that are styled as buttons keep the button's colors, not the link's. */
+.rt-rules-page a.rt-button,
+.rt-rules-form a.rt-button {
+  text-decoration: none;
+}
+
+.rt-rules-page a.rt-button[data-variant="primary"],
+.rt-rules-page a.rt-button[data-variant="primary"]:hover,
+.rt-rules-form a.rt-button[data-variant="primary"],
+.rt-rules-form a.rt-button[data-variant="primary"]:hover {
+  color: var(--rt-on-action);
+}
+
+.rt-rules-page a.rt-button[data-variant="secondary"],
+.rt-rules-page a.rt-button[data-variant="secondary"]:hover,
+.rt-rules-form a.rt-button[data-variant="secondary"],
+.rt-rules-form a.rt-button[data-variant="secondary"]:hover {
+  color: var(--rt-text);
+}
+
+/* ---- The decided line ------------------------------------------------------------------------ */
+
+.rt-rules-decided p,
+.rt-rules-decided .rt-rules-figure-state {
+  margin: 0;
+}
+
+.rt-rules-figure-state p {
+  margin: 0 0 var(--rt-space-2);
+}
+
+.rt-rules-figures {
+  display: grid;
+  align-content: start;
+  margin: 0;
+}
+
+.rt-rules-figures > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--rt-space-4);
+  padding: 0.375rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-rules-figures dt {
+  font-size: 0.8125rem;
+  color: var(--rt-muted);
+}
+
+.rt-rules-figures dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: end;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-rules-caveat {
+  margin: var(--rt-space-3) 0 0;
+  max-width: 46rem;
+  font-size: 0.8125rem;
+  color: var(--rt-muted);
+}
+
+.rt-rules-notes {
+  margin: var(--rt-space-2) 0 0;
+  padding-inline-start: 1.25rem;
+  font-size: 0.8125rem;
+  color: var(--rt-muted);
+}
+
+/* ---- The list ------------------------------------------------------------------------------- */
+
+.rt-rules-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-3);
+}
+
+.rt-rules-list p {
+  margin: 0;
+}
+
+.rt-rules-classifier h2,
+.rt-rules-history h2,
+.rt-rules-section > h2,
+.rt-rules-preview > h2 {
+  margin: 0;
+  font-size: 1.375rem;
+  letter-spacing: -0.03em;
+}
+
+.rt-rules-empty {
+  padding: var(--rt-space-4) 0;
+  border-bottom: 1px solid var(--rt-ink);
+}
+
+.rt-rules-empty h3 {
+  margin: 0 0 var(--rt-space-1);
+  font-size: 1.125rem;
+}
+
+.rt-rules-empty p {
+  max-width: 40rem;
+  color: var(--rt-muted);
+}
+
+/* Visually hidden text inside a scrolling table is positioned against the scroll box, not the page,
+   so it cannot widen the page. */
+.rt-rules-list .rt-table-scroll,
+.rt-rules-details .rt-table-scroll {
+  position: relative;
+}
+
+.rt-rules-table {
+  min-width: 56rem;
+}
+
+.rt-rules-table th,
+.rt-rules-table td {
+  padding: 0.625rem 0.75rem;
+  vertical-align: top;
+}
+
+.rt-rules-order {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.rt-rules-position {
+  display: inline-block;
+  min-width: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-rules-move {
+  display: inline-flex;
+  gap: 0.125rem;
+  vertical-align: middle;
+}
+
+.rt-rules-name {
+  min-width: 15rem;
+  max-width: 32rem;
+  overflow-wrap: anywhere;
+}
+
+.rt-rules-name a {
+  font-weight: 700;
+}
+
+.rt-rules-name small {
+  display: block;
+  font-weight: 400;
+}
+
+.rt-rules-problems {
+  display: block;
+  margin-top: var(--rt-space-1);
+  font-weight: 400;
+}
+
+.rt-rules-problems ul {
+  margin: var(--rt-space-1) 0 0;
+  padding-inline-start: 1.125rem;
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.rt-rules-unmeasured {
+  color: var(--rt-muted);
+}
+
+.rt-rules-when,
+.rt-rules-then {
+  max-width: 22rem;
+  overflow-wrap: anywhere;
+}
+
+.rt-rules-when small {
+  display: block;
+  color: var(--rt-muted);
+}
+
+.rt-rules-used {
+  min-width: 6rem;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-rules-used .rt-details {
+  margin-top: var(--rt-space-1);
+  font-weight: 400;
+  text-align: start;
+}
+
+.rt-rules-performance {
+  display: grid;
+  gap: 0.125rem;
+  margin: 0 0 var(--rt-space-2);
+}
+
+.rt-rules-performance > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--rt-space-3);
+}
+
+.rt-rules-performance dt {
+  color: var(--rt-muted);
+}
+
+.rt-rules-performance dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.rt-rules-state {
+  white-space: nowrap;
+}
+
+/* The switch is a square track with a square thumb, like every control here; the word beside it says On or Off,
+   so the state is never only a position or a colour. */
+.rt-rules-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rt-space-2);
+  cursor: pointer;
+}
+
+.rt-rules-switch[data-disabled] {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.rt-rules-switch-control {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  width: 2.75rem;
+  height: 1.5rem;
+  padding: 0.125rem;
+  border: 2px solid var(--rt-ink);
+  background: var(--rt-paper);
+}
+
+.rt-rules-switch-control[data-state="checked"] {
+  background: var(--rt-ink);
+}
+
+.rt-rules-switch-thumb {
+  width: 1rem;
+  height: 1rem;
+  background: var(--rt-ink);
+  transition: transform var(--rt-motion);
+}
+
+.rt-rules-switch-thumb[data-state="checked"] {
+  background: var(--rt-paper);
+  transform: translateX(1.25rem);
+}
+
+.rt-rules-switch-control[data-focus-visible] {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 3px;
+}
+
+.rt-rules-switch-label {
+  min-width: 2rem;
+  font-weight: 700;
+}
+
+/* ---- The editor ----------------------------------------------------------------------------- */
+
+.rt-rules-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-4);
+}
+
+.rt-rules-form > p,
+.rt-rules-form > h1 {
+  margin: 0;
+}
+
+.rt-rules-form > h1 {
+  max-width: none;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.rt-rules-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 25rem);
+  gap: var(--rt-space-8);
+  align-items: start;
+}
+
+.rt-rules-editor-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-6);
+  min-width: 0;
+}
+
+.rt-rules-editor-aside {
+  position: sticky;
+  top: var(--rt-space-4);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  min-width: 0;
+  padding-top: var(--rt-space-3);
+  border-top: var(--rt-rule);
+}
+
+.rt-rules-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-3);
+  min-width: 0;
+  padding-top: var(--rt-space-3);
+  border-top: var(--rt-rule);
+}
+
+.rt-rules-section > p,
+.rt-rules-section > h2 {
+  margin: 0;
+}
+
+.rt-rules-section:focus,
+.rt-rules-group:focus,
+.rt-rules-split:focus,
+.rt-rules-scope:focus {
+  outline: none;
+}
+
+.rt-rules-section .rt-field {
+  max-width: 34rem;
+}
+
+.rt-rules-section .rt-choice {
+  width: fit-content;
+}
+
+/* Fields sit at the top of their cell, so a long hint under one does not push its neighbours'
+   boxes down. */
+.rt-rules-page .rt-field,
+.rt-rules-form .rt-field {
+  align-content: start;
+}
+
+.rt-rules-conditions {
+  display: grid;
+  gap: var(--rt-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-rules-condition {
+  display: grid;
+  grid-template-columns: 3rem minmax(8rem, 11rem) minmax(9rem, 13rem) minmax(0, 1fr) auto;
+  gap: var(--rt-space-2) var(--rt-space-3);
+  align-items: start;
+}
+
+.rt-rules-condition .rt-field {
+  max-width: none;
+}
+
+.rt-rules-lead {
+  padding-top: 0.625rem;
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-rules-values {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: var(--rt-space-2);
+  min-width: 0;
+}
+
+.rt-rules-group {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-3);
+  min-width: 0;
+  margin: 0;
+  padding: var(--rt-space-3) var(--rt-space-4) var(--rt-space-4);
+  border: 1px solid var(--rt-ink);
+  border-radius: var(--rt-radius);
+}
+
+.rt-rules-group legend {
+  padding: 0 var(--rt-space-2);
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-rules-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: var(--rt-space-3);
+}
+
+.rt-rules-group .rt-button {
+  width: fit-content;
+}
+
+.rt-rules-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2);
+}
+
+.rt-rules-scope {
+  display: grid;
+  gap: var(--rt-space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.rt-rules-scope legend {
+  padding: 0;
+  margin-bottom: var(--rt-space-1);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.rt-rules-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-3);
+  min-width: 0;
+  margin: 0;
+  padding: var(--rt-space-3) 0 0;
+  border: 0;
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-rules-split legend {
+  padding: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.rt-rules-split p {
+  margin: 0;
+}
+
+.rt-rules-split .rt-button {
+  width: fit-content;
+}
+
+.rt-rules-parts {
+  display: grid;
+  gap: var(--rt-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-rules-part {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.2fr) minmax(5rem, 0.6fr) auto;
+  gap: var(--rt-space-3);
+  align-items: start;
+}
+
+.rt-rules-part .rt-field {
+  max-width: none;
+}
+
+.rt-rules-part .rt-rules-remove {
+  margin-top: 1.5rem;
+}
+
+.rt-rules-split-example {
+  display: grid;
+  gap: var(--rt-space-2);
+  max-width: 28rem;
+}
+
+.rt-rules-split-table {
+  font-size: 0.875rem;
+}
+
+.rt-rules-narration {
+  display: grid;
+  gap: var(--rt-space-2);
+}
+
+.rt-rules-narration p {
+  margin: 0;
+}
+
+.rt-rules-insert {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-1);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.rt-rules-insert .rt-button {
+  font-family: var(--rt-mono);
+  font-size: 0.8125rem;
+}
+
+.rt-rules-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-3);
+  padding-top: var(--rt-space-4);
+  border-top: var(--rt-rule);
+}
+
+.rt-rules-actions .rt-button[data-variant="danger"] {
+  margin-inline-start: auto;
+}
+
+/* ---- The live check ------------------------------------------------------------------------- */
+
+.rt-rules-preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-3);
+  min-width: 0;
+}
+
+.rt-rules-preview p {
+  margin: 0;
+}
+
+.rt-rules-preview .rt-field {
+  max-width: 14rem;
+}
+
+.rt-rules-preview-body:empty {
+  display: none;
+}
+
+.rt-rules-preview-result {
+  display: grid;
+  gap: var(--rt-space-3);
+}
+
+.rt-rules-preview-headline {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+}
+
+.rt-rules-facts {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rt-ink);
+}
+
+.rt-rules-facts li {
+  padding: 0.375rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+  font-size: 0.875rem;
+}
+
+.rt-rules-samples {
+  display: grid;
+  gap: var(--rt-space-1);
+}
+
+.rt-rules-samples h4 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.rt-rules-samples ul {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rt-ink);
+}
+
+.rt-rules-sample {
+  display: grid;
+  gap: 0.125rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-rules-sample p {
+  margin: 0;
+}
+
+.rt-rules-sample-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--rt-space-3);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-rules-sample-date {
+  color: var(--rt-muted);
+}
+
+.rt-rules-sample-amount {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.rt-rules-sample-text {
+  overflow-wrap: anywhere;
+  font-size: 0.875rem;
+}
+
+.rt-rules-sample-text small {
+  display: block;
+  color: var(--rt-muted);
+  font-size: 0.75rem;
+}
+
+.rt-rules-sample-result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.rt-rules-sample-legs,
+.rt-rules-sample-booked {
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.rt-rules-leg {
+  display: block;
+}
+
+.rt-rules-sample-legs .rt-rules-label,
+.rt-rules-sample-booked .rt-rules-label {
+  display: inline;
+  margin: 0;
+}
+
+.rt-rules-sample-legs .rt-rules-label {
+  display: block;
+}
+
+/* ---- Try a line ------------------------------------------------------------------------------ */
+
+/* The fold is a section of the page here, so its hairline and its words are a section's. */
+.rt-rules-try {
+  padding-top: var(--rt-space-2);
+  border-top-color: var(--rt-ink);
+}
+
+.rt-rules-try > .rt-details-head > .rt-details-toggle {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.rt-rules-try-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-3);
+  padding-top: var(--rt-space-2);
+}
+
+.rt-rules-try-body p {
+  margin: 0;
+}
+
+.rt-rules-try-fields {
+  display: grid;
+  gap: var(--rt-space-3);
+}
+
+.rt-rules-try-body .rt-field {
+  max-width: none;
+}
+
+.rt-rules-try-body .rt-button {
+  width: fit-content;
+}
+
+.rt-rules-try-result {
+  display: grid;
+  gap: var(--rt-space-2);
+  overflow-wrap: anywhere;
+}
+
+.rt-rules-try-result:empty {
+  display: none;
+}
+
+.rt-rules-try-result h4 {
+  margin: 0 0 0.125rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.rt-rules-try-result ul {
+  margin: 0;
+  padding-inline-start: 1.125rem;
+  font-size: 0.875rem;
+}
+
+.rt-rules-try-result .rt-rules-legs {
+  list-style: none;
+  padding: 0;
+}
+
+/* ---- The classifier --------------------------------------------------------------------------- */
+
+.rt-rules-classifier {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-3);
+  max-width: 62rem;
+  padding-top: var(--rt-space-4);
+  border-top: var(--rt-rule);
+}
+
+.rt-rules-classifier p {
+  margin: 0;
+}
+
+.rt-rules-classifier-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-3);
+}
+
+.rt-rules-classifier-status {
+  display: grid;
+  justify-items: start;
+  gap: var(--rt-space-1);
+}
+
+.rt-rules-classifier-status .rt-button {
+  margin-top: var(--rt-space-2);
+}
+
+.rt-rules-evaluation {
+  display: grid;
+  gap: var(--rt-space-1);
+}
+
+.rt-rules-evaluation h3,
+.rt-rules-thresholds h3 {
+  margin: 0 0 var(--rt-space-1);
+  font-size: 1.0625rem;
+  letter-spacing: -0.02em;
+}
+
+.rt-rules-quality {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--rt-space-4);
+  margin: var(--rt-space-3) 0;
+  padding: var(--rt-space-3) 0;
+  border-top: 1px solid var(--rt-ink);
+  border-bottom: 6px double var(--rt-ink);
+}
+
+.rt-rules-quality dt {
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-rules-quality dd {
+  margin: 0;
+}
+
+.rt-rules-quality-figure {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-rules-quality-note {
+  font-size: 0.8125rem;
+  color: var(--rt-muted);
+}
+
+.rt-rules-details p,
+.rt-rules-details ul {
+  margin: var(--rt-space-2) 0;
+}
+
+.rt-rules-details ul {
+  padding-inline-start: 1.25rem;
+}
+
+.rt-rules-details .rt-table-scroll {
+  margin-top: var(--rt-space-2);
+}
+
+.rt-rules-thresholds {
+  display: grid;
+  justify-items: start;
+  gap: var(--rt-space-3);
+  padding-top: var(--rt-space-3);
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-rules-threshold-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--rt-space-4);
+  width: 100%;
+}
+
+.rt-rules-threshold-fields .rt-field {
+  max-width: none;
+}
+
+/* ---- History ---------------------------------------------------------------------------------- */
+
+.rt-rules-history {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-3);
+  padding-top: var(--rt-space-4);
+  border-top: var(--rt-rule);
+}
+
+.rt-rules-history p {
+  margin: 0;
+}
+
+.rt-rules-history ol {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rt-ink);
+}
+
+.rt-rules-history li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-rules-history-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem var(--rt-space-4);
+}
+
+/* ---- Notices and states inside the lane's pages ---------------------------------------------- */
+
+.rt-rules-page .rt-notice p,
+.rt-rules-form .rt-notice p {
+  margin: 0 0 var(--rt-space-3);
+}
+
+.rt-rules-page .rt-notice p:last-child,
+.rt-rules-form .rt-notice p:last-child {
+  margin-bottom: 0;
+}
+
+/* A rule that is off is quieter, and still readable: the word "Off" says it, not the shade. */
+.rt-rules-table tr[data-enabled="false"] td,
+.rt-rules-table tr[data-enabled="false"] .rt-rules-name small {
+  color: var(--rt-muted);
+}
+
+/* ---- Narrow screens --------------------------------------------------------------------------- */
+
+@media (max-width: 960px) {
+  .rt-rules-editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rt-rules-editor-aside {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .rt-rules-quality {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 800px) {
+  /* On a phone the table keeps what matters in the first screen of it: the order, the rule with what it
+     suggests under its name, and the switch. When it applies and how it is doing are on the rule's own page. */
+  .rt-rules-table {
+    min-width: 0;
+  }
+
+  .rt-rules-table th:nth-child(3),
+  .rt-rules-table td:nth-child(3),
+  .rt-rules-table th:nth-child(4),
+  .rt-rules-table td:nth-child(4),
+  .rt-rules-table th:nth-child(5),
+  .rt-rules-table td:nth-child(5) {
+    display: none;
+  }
+
+  .rt-rules-name {
+    min-width: 0;
+  }
+
+  .rt-rules-name::after {
+    content: attr(data-then);
+    display: block;
+    margin-top: var(--rt-space-1);
+    font-weight: 600;
+  }
+
+  .rt-rules-condition {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  }
+
+  .rt-rules-condition .rt-rules-lead {
+    grid-column: 1 / -1;
+    padding-top: 0;
+  }
+
+  .rt-rules-condition .rt-rules-values {
+    grid-column: 1 / 3;
+  }
+
+  .rt-rules-part {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .rt-rules-part .rt-rules-remove {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .rt-rules-group {
+    padding-inline: var(--rt-space-3);
+  }
+}
+
+@media (forced-colors: active) {
+  .rt-rules-group,
+  .rt-rules-section {
+    border-color: CanvasText;
+  }
+}

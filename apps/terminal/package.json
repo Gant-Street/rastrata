@@ -1,0 +1,19 @@
+{
+  "name": "@rastrata/terminal",
+  "private": true,
+  "version": "0.0.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "bun tooling/go.ts build",
+    "typecheck": "tsc -p tsconfig.json && bun tooling/go.ts check",
+    "test": "bun tooling/go.ts test && bun test tests",
+    "dev": "bun tooling/go.ts run",
+    "test:integration": "bun test tests/integration.test.ts"
+  },
+  "devDependencies": {
+    "@rastrata/application": "workspace:*",
+    "@types/bun": "1.4.4",
+    "typescript": "7.0.2"
+  }
+}

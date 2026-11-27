@@ -1,0 +1,144 @@
+/* ==========================================================================
+   The page header: a 32 px title (Home 56 px), one line, the main actions at the right, a "How this
+   works" disclosure. Work comes before explanation, so nothing here is taller than it must be: the
+   first control of a page sits within 220 px of the rule under the header.
+   ========================================================================== */
+
+.rt-page-header {
+  display: grid;
+  /* The description, "How this works" beside it, room, the page's actions. The title spans the first three. */
+  grid-template-columns: fit-content(75ch) auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "back  back  back  back"
+    "title title title actions"
+    "desc  help  .     ."
+    "body  body  body  body";
+  align-items: start;
+  margin: 0 0 1.25rem;
+}
+
+/* A page laid out as a grid with a gap of its own does not need the header's margin as well. */
+:where(.rt-shadow-screen, .rt-safe-workspace) > .rt-page-header {
+  margin-bottom: 0;
+}
+
+:where(.rt-stack) > .rt-page-header {
+  margin-bottom: 0.5rem;
+}
+
+.rt-page-header > .rt-page-back {
+  grid-area: back;
+  margin-bottom: 0.25rem;
+}
+
+.rt-page-header > .rt-page-title-row {
+  grid-area: title;
+}
+
+.rt-page-header > .rt-page-description {
+  grid-area: desc;
+}
+
+.rt-page-header > .rt-page-actions {
+  grid-area: actions;
+  align-self: center;
+  margin-inline-start: 1.5rem;
+}
+
+.rt-page-header .rt-page-back {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.rt-page-header .rt-page-back svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.rt-page-header .rt-page-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem 0.75rem;
+}
+
+.rt-page-header .rt-page-title {
+  margin: 0;
+  max-width: none;
+  font-size: var(--rt-title-size, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.rt-page-header[data-size="home"] .rt-page-title {
+  font-size: var(--rt-title-size-home, 3.5rem);
+  letter-spacing: -0.058em;
+  line-height: 1;
+}
+
+/* A state of the page's subject, beside its title: a cell and plain words, as every status is. */
+.rt-page-header .rt-page-status {
+  color: var(--rt-muted);
+  font: 500 0.8125rem / 1.4 var(--rt-font);
+}
+
+/* A status label put inside the chip is the chip's own text: it must not bring its own border and ink, which
+   made "Draft" black on black. */
+.rt-page-header .rt-page-status .rt-status {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+.rt-page-header .rt-page-description {
+  max-width: 75ch;
+  margin: 0.375rem 0 0;
+  color: var(--rt-muted);
+  font-size: 1rem;
+  line-height: 1.45;
+  letter-spacing: -0.005em;
+}
+
+.rt-page-header .rt-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem 0.75rem;
+}
+
+@media (max-width: 40rem) {
+  .rt-page-header {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "back"
+      "title"
+      "desc"
+      "actions"
+      "help";
+  }
+
+  .rt-page-header > .rt-page-actions {
+    align-self: start;
+    margin: 0.5rem 0 0;
+    justify-content: flex-start;
+  }
+
+  .rt-page-header .rt-page-title {
+    font-size: var(--rt-title-size-phone, 1.75rem);
+  }
+
+  .rt-page-header[data-size="home"] .rt-page-title {
+    font-size: var(--rt-title-size-home-phone, 2.5rem);
+  }
+}

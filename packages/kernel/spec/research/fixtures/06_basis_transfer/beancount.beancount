@@ -1,0 +1,12 @@
+option "booking_method" "FIFO"
+2025-01-01 open Assets:BrokerA UNIT
+2025-01-01 open Assets:BrokerB UNIT
+2025-01-01 open Assets:Cash USD
+
+2025-01-02 * "Buy"
+  Assets:BrokerA       2 UNIT {10 USD}
+  Assets:Cash        -20 USD
+
+2025-02-02 * "Transfer"
+  Assets:BrokerA      -1 UNIT {10 USD, 2025-01-02}
+  Assets:BrokerB       1 UNIT {10 USD, 2025-01-02}

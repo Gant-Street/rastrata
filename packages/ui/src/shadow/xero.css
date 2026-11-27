@@ -1,0 +1,223 @@
+/* Styles for the Xero import, the comparison and the gap log. Tokens from base.css only; no one-off
+   colors. The same structure as the rest of the lane: a heavy rule above each step, hairlines
+   between lines, and the figure the screen exists to state set largest: how many comparisons match. */
+
+/* A grid item will not shrink below the width of its content unless it is told it may. The steps and
+   the groups hold tables that scroll inside their own wrappers, so what holds them must not widen
+   the page for them. */
+.rt-shadow-step > *,
+.rt-shadow-block > *,
+.rt-xero-gap article > * {
+  min-width: 0;
+}
+
+.rt-xero-figure {
+  margin: 0;
+  max-width: 24ch;
+  font-size: clamp(1.75rem, 4.5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.rt-shadow-screen .rt-xero-figure {
+  margin: 0;
+}
+
+.rt-xero-facts {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+  display: grid;
+  gap: var(--rt-space-1);
+}
+
+.rt-xero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2);
+  align-items: center;
+}
+
+.rt-xero-detail {
+  max-width: 48rem;
+  overflow-wrap: anywhere;
+}
+
+.rt-xero-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.rt-xero-filter-button {
+  min-height: 2.375rem;
+  padding: 0 var(--rt-space-4);
+  border: 1px solid var(--rt-border);
+  border-radius: var(--rt-radius);
+  background: var(--rt-surface);
+  color: var(--rt-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rt-xero-filter-button[aria-pressed="true"] {
+  border-color: var(--rt-ink);
+  background: var(--rt-ink);
+  color: var(--rt-paper);
+}
+
+.rt-xero-filter-button:hover:not([aria-pressed="true"]) {
+  border-color: var(--rt-ink);
+  background: var(--rt-surface-subtle);
+}
+
+.rt-xero-gaps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--rt-space-5);
+}
+
+.rt-xero-gap {
+  padding-top: var(--rt-space-4);
+  border-top: var(--rt-rule);
+}
+
+.rt-xero-gap article {
+  display: grid;
+  gap: var(--rt-space-3);
+  max-width: 48rem;
+}
+
+.rt-xero-gap h3 {
+  overflow-wrap: anywhere;
+}
+
+.rt-xero-resolution {
+  display: grid;
+  gap: var(--rt-space-2);
+  padding-inline-start: var(--rt-space-4);
+  border-top: 2px solid var(--rt-ink);
+}
+
+.rt-xero-resolution h4 {
+  margin: 0;
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-xero-close,
+.rt-xero-add,
+.rt-xero-reconciled {
+  display: grid;
+  gap: var(--rt-space-4);
+  max-width: 36rem;
+}
+
+.rt-xero-range {
+  display: grid;
+  gap: var(--rt-space-4);
+}
+
+.rt-xero-range-fields {
+  display: grid;
+  gap: var(--rt-space-4);
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  align-items: start;
+}
+
+.rt-xero-options {
+  display: grid;
+  gap: var(--rt-space-4);
+  max-width: 36rem;
+}
+
+.rt-xero-dates {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--rt-space-4);
+}
+
+.rt-xero-file {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 36rem;
+  justify-items: start;
+}
+
+.rt-xero-file-what {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.rt-xero-table th[scope="row"] {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.rt-xero-table td,
+.rt-xero-table th {
+  vertical-align: top;
+}
+
+.rt-xero-table td small,
+.rt-xero-table th small {
+  overflow-wrap: anywhere;
+}
+
+.rt-xero-table tr[data-status="not_comparable"] > td,
+.rt-xero-table tr[data-status="not_comparable"] > th {
+  color: var(--rt-muted);
+}
+
+.rt-xero-table .rt-row-select {
+  min-width: 13rem;
+}
+
+.rt-xero-explanation {
+  display: grid;
+  gap: var(--rt-space-3);
+  margin-top: var(--rt-space-3);
+}
+
+.rt-xero-explanation h4 {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.rt-xero-unmapped,
+.rt-xero-leftout {
+  display: grid;
+  gap: var(--rt-space-2);
+}
+
+.rt-xero-status {
+  min-height: 1.5em;
+}
+
+.rt-xero-next {
+  display: flex;
+}
+
+/* A step of the import inside the steps of the page: the step's own name is the line that opens it, so the
+   body does not say it again, and it has no rule of its own above it. */
+.rt-step-body > .rt-shadow-step {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.rt-step-body > .rt-shadow-step > h2 {
+  display: none;
+}

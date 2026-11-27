@@ -1,0 +1,1471 @@
+.rt-account-group {
+  padding: 0.5rem 0.75rem;
+  color: var(--rt-muted);
+  background: var(--rt-hover);
+  border-bottom: 1px solid var(--rt-ink);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+}
+
+.rt-account-path {
+  display: block;
+  color: var(--rt-muted);
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================================================
+   Transaction Register & Entry Inspector (Executive Ledger Architecture)
+   ========================================================================== */
+
+.rt-register-sheet {
+  border-top: 2px solid var(--rt-ink);
+  border-bottom: 1px solid var(--rt-ink);
+  background: var(--rt-surface);
+}
+
+/* A list that is a view of a page (Transactions, All) stands under the page's own tools: no heavy rule
+ * of its own above them. */
+.rt-register-sheet[data-view] {
+  border-top: 0;
+}
+
+.rt-register-filtering {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* What the Filter button opens, under the search box: the dates, the account, the type and the status.
+ * They share the width and wrap; every control starts at the top of the row (a custom range puts From
+ * and To under the period list). */
+.rt-register-toolbar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  align-items: start;
+  gap: 0.75rem 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+  background: var(--rt-surface);
+}
+
+.rt-register-toolbar[hidden] {
+  display: none;
+}
+
+.rt-register-toolbar > * {
+  min-width: 0;
+}
+
+.rt-date-control {
+  align-items: center;
+}
+
+.rt-date-range-sep {
+  color: var(--rt-muted);
+  font-size: 0.75rem;
+  padding: 0 0.125rem;
+  user-select: none;
+}
+
+.rt-register-status-strip {
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+  background: var(--rt-surface);
+}
+
+.rt-applied-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.625rem 1rem;
+  padding: 0.625rem 0;
+  background: var(--rt-surface);
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-register-applied-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-register-applied-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.rt-applied-filters .rt-button[data-variant="secondary"] {
+  min-height: 1.75rem;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.75rem;
+  border-radius: var(--rt-radius-full);
+  background: var(--rt-surface);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: start;
+}
+
+.rt-register-selection-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--rt-nasa-blue);
+  color: var(--rt-white);
+  border-bottom: 1px solid var(--rt-ink);
+}
+
+.rt-register-selection-bar .rt-button[data-variant="secondary"] {
+  color: var(--rt-text);
+}
+
+/* The bar is a fixed blue field in both themes, so quiet actions use fixed white. */
+.rt-register-selection-bar .rt-button[data-variant="quiet"] {
+  color: var(--rt-white);
+}
+
+.rt-register-selection-bar .rt-button[data-variant="quiet"]:hover:not(:disabled) {
+  background: color-mix(in srgb, #fff 16%, #0b3d91);
+}
+
+.rt-register-selection-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+}
+
+.rt-register-selection-info strong {
+  font-weight: 600;
+}
+
+.rt-register-selection-outside {
+  font-size: 0.75rem;
+  color: var(--rt-white);
+  padding: 0.125rem 0.5rem;
+  background: transparent;
+  border: 1px solid var(--rt-white);
+  border-radius: var(--rt-radius-full);
+}
+
+.rt-register-state-box {
+  padding: 1.5rem;
+}
+
+.rt-register-table-scroll {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* The register's columns. Date, number, amount and status take what they need; the description and
+ * the accounts share the rest and wrap, so no entry, however it is named, can make the table wider
+ * than its container: the amount and the status are always on screen. */
+.rt-register-table th,
+.rt-register-table td {
+  padding-inline: 0.75rem;
+}
+
+.rt-register-table th:first-child,
+.rt-register-table td:first-child {
+  padding-inline-start: 0.25rem;
+}
+
+.rt-register-table th:last-child,
+.rt-register-table td:last-child {
+  padding-inline-end: 0.25rem;
+}
+
+.rt-register-col-check {
+  width: 2.25rem;
+  padding-inline-end: 0.25rem;
+}
+
+.rt-register-table .rt-register-col-date {
+  width: 7.5rem;
+}
+
+.rt-register-table .rt-register-col-number {
+  width: 5.5rem;
+}
+
+.rt-register-table .rt-register-col-amount {
+  width: 8.5rem;
+}
+
+.rt-register-table .rt-register-col-status {
+  width: 6.5rem;
+}
+
+.rt-register-cell-description,
+.rt-register-cell-accounts {
+  min-width: 10rem;
+  overflow-wrap: anywhere;
+  color: var(--rt-text);
+}
+
+.rt-register-reference {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Links that are styled as buttons (the page's main action, a way to another page) keep the button's
+ * colors and have no underline, not the link's. Every page of the accounting lane carries the class. */
+.rt-acct-page a.rt-button {
+  text-decoration: none;
+}
+
+.rt-acct-page a.rt-button[data-variant="primary"],
+.rt-acct-page a.rt-button[data-variant="primary"]:hover {
+  color: var(--rt-on-action);
+}
+
+.rt-acct-page a.rt-button[data-variant="secondary"],
+.rt-acct-page a.rt-button[data-variant="secondary"]:hover {
+  color: var(--rt-text);
+}
+
+/* The machine detail of a page (a revision, a population) sits at its foot, one click away. */
+.journal-details {
+  margin-top: 1rem;
+}
+
+.journal-details .report-meta {
+  margin: 0.5rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--rt-muted);
+  overflow-wrap: anywhere;
+}
+
+.rt-register-cell-status {
+  white-space: nowrap;
+}
+
+.rt-register-table .rt-register-col-actions {
+  width: 2.75rem;
+}
+
+.rt-register-cell-actions {
+  text-align: end;
+  white-space: nowrap;
+}
+
+/* An entry's own page: when it was, the reversal it is part of, the lines, and the machine detail. */
+.entry-facts {
+  margin: 0.25rem 0 1rem;
+  color: var(--rt-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.entry-correction {
+  margin: 0 0 1rem;
+}
+
+.entry-details {
+  margin-top: 1.5rem;
+}
+
+.entry-details section {
+  margin-top: 0.75rem;
+}
+
+.entry-details p {
+  margin: 0.5rem 0 0;
+  font-size: 0.8125rem;
+}
+
+/* Reversing an entry: what is being reversed, then a date and a reason. */
+.rt-reverse-summary {
+  display: grid;
+  gap: 0.125rem;
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.rt-reverse-facts {
+  font-weight: 400;
+  color: var(--rt-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rt-reverse-form {
+  display: grid;
+  gap: 1rem;
+}
+
+/* What can be done to the entry in the side sheet, under its title. */
+.rt-inspector-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rt-sort-button {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--rt-radius-sm);
+  padding: 0.25rem 0.4rem;
+  margin-inline-start: -0.4rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font: inherit;
+  font-weight: 700;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--rt-text);
+  cursor: pointer;
+  transition: background-color var(--rt-motion);
+}
+
+.rt-sort-button:hover {
+  background: var(--rt-pressed);
+}
+
+.rt-sort-button svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--rt-accent);
+  stroke-width: 3;
+}
+
+.rt-register-row-selected td,
+.rt-register-row-selected th[scope="row"] {
+  background: var(--rt-selection);
+}
+
+.rt-register-row-selected td:first-child {
+  box-shadow: inset 5px 0 0 var(--rt-accent);
+}
+
+.rt-register-row-selected td:first-child:dir(rtl) {
+  box-shadow: inset -5px 0 0 var(--rt-accent);
+}
+
+.rt-register-table tbody tr:hover td:first-child:not(:where(.rt-register-row-selected *)) {
+  box-shadow: inset 5px 0 0 var(--rt-ink);
+}
+
+.rt-register-table tbody tr:hover td:first-child:not(:where(.rt-register-row-selected *)):dir(rtl) {
+  box-shadow: inset -5px 0 0 var(--rt-ink);
+}
+
+.rt-register-cell-id {
+  background: transparent;
+  font-weight: 400;
+  /* An identifier that is not a short number (a host that has no better name for an entry) wraps
+   * inside its cell instead of widening the table. */
+  overflow-wrap: anywhere;
+}
+
+/* "No. 23" stays on one line. */
+.rt-register-cell-id[data-numbered] {
+  white-space: nowrap;
+}
+
+.rt-register-entry-button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--rt-radius-sm);
+  max-width: 100%;
+  text-align: start;
+  padding: 0.15rem 0.25rem;
+  margin-inline-start: -0.25rem;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  font-feature-settings: "ss02";
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* The same as a row's name that is a link (base.css): ink, and blue and underlined under the pointer or the keyboard. */
+.rt-register-entry-button:is(:hover, :focus-visible) {
+  color: var(--rt-accent-hover);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.rt-register-cell-date {
+  color: var(--rt-text);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.rt-register-account-line {
+  color: var(--rt-text);
+}
+
+.rt-register-account-sep {
+  color: var(--rt-muted);
+  margin: 0 0.15rem;
+}
+
+.rt-register-cell-amount {
+  color: var(--rt-text);
+  white-space: nowrap;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.015em;
+}
+
+.rt-register-footer-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 0;
+  background: var(--rt-surface);
+  border-top: 1px solid var(--rt-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.rt-register-feedback-status {
+  margin-top: 0.875rem;
+}
+
+.rt-register-footnote {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.875rem;
+}
+
+.rt-register-footnote svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+}
+
+.rt-text-button {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0.2rem 0;
+  color: var(--rt-accent);
+  font: inherit;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+  text-align: start;
+}
+
+.rt-text-button:hover {
+  color: var(--rt-accent-hover);
+}
+
+/* Entry Inspector Voucher Sheet */
+.rt-inspector-positioner {
+  place-items: stretch end;
+  padding: 0;
+}
+
+.rt-inspector {
+  box-sizing: border-box;
+  min-width: 0;
+  width: min(100%, 40rem);
+  max-height: 100dvh;
+  height: 100%;
+  margin: 0;
+  padding: clamp(1rem, 3vw, 1.75rem);
+  border-radius: 0;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+  /* A sheet at the side floats over the page: a pale line at its edge and a soft shadow. */
+  border-inline-start: 1px solid var(--rt-border-subtle);
+  box-shadow: -16px 0 48px color-mix(in srgb, #000 16%, transparent);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.rt-inspector-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding-bottom: 0.875rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-inspector-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rt-inspector-title-row > .rt-button {
+  min-height: 2rem;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.8125rem;
+}
+
+.rt-inspector-title-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rt-inspector-title-group [data-part="title"] {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+  font-feature-settings: "ss02";
+  font-variant-numeric: tabular-nums;
+}
+
+.rt-inspector-details {
+  font-size: 0.8125rem;
+}
+
+.rt-inspector-description {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--rt-muted);
+  line-height: 1.45;
+}
+
+.rt-inspector-meta-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 0.625rem 0;
+  background: transparent;
+  border-top: 2px solid var(--rt-ink);
+  border-bottom: 1px solid var(--rt-ink);
+}
+
+.rt-inspector-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.rt-inspector-meta-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-inspector-meta-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--rt-ink);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.rt-inspector-body {
+  min-width: 0;
+  gap: 0.875rem;
+}
+
+.rt-inspector-readonly-banner {
+  padding: 0.625rem 0.875rem;
+  font-size: 0.8125rem;
+  color: var(--rt-muted);
+  background: var(--rt-hover);
+  border-top: 2px solid var(--rt-ink);
+  border-radius: var(--rt-radius);
+}
+
+.rt-inspector-form-card {
+  padding: 0.75rem 0 0.875rem;
+  gap: 0.625rem;
+  background: transparent;
+  border-top: var(--rt-rule);
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-save-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid var(--rt-divider);
+  margin: 0;
+}
+
+.rt-save-bar p {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--rt-muted);
+}
+
+.rt-inspector-save-status[data-dirty] {
+  color: var(--rt-text);
+  font-weight: 600;
+}
+
+.rt-inspector-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.rt-inspector-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rt-inspector h3 {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin: 0;
+  color: var(--rt-ink);
+}
+
+.rt-inspector-section-note {
+  font-size: 0.75rem;
+  color: var(--rt-muted);
+}
+
+.rt-inspector-account-btn {
+  overflow-wrap: anywhere;
+}
+
+.rt-inspector-account-card {
+  min-width: 0;
+}
+
+.rt-inspector-account-detail {
+  padding: 1.25rem;
+  background: var(--rt-hover);
+  border-top: 2px solid var(--rt-ink);
+  border-radius: var(--rt-radius);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rt-inspector-account-detail h3 {
+  font-size: 1.125rem;
+  letter-spacing: -0.02em;
+  margin-top: 0.125rem;
+}
+
+.rt-inspector-account-path {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--rt-text);
+}
+
+.rt-inspector-account-note {
+  margin: 0.25rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--rt-divider);
+  font-size: 0.8125rem;
+  color: var(--rt-muted);
+}
+
+.rt-leave-dialog {
+  box-sizing: border-box;
+  min-width: 0;
+  width: min(100%, 28rem);
+}
+
+.rt-inspector-leave-status {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--rt-muted);
+}
+
+.rt-inspector-leave-status:not(:empty) {
+  margin-bottom: 0.75rem;
+}
+
+.rt-leave-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rt-divider);
+}
+
+@media (max-width: 64rem) {
+  .rt-register-toolbar,
+  .rt-register-toolbar[data-typed],
+  .rt-register-toolbar[data-kit],
+  .rt-register-toolbar[data-kit][data-typed] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .rt-register-toolbar .rt-register-search-box {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 40rem) {
+  .rt-register-toolbar,
+  .rt-register-toolbar[data-typed],
+  .rt-register-toolbar[data-kit],
+  .rt-register-toolbar[data-kit][data-typed] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 800px) {
+  .rt-register-selection-bar {
+    padding-inline: 1rem;
+  }
+}
+
+/* A phone: the list of transactions is two lines each, the way For review's is. The description and what it
+   came to first; then the date, the accounts it moved between and the row's menu. The column headings stay
+   for a screen reader and are not shown, and nothing makes the table wider than the screen. */
+@media (max-width: 40rem) {
+  .rt-register-table,
+  .rt-register-table tbody {
+    display: block;
+  }
+
+  .rt-register-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .rt-register-table tbody tr {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--rt-divider);
+  }
+
+  /* The break between the two lines. */
+  .rt-register-table tbody tr::before {
+    content: "";
+    order: 4;
+    flex: 0 0 100%;
+  }
+
+  .rt-register-table tbody td,
+  .rt-register-table tbody th {
+    display: block;
+    width: auto;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .rt-register-table tbody .rt-register-col-check {
+    order: 1;
+    flex: none;
+    align-self: center;
+  }
+
+  .rt-register-table tbody .rt-register-cell-description {
+    order: 2;
+    flex: 1 1 0;
+  }
+
+  .rt-register-table tbody .rt-register-cell-amount {
+    order: 3;
+    flex: none;
+    font-weight: 600;
+  }
+
+  .rt-register-table tbody .rt-register-cell-date {
+    order: 5;
+    flex: none;
+    color: var(--rt-muted);
+    font-size: 0.875rem;
+  }
+
+  .rt-register-table tbody .rt-register-cell-accounts {
+    order: 6;
+    flex: 1 1 0;
+    font-size: 0.875rem;
+  }
+
+  .rt-register-table tbody .rt-register-cell-actions {
+    order: 7;
+    flex: none;
+    align-self: center;
+  }
+}
+
+.rt-inspector:dir(rtl) {
+  box-shadow: 8px 0 0 var(--rt-ink);
+}
+
+@media (max-width: 480px) {
+  .rt-inspector {
+    border-inline-start-width: 6px;
+    box-shadow: none;
+  }
+  .rt-inspector:dir(rtl) {
+    box-shadow: none;
+  }
+  .rt-inspector .rt-table th,
+  .rt-inspector .rt-table td {
+    padding-inline: 0.375rem;
+  }
+  .rt-inspector-meta-strip {
+    gap: 0.75rem 0.5rem;
+  }
+  .rt-leave-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .rt-leave-actions .rt-button {
+    width: 100%;
+  }
+}
+
+.rt-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.rt-description {
+  font-size: 0.8125rem;
+  color: var(--rt-muted);
+}
+
+.rt-history {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.rt-history li {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--rt-divider);
+  font-size: 0.875rem;
+}
+
+.rt-history time {
+  color: var(--rt-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rt-inspector .rt-history li {
+  grid-template-columns: minmax(0, 7rem) minmax(0, 1fr);
+  overflow-wrap: anywhere;
+}
+
+@media (forced-colors: active) {
+  .rt-register-row-selected td:first-child {
+    border-inline-start: 5px solid Highlight;
+  }
+}
+
+/* ==========================================================================
+   The Chart of accounts: the drawers that add and edit an account.
+   ========================================================================== */
+
+.rt-account-form,
+.rt-account-advanced {
+  display: grid;
+  gap: 1rem;
+}
+
+.rt-account-advanced {
+  margin-top: 0.75rem;
+}
+
+.rt-account-close {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.rt-account-close .rt-hint {
+  margin: 0;
+  padding-inline-start: 2rem;
+}
+
+/* The drawer's foot says what saving will do, and holds the button that does it. */
+.rt-account-drawer-foot {
+  display: grid;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.rt-account-summary {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.rt-account-drawer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* ==========================================================================
+   An account's register: the transactions of one account with a running balance.
+   ========================================================================== */
+
+.rt-register-range {
+  max-width: 24rem;
+  margin: 0 0 1rem;
+}
+
+/* The two folds under an account's transactions: its reconciliations and its details. */
+.rt-account-folds {
+  display: grid;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-account-folds > .rt-details {
+  padding-block: 0.5rem;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-account-folds-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0.25rem;
+}
+
+.rt-account-register-table {
+  width: 100%;
+  min-width: 40rem;
+}
+
+.rt-account-register-table th,
+.rt-account-register-table td {
+  vertical-align: top;
+}
+
+.rt-account-register-description {
+  min-width: 12rem;
+  overflow-wrap: anywhere;
+  font-weight: 400;
+}
+
+.rt-account-register-opening th,
+.rt-account-register-opening td {
+  color: var(--rt-muted);
+}
+
+.rt-account-register-table tfoot th,
+.rt-account-register-table tfoot td {
+  font-weight: 700;
+  border-top: 1px solid var(--rt-ink);
+}
+
+.rt-account-register-none {
+  color: var(--rt-muted);
+}
+
+/* On a narrow screen a transaction is two lines: what it was and its amount (named Spent or Received,
+   Debit or Credit, since the column headings are out of sight), then its date and the balance after it.
+   The foot is the totals, one under another. Nothing scrolls sideways. */
+@media (max-width: 40rem) {
+  .rt-account-register-table {
+    display: block;
+    min-width: 0;
+  }
+
+  .rt-account-register-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .rt-account-register-table tbody,
+  .rt-account-register-table tfoot {
+    display: block;
+  }
+
+  .rt-account-register-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.125rem 0.75rem;
+    padding: 0.625rem 0;
+    border-bottom: 1px solid var(--rt-divider);
+  }
+
+  .rt-account-register-table tbody th,
+  .rt-account-register-table tbody td,
+  .rt-account-register-table tfoot th,
+  .rt-account-register-table tfoot td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  .rt-account-register-table [data-cell="description"] {
+    grid-area: 1 / 1;
+    min-width: 0;
+  }
+
+  .rt-account-register-table [data-cell="first"],
+  .rt-account-register-table [data-cell="second"] {
+    grid-area: 1 / 2;
+  }
+
+  .rt-account-register-table [data-cell="date"] {
+    grid-area: 2 / 1;
+    font-size: 0.875rem;
+    color: var(--rt-muted);
+  }
+
+  .rt-account-register-table [data-cell="balance"] {
+    grid-area: 2 / 2;
+    font-size: 0.875rem;
+    color: var(--rt-muted);
+  }
+
+  /* Each figure says what it is. A blank amount shares the place of the other and says nothing; it stays
+     a cell of its row, so the row has as many cells as the table has columns. */
+  .rt-account-register-table td[data-label]::before {
+    content: attr(data-label) " ";
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: var(--rt-muted);
+  }
+
+  .rt-account-register-table td[data-label]:empty::before {
+    content: none;
+  }
+
+  .rt-account-register-table tfoot tr {
+    border-top: 1px solid var(--rt-ink);
+    border-bottom: 0;
+  }
+
+  .rt-account-register-table tfoot [data-cell="description"] {
+    grid-area: 1 / 1 / 2 / 3;
+  }
+
+  .rt-account-register-table tfoot [data-cell="first"] {
+    grid-area: 2 / 1 / 3 / 3;
+  }
+
+  .rt-account-register-table tfoot [data-cell="second"] {
+    grid-area: 3 / 1 / 4 / 3;
+  }
+
+  .rt-account-register-table tfoot [data-cell="balance"] {
+    grid-area: 4 / 1 / 5 / 3;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  .rt-account-register-table tfoot td {
+    text-align: end;
+  }
+}
+
+/* Inside the fold the list of reconciliations needs no rule of its own. */
+.rt-account-folds .rt-recon-list {
+  border-top: 0;
+  padding-top: 0;
+}
+
+/* ==========================================================================
+   Close the books: how far, one card for what can be closed now, and three folds under it.
+   ========================================================================== */
+
+.rt-close-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.rt-close-through {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+/* The block: a heavy rule, the month it closes through, what is left, the button. In no box. */
+.rt-close-card {
+  display: grid;
+  gap: 0.875rem;
+  padding: 1rem 0 1.25rem;
+  border-top: var(--rt-rule);
+}
+
+.rt-close-card h2 {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.rt-close-card p {
+  max-width: none;
+  margin: 0;
+}
+
+/* What is left: a sentence and its one button a line. The button stays on the sentence's line at every
+   width, as Home's rows do. */
+.rt-close-left {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-close-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-close-text {
+  overflow-wrap: anywhere;
+}
+
+.rt-close-look .rt-details {
+  border-top: 0;
+}
+
+.rt-close-look ul {
+  display: grid;
+  gap: 0.375rem;
+  margin: 0;
+  padding-inline-start: 1.125rem;
+}
+
+.rt-close-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+/* A close that stopped short: one line, in the ink, above what is left for the month that would not close. */
+.rt-close-run-stopped {
+  padding: 0.625rem 1rem;
+  border-top: 2px solid var(--rt-ink);
+  background: var(--rt-surface-subtle);
+  font-weight: 600;
+}
+
+/* The folds under the card: the year, the closed months, the calendar. One rule between them. */
+.rt-close-folds {
+  display: grid;
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-close-folds .rt-details {
+  padding-block: 0.5rem;
+  border-top: 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-close-folds .rt-details-toggle {
+  font-weight: 700;
+}
+
+.rt-close-closed-list {
+  display: grid;
+  gap: 0;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-close-closed-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-close-closed-row:first-child {
+  border-top: 0;
+}
+
+.rt-close-closed-row > span {
+  flex: 1 1 12rem;
+}
+
+.rt-close-year,
+.rt-close-calendar {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.rt-close-year .rt-cal-year {
+  padding: 0;
+  border-top: 0;
+}
+
+.rt-close-year h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.rt-close-calendar p {
+  max-width: none;
+  margin: 0;
+}
+
+/* ==========================================================================
+   The new-entry form: the fields, the lines, the totals and actions bar that stays in view, and the
+   closed section for duplicate protection.
+   ========================================================================== */
+
+.rt-entry-form {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.rt-entry-fields {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr) minmax(10rem, 16rem);
+  gap: 0.75rem 1rem;
+  align-items: start;
+}
+
+.rt-entry-lines h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.rt-entry-line-head,
+.rt-entry-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 9.5rem 9.5rem 2.5rem;
+  gap: 0.5rem 0.75rem;
+  align-items: start;
+}
+
+.rt-entry-line-head {
+  padding-bottom: 0.375rem;
+  border-bottom: 1px solid var(--rt-ink);
+  color: var(--rt-muted);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+}
+
+.rt-entry-line {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-entry-line > .rt-button {
+  justify-self: end;
+}
+
+.rt-entry-amount .rt-input {
+  text-align: end;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* The column names are in the header row at desktop width; on a phone each box carries its own. */
+.rt-entry-amount::before {
+  content: none;
+}
+
+.rt-entry-lines > .rt-button {
+  margin-top: 0.75rem;
+}
+
+/* Where this entry came from: only on a form opened for a source, with the source's facts and its record. */
+.rt-entry-source-fold {
+  max-width: 44rem;
+}
+
+.rt-entry-source-actions {
+  margin-top: 0.75rem;
+}
+
+.rt-entry-source {
+  display: grid;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--rt-divider);
+  overflow-wrap: anywhere;
+}
+
+.rt-entry-source p,
+.rt-entry-source ul {
+  margin: 0;
+}
+
+.rt-entry-recovery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rt-entry-review table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-entry-review table th,
+.rt-entry-review table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--rt-divider);
+  text-align: start;
+}
+
+.rt-entry-review table th:not(:first-child),
+.rt-entry-review table td {
+  text-align: end;
+}
+
+/* The bar stays at the foot of the window while the lines scroll. */
+.rt-entry-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  margin-top: 0.5rem;
+  padding: 0.75rem 0;
+  border-top: 2px solid var(--rt-ink);
+  background: var(--rt-surface);
+  box-shadow: 0 8px 0 0 var(--rt-surface);
+}
+
+.rt-entry-totals {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-entry-totals [data-unbalanced] {
+  font-weight: 700;
+}
+
+.rt-entry-flag {
+  padding: 0.125rem 0.5rem;
+  border: 1px solid var(--rt-ink);
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-entry-flag[data-balanced] {
+  border-color: var(--rt-muted);
+  color: var(--rt-muted);
+}
+
+.rt-entry-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 64rem) {
+  .rt-entry-fields {
+    grid-template-columns: 11rem minmax(0, 1fr);
+  }
+  .rt-entry-fields > :last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 40rem) {
+  .rt-entry-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rt-entry-line-head {
+    display: none;
+  }
+
+  /* Each line is a small card: the account across, then the two amounts and the way to remove it. */
+  .rt-entry-line {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 2.5rem;
+    padding: 0.75rem 0;
+  }
+
+  .rt-entry-line > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  .rt-entry-amount::before {
+    content: attr(data-heading);
+    display: block;
+    margin-bottom: 0.125rem;
+    color: var(--rt-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .rt-entry-line > .rt-button {
+    align-self: end;
+  }
+
+  .rt-entry-bar {
+    gap: 0.5rem;
+  }
+
+  .rt-entry-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

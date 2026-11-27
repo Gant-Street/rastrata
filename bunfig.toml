@@ -1,0 +1,7 @@
+[install]
+auto = "disable"
+
+[test]
+timeout = 60000
+coveragePathIgnorePatterns = ["packages/kernel/test/**", "packages/kernel/slow/**"]
+coverageThreshold = { lines = 1.0, functions = 1.0 }

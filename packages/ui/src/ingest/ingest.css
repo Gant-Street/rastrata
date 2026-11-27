@@ -1,0 +1,1037 @@
+/* Styles for the ingest lane's components (the Inbox). Tokens from base.css only; no one-off colors.
+   Structure comes from rules and space: a heavy rule above, hairlines between lines, a double rule
+   under the figure. How many lines wait for a person is the largest thing on the page. Orange means
+   "a person has something to decide"; blue means "where you are" (the focused line, the open tab). */
+
+@import "./bank-tiles.css";
+
+.rt-inbox {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-4);
+}
+
+/* Links that are styled as buttons keep the button's colors, not the link's. */
+.rt-inbox a.rt-button {
+  text-decoration: none;
+}
+
+.rt-inbox a.rt-button[data-variant="primary"],
+.rt-inbox a.rt-button[data-variant="primary"]:hover {
+  color: var(--rt-on-action);
+}
+
+.rt-inbox a.rt-button[data-variant="secondary"],
+.rt-inbox a.rt-button[data-variant="secondary"]:hover,
+.rt-inbox a.rt-button[data-variant="quiet"],
+.rt-inbox a.rt-button[data-variant="quiet"]:hover {
+  color: var(--rt-text);
+}
+
+.rt-inbox-muted {
+  color: var(--rt-muted);
+  font-size: 0.8125rem;
+}
+
+.rt-inbox-label {
+  margin: var(--rt-space-3) 0 var(--rt-space-1);
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-inbox-amount {
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+
+.rt-inbox-currency {
+  font-size: 0.75em;
+  color: var(--rt-muted);
+}
+
+.rt-inbox-link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--rt-accent);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.rt-inbox-link-button:disabled {
+  color: var(--rt-muted);
+  text-decoration: none;
+  cursor: default;
+}
+
+.rt-inbox-link-button:focus-visible,
+.rt-inbox-tab:focus-visible {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 3px;
+}
+
+/* ---- Views and filters ------------------------------------------------------------------------ */
+
+/* The page's tools are one line under the title: the views at the left, and at the right the account (when
+   there is more than one) and the search box, which holds the button for the rest of the filters. */
+.rt-inbox-filtering {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* The views are links between addresses, drawn as the tabs they replace: the one that is showing is in ink
+   with an ink line under it, the others in grey (docs/reference/design-language.md). */
+.rt-inbox-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--rt-space-4);
+}
+
+/* Two classes, so that the themed shell's blue for links does not outweigh these. */
+.rt-inbox-tabs .rt-inbox-tab,
+.rt-inbox-tabs .rt-inbox-tab:hover,
+.rt-inbox-tabs .rt-inbox-tab:visited {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--rt-space-2);
+  padding: var(--rt-space-2) 0 calc(var(--rt-space-2) - 2px);
+  margin-bottom: -1px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--rt-muted);
+  font: inherit;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.rt-inbox-tabs .rt-inbox-tab:hover {
+  color: var(--rt-ink);
+}
+
+.rt-inbox-tabs .rt-inbox-tab[aria-current],
+.rt-inbox-tabs .rt-inbox-tab[aria-current]:hover,
+.rt-inbox-tabs .rt-inbox-tab[aria-current]:visited {
+  border-bottom-color: var(--rt-ink);
+  color: var(--rt-ink);
+  font-weight: 600;
+}
+
+.rt-inbox-tab-count {
+  font: 500 0.75rem / 1.4 var(--rt-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--rt-muted);
+}
+
+.rt-inbox-account-select .rt-field {
+  min-width: 11rem;
+  max-width: 16rem;
+}
+
+.rt-inbox-search-row {
+  display: flex;
+  align-items: center;
+}
+
+/* What the Filter button opens, under the tools. */
+.rt-inbox-filter-more {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--rt-space-4);
+  padding: var(--rt-space-3) 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-inbox-filter-more[hidden] {
+  display: none;
+}
+
+.rt-inbox-filter-clear {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--rt-space-2);
+}
+
+.rt-inbox-chip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-2) var(--rt-space-3);
+  margin: 0;
+}
+
+/* "14 have a suggested category. [Accept 14 suggested]": the quick way through, above the rows, and the
+   page's one main button. */
+.rt-inbox-accept {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rt-space-2) var(--rt-space-4);
+}
+
+.rt-inbox-accept p {
+  margin: 0;
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+}
+
+/* ---- Selection, notes, progress ----------------------------------------------------------------- */
+
+.rt-inbox-selection {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rt-space-2) var(--rt-space-4);
+  padding: var(--rt-space-2) var(--rt-space-3);
+  border-top: 1px solid var(--rt-ink);
+  border-bottom: 1px solid var(--rt-ink);
+  background: var(--rt-selection);
+}
+
+.rt-inbox-selection-text {
+  margin: 0;
+  font-weight: 600;
+}
+
+.rt-inbox-selection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2);
+}
+
+.rt-inbox-note-lines,
+.rt-inbox-unmapped,
+.rt-inbox-reasons,
+.rt-inbox-history,
+.rt-inbox-flags,
+.rt-inbox-quick {
+  margin: var(--rt-space-2) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-inbox-note-extra {
+  margin-block: var(--rt-space-2);
+}
+
+.rt-inbox-note-lines li {
+  padding: 0.125rem 0;
+  overflow-wrap: anywhere;
+}
+
+.rt-inbox-unmapped li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-3);
+  padding: var(--rt-space-1) 0;
+}
+
+.rt-inbox-progress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-4);
+}
+
+.rt-inbox-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2);
+}
+
+/* ---- Panes ---------------------------------------------------------------------------------------- */
+
+/* The list has the whole width until a transaction is opened; then its pane takes a column beside it. */
+.rt-inbox-panes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--rt-space-6);
+  align-items: start;
+}
+
+@media (min-width: 62rem) {
+  .rt-inbox-panes[data-open] {
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 26rem);
+  }
+
+  .rt-inbox-side {
+    position: sticky;
+    top: var(--rt-space-4);
+    max-height: calc(100vh - 2 * var(--rt-space-4));
+    overflow: auto;
+    padding-inline-start: var(--rt-space-4);
+    border-inline-start: 1px solid var(--rt-divider);
+  }
+}
+
+.rt-inbox-main {
+  min-width: 0;
+  display: grid;
+  gap: var(--rt-space-4);
+}
+
+.rt-inbox-sheet {
+  width: min(32rem, 100vw);
+  max-width: 100vw;
+}
+
+/* ---- The lines ------------------------------------------------------------------------------------- */
+
+.rt-inbox-list {
+  min-width: 0;
+}
+
+.rt-inbox-scroll {
+  position: relative;
+}
+
+.rt-inbox-table th.rt-inbox-check,
+.rt-inbox-table td.rt-inbox-check {
+  width: 2.25rem;
+  padding-inline-end: 0;
+}
+
+.rt-inbox-table tbody tr {
+  cursor: pointer;
+}
+
+.rt-inbox-table tbody tr[data-selected] {
+  background: var(--rt-selection);
+}
+
+/* "Where you are" is marked only while it means something: the transaction that is open beside the list,
+   or the row the keyboard is working in. A list at rest marks no row. */
+.rt-inbox-panes[data-open] .rt-inbox-table tbody tr[data-active],
+.rt-inbox-list:focus-within .rt-inbox-table tbody tr[data-active] {
+  box-shadow: inset 3px 0 0 var(--rt-accent);
+}
+
+.rt-inbox-table td {
+  vertical-align: middle;
+}
+
+.rt-inbox-date {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-inbox-description {
+  min-width: 12rem;
+  max-width: 28rem;
+}
+
+.rt-inbox-description > span {
+  display: block;
+}
+
+/* The description opens the transaction: a button that reads as the text it is. */
+.rt-inbox-open {
+  display: block;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--rt-text);
+  font: inherit;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+}
+
+.rt-inbox-open:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.rt-inbox-open:focus-visible {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 3px;
+}
+
+.rt-inbox-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.rt-inbox-text {
+  overflow-wrap: anywhere;
+}
+
+.rt-inbox-source {
+  margin-top: 0.125rem;
+}
+
+.rt-inbox-inline-date,
+.rt-inbox-inline-sep {
+  display: none;
+}
+
+.rt-inbox-col-category {
+  min-width: 15rem;
+}
+
+.rt-inbox-col-date {
+  width: 7rem;
+  white-space: nowrap;
+}
+
+.rt-inbox-col-spent,
+.rt-inbox-col-received {
+  width: 6.5rem;
+  white-space: nowrap;
+}
+
+.rt-inbox-col-action {
+  width: 1%;
+  text-align: end;
+  white-space: nowrap;
+}
+
+/* One signed column stands in for the two on a narrow list. */
+.rt-inbox-col-amount {
+  display: none;
+  white-space: nowrap;
+}
+
+/* A category that is said and not chosen on the row (a split, a transfer, an entry already in the books). */
+.rt-inbox-category-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.rt-inbox-refused {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+  margin-top: 0.25rem;
+  color: var(--rt-error);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.rt-inbox-refused svg {
+  flex: none;
+  width: 0.9375rem;
+  height: 0.9375rem;
+  margin-top: 0.125rem;
+}
+
+/* A posted line that is on a reconciliation: a quiet check and a word, never colour alone. */
+.rt-inbox-reconciled {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.rt-inbox-reconciled svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  stroke-width: 2.25;
+}
+
+.rt-inbox-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-2);
+}
+
+.rt-inbox-flags {
+  display: grid;
+  gap: 0.125rem;
+  font-size: 0.8125rem;
+}
+
+.rt-inbox-flags li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 600;
+}
+
+.rt-inbox-flags svg {
+  flex: none;
+  width: 0.9375rem;
+  height: 0.9375rem;
+}
+
+.rt-inbox-flag-note {
+  flex-basis: 100%;
+  font-weight: 400;
+  color: var(--rt-muted);
+}
+
+.rt-inbox-state {
+  display: grid;
+  justify-items: start;
+  gap: var(--rt-space-3);
+  padding: var(--rt-space-8) 0;
+}
+
+.rt-inbox-state h2,
+.rt-inbox-state p {
+  margin: 0;
+}
+
+.rt-inbox-empty {
+  max-width: 34rem;
+}
+
+/* What was set aside: one quiet line under the list. */
+.rt-inbox-excluded {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.rt-inbox-excluded a,
+.rt-inbox-excluded a:visited {
+  color: var(--rt-muted);
+}
+
+.rt-inbox-excluded a:hover {
+  color: var(--rt-text);
+}
+
+/* The keyboard shortcuts, in the dialog "?" opens. */
+.rt-inbox-shortcut-list {
+  display: grid;
+  gap: var(--rt-space-2);
+  margin: 0;
+}
+
+.rt-inbox-shortcut-list > div {
+  display: flex;
+  gap: var(--rt-space-3);
+  align-items: baseline;
+}
+
+.rt-inbox-shortcut-list dt {
+  min-width: 7.5rem;
+}
+
+.rt-inbox-shortcut-list dd {
+  margin: 0;
+}
+
+.rt-inbox-shortcuts kbd {
+  padding: 0.0625rem 0.375rem;
+  border: 1px solid var(--rt-ink);
+  font: 600 0.75rem / 1.4 var(--rt-mono);
+}
+
+/* ---- Detail --------------------------------------------------------------------------------------- */
+
+.rt-inbox-detail {
+  display: grid;
+  gap: var(--rt-space-3);
+  min-width: 0;
+}
+
+.rt-inbox-detail > * {
+  margin: 0;
+}
+
+.rt-inbox-detail-title {
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-inbox-detail-head {
+  display: grid;
+  gap: var(--rt-space-1);
+  justify-items: start;
+  padding-bottom: var(--rt-space-2);
+}
+
+.rt-inbox-detail-head > p {
+  margin: 0;
+}
+
+.rt-inbox-detail-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+}
+
+/* The actions come first and stay in view as the pane scrolls. */
+.rt-inbox-actionbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-2);
+  padding-block: var(--rt-space-2);
+  background: var(--rt-paper);
+  border-bottom: 1px solid var(--rt-ink);
+}
+
+.rt-inbox-actionbar a.rt-button {
+  text-decoration: none;
+  color: var(--rt-text);
+}
+
+.rt-inbox-actionbar-end {
+  margin-inline-start: auto;
+}
+
+.rt-inbox-detail-description {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.rt-inbox-detail-direction {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--rt-muted);
+}
+
+.rt-inbox-facts-list {
+  display: grid;
+  margin: 0;
+}
+
+.rt-inbox-facts-list > div {
+  display: grid;
+  gap: 0.125rem;
+  padding: var(--rt-space-2) 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-inbox-facts-list dt {
+  font-size: 0.75rem;
+  color: var(--rt-muted);
+}
+
+.rt-inbox-facts-list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.rt-inbox-why-section,
+.rt-inbox-record {
+  display: grid;
+  gap: var(--rt-space-1);
+  padding-top: var(--rt-space-2);
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-inbox-why-section > *,
+.rt-inbox-record > * {
+  margin: 0;
+}
+
+.rt-inbox-effects {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-inbox-effects li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--rt-space-3);
+  padding: var(--rt-space-1) 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-inbox-action-line {
+  font-weight: 600;
+}
+
+.rt-inbox-facts {
+  display: grid;
+  margin: 0;
+}
+
+.rt-inbox-facts > div {
+  display: grid;
+  gap: 0.125rem;
+  padding: var(--rt-space-2) 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-inbox-facts dt {
+  font-size: 0.75rem;
+  color: var(--rt-muted);
+}
+
+.rt-inbox-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.rt-inbox-text[data-clamped] {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+  overflow: hidden;
+}
+
+.rt-inbox-section {
+  display: grid;
+  gap: var(--rt-space-2);
+  padding-top: var(--rt-space-3);
+  border-top: var(--rt-rule);
+}
+
+.rt-inbox-section > * {
+  margin: 0;
+}
+
+.rt-inbox-section h3 {
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.rt-inbox-proposal {
+  display: grid;
+  gap: var(--rt-space-2);
+  padding: var(--rt-space-3) 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-inbox-proposal > * {
+  margin: 0;
+}
+
+.rt-inbox-proposal-who {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--rt-space-3);
+}
+
+.rt-inbox-reasons {
+  display: grid;
+  gap: 0.125rem;
+  list-style: disc;
+  padding-inline-start: 1.25rem;
+}
+
+.rt-inbox-legs {
+  font-size: 0.8125rem;
+}
+
+.rt-inbox-legs th,
+.rt-inbox-legs td {
+  padding: var(--rt-space-1) var(--rt-space-2);
+}
+
+.rt-inbox-proposal-actions,
+.rt-inbox-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-3);
+}
+
+.rt-inbox-action-link {
+  font-weight: 600;
+}
+
+.rt-inbox-rule-link {
+  margin: 0;
+  font-weight: 600;
+}
+
+.rt-inbox-hash {
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+.rt-inbox-excerpt {
+  max-height: 12rem;
+  overflow: auto;
+  margin: 0;
+  padding: var(--rt-space-2) var(--rt-space-3);
+  border: 1px solid var(--rt-border-subtle);
+  background: var(--rt-surface-subtle);
+  font: 0.8125rem / 1.5 var(--rt-mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.rt-inbox-history {
+  display: grid;
+  gap: var(--rt-space-2);
+}
+
+.rt-inbox-history li {
+  display: grid;
+  gap: 0.0625rem;
+  padding-bottom: var(--rt-space-2);
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+/* ---- Split ---------------------------------------------------------------------------------------- */
+
+.rt-inbox-split {
+  display: grid;
+  gap: var(--rt-space-3);
+  margin: 0;
+  padding: var(--rt-space-3) 0 0;
+  border: 0;
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-inbox-split legend {
+  padding: 0;
+  font-weight: 700;
+}
+
+.rt-inbox-split-total,
+.rt-inbox-split-left {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--rt-space-3);
+  margin: 0;
+}
+
+.rt-inbox-split-parts {
+  display: grid;
+  gap: var(--rt-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-inbox-split-part {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 7rem auto;
+  gap: var(--rt-space-2);
+  align-items: end;
+}
+
+.rt-inbox-split-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rt-space-3);
+}
+
+.rt-inbox-split-left strong {
+  font-size: 1.125rem;
+}
+
+.rt-inbox-split-left[data-balanced] strong::after {
+  content: " ✓";
+}
+
+.rt-inbox-split-message {
+  margin: 0;
+}
+
+/* ---- Narrow lists and screens ------------------------------------------------------------------ */
+
+/* The list decides from its own width, because a pane beside it takes room too. */
+.rt-inbox-list {
+  container-type: inline-size;
+}
+
+/* Less room (the pane is open beside the list): the date goes under the description and one signed column
+   stands in for Spent and Received. */
+@container (max-width: 56rem) {
+  .rt-inbox-col-date,
+  .rt-inbox-col-spent,
+  .rt-inbox-col-received {
+    display: none;
+  }
+
+  .rt-inbox-col-amount {
+    display: table-cell;
+  }
+
+  .rt-inbox-inline-date,
+  .rt-inbox-inline-sep {
+    display: inline;
+  }
+
+  .rt-inbox-col-category {
+    min-width: 11rem;
+  }
+
+  .rt-inbox-description {
+    min-width: 9rem;
+  }
+}
+
+/* A narrow list (a phone, or a small window with the pane open): a transaction is two lines, its
+   description and its amount, then its category and its button. The column headings are kept for a
+   screen reader and not shown. */
+@container (max-width: 40rem) {
+  .rt-inbox-table,
+  .rt-inbox-table tbody {
+    display: block;
+  }
+
+  .rt-inbox-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .rt-inbox-table tbody tr {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "check desc amount"
+      "check cat act";
+    align-items: center;
+    gap: 0.25rem 0.75rem;
+    padding: 0.625rem 0;
+    border-bottom: 1px solid var(--rt-divider);
+  }
+
+  .rt-inbox-table tbody td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  .rt-inbox-table tbody td.rt-inbox-check {
+    grid-area: check;
+    align-self: start;
+    width: auto;
+    padding-block-start: 0.125rem;
+  }
+
+  .rt-inbox-table tbody td.rt-inbox-description {
+    grid-area: desc;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .rt-inbox-table tbody td.rt-inbox-col-amount {
+    grid-area: amount;
+    align-self: start;
+    justify-self: end;
+    font-weight: 600;
+  }
+
+  .rt-inbox-table tbody td.rt-inbox-col-category {
+    grid-area: cat;
+    min-width: 0;
+  }
+
+  /* At the end of its line, whatever the width of the amount above it. */
+  .rt-inbox-table tbody td.rt-inbox-col-action {
+    grid-area: act;
+    justify-self: end;
+    width: auto;
+  }
+
+  .rt-inbox-table tbody td.rt-inbox-col-status,
+  .rt-inbox-table tbody td.rt-inbox-col-date,
+  .rt-inbox-table tbody td.rt-inbox-col-spent,
+  .rt-inbox-table tbody td.rt-inbox-col-received {
+    display: none;
+  }
+
+  /* No cell padding to hang into here: the chosen category starts at the row's own edge, like the
+     description above it, and is a box only while it is empty or being changed. */
+  .rt-inbox-table .rt-account-picker[data-quiet] {
+    margin-inline-start: 0;
+  }
+
+  .rt-inbox-table
+    .rt-account-picker[data-quiet]:not([data-empty])
+    .rt-control
+    .rt-input:not(:focus) {
+    padding-inline-start: 0;
+  }
+}
+
+@media (max-width: 40rem) {
+  .rt-inbox-account-select .rt-field {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .rt-inbox-tabs {
+    gap: 0 var(--rt-space-3);
+  }
+
+  .rt-inbox-split-part {
+    grid-template-columns: minmax(0, 1fr) 6rem auto;
+  }
+
+  /* A phone has no tick boxes: a transaction is its two lines, and several at once are accepted with the
+     button above the list. (By the screen's width and not the list's: a list made narrow by the pane on a
+     wide screen keeps its boxes, which are where the keyboard stands on a row.) */
+  .rt-inbox-table tbody td.rt-inbox-check {
+    display: none;
+  }
+
+  .rt-inbox-table tbody tr {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "desc amount"
+      "cat act";
+  }
+
+  /* The first line: the description, cut to one line, and its date after it. The account's name gives
+     way: on a phone the row stays two lines. */
+  .rt-inbox-table tbody td.rt-inbox-description {
+    display: grid;
+    grid-template-columns: minmax(0, auto) auto;
+    justify-content: start;
+    align-items: baseline;
+    column-gap: 0.5rem;
+  }
+
+  .rt-inbox-description > .rt-inbox-open .rt-inbox-clamp {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .rt-inbox-description > .rt-inbox-source {
+    margin-top: 0;
+    white-space: nowrap;
+  }
+
+  .rt-inbox-description > .rt-inbox-refused,
+  .rt-inbox-description > .rt-inbox-flags {
+    grid-column: 1 / -1;
+  }
+
+  .rt-inbox-account-name {
+    display: none;
+  }
+}

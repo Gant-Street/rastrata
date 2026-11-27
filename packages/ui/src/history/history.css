@@ -1,0 +1,163 @@
+/* ---- Bring in history --------------------------------------------------------------------------------- */
+
+.rt-history-done h2 {
+  margin: 0;
+}
+
+.rt-history-done p {
+  margin: 0;
+  max-width: 60ch;
+}
+
+.rt-history-done-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.rt-history-compare {
+  margin-block-start: 2rem;
+  padding-block-start: 1.5rem;
+  border-block-start: 1px solid var(--rt-border, currentColor);
+}
+
+.rt-history-compare h2,
+.rt-history-compare h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+}
+
+.rt-history-compare p,
+.rt-history-compare ul {
+  margin: 0;
+}
+
+.rt-history-compare ul {
+  padding-inline-start: 1.25rem;
+}
+
+.rt-history-compare-date {
+  max-width: 16rem;
+}
+
+.rt-history-compare-next {
+  margin-block-start: 0.75rem;
+}
+
+.rt-history h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+}
+
+.rt-history section > p {
+  margin: 0 0 0.75rem;
+}
+
+.rt-history ul {
+  margin: 0 0 0.75rem;
+  padding-inline-start: 1.25rem;
+}
+
+.rt-history-order {
+  max-width: 24rem;
+}
+
+/* A file can hold a hundred accounts, each with a choice, so the choices sit in the table rather than
+   under it, wide enough to read an account's name. */
+.rt-history-accounts {
+  position: relative;
+}
+
+.rt-history-accounts .rt-row-select {
+  min-width: 16rem;
+}
+
+.rt-history-accounts .rt-table th[scope="row"] {
+  font-weight: 500;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+
+/* On a phone each account is a card: its name and the lines it has on one row, its choice under it. The
+   table keeps its roles (set in the markup), so a screen reader still reads a table. */
+@media (max-width: 40rem) {
+  .rt-history-accounts .rt-table,
+  .rt-history-accounts .rt-table tbody {
+    display: block;
+  }
+
+  .rt-history-accounts .rt-table thead {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .rt-history-accounts .rt-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.25rem 0.75rem;
+    padding-block: 0.75rem;
+    border-block-end: 1px solid var(--rt-border, currentColor);
+  }
+
+  .rt-history-accounts .rt-table th,
+  .rt-history-accounts .rt-table td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  .rt-history-accounts .rt-table td:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .rt-history-accounts .rt-row-select {
+    min-width: 0;
+  }
+}
+
+/* On a phone each account that differs is a card: its name, then each figure with what it is. */
+@media (max-width: 40rem) {
+  .rt-history-compare .rt-table,
+  .rt-history-compare .rt-table tbody {
+    display: block;
+  }
+
+  .rt-history-compare .rt-table thead {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .rt-history-compare .rt-table tr {
+    display: grid;
+    gap: 0.25rem;
+    padding-block: 0.75rem;
+    border-block-end: 1px solid var(--rt-border, currentColor);
+  }
+
+  .rt-history-compare .rt-table th,
+  .rt-history-compare .rt-table td {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0;
+    border: 0;
+    text-align: end;
+  }
+
+  .rt-history-compare .rt-table th[scope="row"] {
+    justify-content: flex-start;
+    text-align: start;
+  }
+
+  .rt-history-compare .rt-table td::before {
+    content: attr(data-heading);
+    color: var(--rt-muted);
+    text-align: start;
+  }
+}

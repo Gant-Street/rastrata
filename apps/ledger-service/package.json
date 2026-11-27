@@ -1,0 +1,25 @@
+{
+  "name": "@rastrata/ledger-service",
+  "private": true,
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json",
+    "test": "bun test --parallel --timeout 60000 test",
+    "acceptance:deployed": "bun scripts/deployed-acceptance.ts",
+    "deploy": "bun --bun node_modules/wrangler/bin/wrangler.js deploy"
+  },
+  "dependencies": {
+    "@rastrata/kernel": "workspace:*",
+    "@rastrata/ledger": "workspace:*"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261104.1",
+    "@types/bun": "1.4.4",
+    "jose": "6.2.15",
+    "miniflare": "4.20260730.0",
+    "typescript": "7.0.2",
+    "wrangler": "4.157.0"
+  }
+}

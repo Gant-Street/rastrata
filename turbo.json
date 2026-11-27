@@ -1,0 +1,49 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "ui": "stream",
+  "globalPassThroughEnv": [
+    "PORT",
+    "CI",
+    "SITE_ORIGIN",
+    "SITE_CONTACT_EMAIL",
+    "SITE_RELEASE_FILE",
+    "GO_BIN",
+    "GOFMT_BIN",
+    "RASTRATA_PORT_OFFSET",
+    "RASTRATA_PLAYWRIGHT_PROJECTS",
+    "RASTRATA_PLAYWRIGHT_RETRIES",
+    "RASTRATA_TEST_CONCURRENCY",
+    "RASTRATA_WEB_HMR",
+    "RASTRATA_LAND_GATES",
+    "RASTRATA_PERF"
+  ],
+  "globalDependencies": [
+    ".bun-version",
+    "bunfig.toml",
+    "biome.json",
+    "tsconfig*.json",
+    "scripts/**",
+    "docs/reference/reviews/**",
+    ".dependency-cruiser.cjs",
+    ".go-version"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"],
+      "cache": false
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "cache": false
+    },
+    "test": {
+      "dependsOn": ["^typecheck"],
+      "cache": false
+    },
+    "test:slow": {
+      "dependsOn": ["^typecheck"],
+      "cache": false
+    }
+  }
+}

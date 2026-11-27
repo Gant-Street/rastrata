@@ -1,0 +1,279 @@
+{
+  "version": "rastrata-kernel-v1-verification-cases-v2",
+  "purpose": "Executable design oracles enforced by the accounting kernel conformance suite",
+  "cases": [
+    {
+      "id": "V01-balanced-journal",
+      "outcome": "admit",
+      "requirements": ["ACC-001", "ACC-002", "ACC-003", "ACC-018", "ACC-026"],
+      "given": "Two nonzero uniquely ordered postings in one book use exact typed values and balance in the functional commodity.",
+      "expect": {"revision_delta": 1, "posting_sequence_delta": 1}
+    },
+    {
+      "id": "V02-exact-correction",
+      "outcome": "admit",
+      "requirements": ["ACC-004", "ACC-017"],
+      "given": "One same-book correction exactly negates the original journal and retains complete policy, evidence, and lineage.",
+      "expect": {"revision_delta": 1, "posting_sequence_delta": 1}
+    },
+    {
+      "id": "V03-resolved-deterministic-command",
+      "outcome": "admit",
+      "requirements": ["ACC-005", "ACC-006", "ACC-007", "ACC-011", "ACC-013", "ACC-022"],
+      "given": "A fully resolved typed command and complete dated policy snapshot are evaluated twice against identical book state.",
+      "expect": {"same_intent_hash": true, "diagnostics": []}
+    },
+    {
+      "id": "V04-lot-disposal",
+      "outcome": "admit",
+      "requirements": ["ACC-008", "ACC-009", "ACC-010", "ACC-023"],
+      "given": "Specific stable lot IDs select an available quantity and allocate exact rational total basis under an applicable transfer policy.",
+      "expect": {"quantity_conserved": true, "basis_conserved": true}
+    },
+    {
+      "id": "V05-account-and-chart",
+      "outcome": "admit",
+      "requirements": ["ACC-014", "ACC-026"],
+      "given": "An active posting account has a unique chart code, an acyclic same-book parent, and an admissible commodity at the accounting date.",
+      "expect": {"admitted": true}
+    },
+    {
+      "id": "V06-price-separation",
+      "outcome": "admit",
+      "requirements": ["ACC-012"],
+      "given": "A later market observation produces a reporting valuation while transaction price, basis, and book value remain unchanged.",
+      "expect": {"canonical_booked_values_unchanged": true}
+    },
+    {
+      "id": "V07-order-equivalence",
+      "outcome": "admit",
+      "requirements": ["ACC-019"],
+      "given": "Two presentations of the same identified postings differ only in input order.",
+      "expect": {"same_economic_meaning": true, "same_canonical_hash": true}
+    },
+    {
+      "id": "V08-atomic-command",
+      "outcome": "admit",
+      "requirements": ["ACC-021", "ACC-030", "ACC-031"],
+      "given": "A new command matches the current expected revision and its complete canonical input has not been retained before.",
+      "expect": {"revision_delta": 1, "posting_sequence_delta": 1, "atomic": true}
+    },
+    {
+      "id": "V09-empty-activation",
+      "outcome": "admit",
+      "requirements": ["ACC-027", "ACC-028", "ACC-029"],
+      "given": "A new zero-balance operational accrual book has an immutable identity, valid chart, calendar, and no opening journal.",
+      "expect": {"revision_delta": 1, "posting_sequence_delta": 0, "activated": true}
+    },
+    {
+      "id": "V10-close-reopen",
+      "outcome": "admit",
+      "requirements": ["ACC-032"],
+      "given": "Close pins one population and reopen appends disclosure while explicitly superseding every dependent later close.",
+      "expect": {"history_rewritten": false, "current_close_unambiguous": true}
+    },
+    {
+      "id": "V11-projection-rebuild",
+      "outcome": "admit",
+      "requirements": ["ACC-034"],
+      "given": "All projections are deleted and rebuilt from the ordered canonical revision chain.",
+      "expect": {"same_projection_hashes": true}
+    },
+    {
+      "id": "V12-typed-dimensions",
+      "outcome": "admit",
+      "requirements": ["ACC-011", "ACC-026", "ACC-037"],
+      "given": "A posting selects one active same-book member for each dimension required by its applicable policy; another posting legitimately selects no optional dimensions.",
+      "expect": {"admitted": true, "monetary_balance_unchanged": true}
+    },
+    {
+      "id": "V13-canonical-identity",
+      "outcome": "admit",
+      "requirements": ["ACC-019", "ACC-031", "ACC-038"],
+      "given": "Two genuinely committed raw journal/effect tuples have the same delimiter concatenation. The explicit structural profile resolves both original postings, while legacy replay preserves its original shadowed lookup. Durable round-trip and command retry preserve the original complete result hash and encoded history.",
+      "expect": {"identities_unambiguous": true, "same_canonical_hash": true}
+    },
+    {
+      "id": "V14-chain-head-state-commitment",
+      "outcome": "admit",
+      "requirements": ["ACC-031", "ACC-034"],
+      "given": "A book whose genesis configuration selected the chain-head state commitment activates and commits a journal. Its content hash is the typed commitment over its identity, counters, active configuration, opening boundary and revision chain head; the restored aggregate reproduces it and every collection; a book without the marker keeps its original complete-population hash.",
+      "expect": {"commitment_matches_specification": true, "restored_state_equal": true, "legacy_hash_unchanged": true}
+    },
+    {
+      "id": "I01-invalid-number",
+      "outcome": "reject",
+      "requirements": ["ACC-001", "ACC-022"],
+      "given": "A command contains binary floating input, a nonpositive rational denominator, or arithmetic beyond the admitted representation.",
+      "expect": {"diagnostic": "invalid_exact_number", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I02-type-substitution",
+      "outcome": "reject",
+      "requirements": ["ACC-002"],
+      "given": "A market value or transaction price is supplied where canonical book value or cost basis is required.",
+      "expect": {"diagnostic": "monetary_type_mismatch", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I03-imbalanced-journal",
+      "outcome": "reject",
+      "requirements": ["ACC-003"],
+      "given": "Quantized functional book values differ by one minor unit and no explicit rounding posting is present.",
+      "expect": {"diagnostic": "journal_imbalance", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I04-invalid-correction",
+      "outcome": "reject",
+      "requirements": ["ACC-004", "ACC-017"],
+      "given": "A reversal changes only book values, crosses books, omits lineage, or independently corrects an already corrected effect.",
+      "expect": {"diagnostic": "invalid_correction_topology", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I05-unresolved-input",
+      "outcome": "reject",
+      "requirements": ["ACC-005", "ACC-007"],
+      "given": "A boundary service attempts to book a proposal with an omitted value or unresolved lot choice directly.",
+      "expect": {"diagnostic": "unresolved_accounting_input", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I06-nondeterministic-core",
+      "outcome": "reject",
+      "requirements": ["ACC-006"],
+      "given": "Command evaluation attempts a clock, network, authorization, random, or storage read not supplied in its input.",
+      "expect": {"diagnostic": "impure_core_dependency", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I07-lot-identity-alias",
+      "outcome": "reject",
+      "requirements": ["ACC-008"],
+      "given": "Two lots share date and label and a selector identifies them only by rendered attributes.",
+      "expect": {"diagnostic": "canonical_identity_conflict", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I08-lot-overallocation",
+      "outcome": "reject",
+      "requirements": ["ACC-009", "ACC-023"],
+      "given": "A disposal allocates more quantity or basis than the selected ordinary holdings contain.",
+      "expect": {"diagnostic": "lot_overallocation", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I09-transfer-policy-missing",
+      "outcome": "reject",
+      "requirements": ["ACC-010", "ACC-011"],
+      "given": "A lot crosses a declared basis boundary without an applicable continuity or disposal-and-reacquisition policy.",
+      "expect": {"diagnostic": "transfer_policy_missing", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I10-market-rewrites-booking",
+      "outcome": "reject",
+      "requirements": ["ACC-012"],
+      "given": "A reporting valuation attempts to replace transaction price, basis, or booked value in canonical history.",
+      "expect": {"diagnostic": "valuation_mutates_booking", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I11-time-conflation",
+      "outcome": "reject",
+      "requirements": ["ACC-013"],
+      "given": "Recording time is silently substituted for accounting date or policy-effective time.",
+      "expect": {"diagnostic": "temporal_semantics_violation", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I12-invalid-chart",
+      "outcome": "reject",
+      "requirements": ["ACC-014", "ACC-026"],
+      "given": "A chart has duplicate codes, a parent cycle, a cross-book parent, an inactive account, or a forbidden commodity.",
+      "expect": {"diagnostic": "invalid_chart_or_account", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I13-invalid-journal-structure",
+      "outcome": "reject",
+      "requirements": ["ACC-018"],
+      "given": "A journal contains duplicate posting identity or ordinal, zero value, virtual posting, unresolved posting, or fewer than two postings.",
+      "expect": {"diagnostic": "invalid_journal_structure", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I14-order-hash-drift",
+      "outcome": "reject",
+      "requirements": ["ACC-019"],
+      "given": "Equivalent identified postings produce different canonical hashes solely because source order changed.",
+      "expect": {"diagnostic": "noncanonical_ordering", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I15-partial-canonical-commit",
+      "outcome": "reject",
+      "requirements": ["ACC-021"],
+      "given": "The command result, intent, journal, provenance, or revision record cannot commit together.",
+      "expect": {"diagnostic": "atomic_commit_failed", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I16-financial-identity-mutation",
+      "outcome": "reject",
+      "requirements": ["ACC-027"],
+      "given": "An activated book changes owner, functional commodity, basis, calendar identity, or timezone in place.",
+      "expect": {"diagnostic": "immutable_book_identity", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I17-fabricated-opening",
+      "outcome": "reject",
+      "requirements": ["ACC-028"],
+      "given": "A zero-balance activation includes a zero-value or otherwise fabricated opening journal.",
+      "expect": {"diagnostic": "fabricated_opening_journal", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I18-period-ambiguity",
+      "outcome": "reject",
+      "requirements": ["ACC-029"],
+      "given": "Regular periods overlap, the accounting date resolves to no regular period, or a closed period does not admit the journal kind.",
+      "expect": {"diagnostic": "fiscal_period_admission", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I19-command-replay-conflict",
+      "outcome": "reject",
+      "requirements": ["ACC-030"],
+      "given": "A retained command ID is submitted with different complete canonical content.",
+      "expect": {"diagnostic": "command_identity_conflict", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I20-history-sequence-error",
+      "outcome": "reject",
+      "requirements": ["ACC-031"],
+      "given": "A rejection or replay consumes sequence, a revision skips, or a revision hash omits an ordered canonical effect.",
+      "expect": {"diagnostic": "ordered_history_violation", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I21-downstream-close-ambiguity",
+      "outcome": "reject",
+      "requirements": ["ACC-032"],
+      "given": "An earlier period is reopened while a dependent later close remains presented as current without disclosure or supersession.",
+      "expect": {"diagnostic": "dependent_close_not_current", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I22-projection-divergence",
+      "outcome": "reject",
+      "requirements": ["ACC-034"],
+      "given": "An incremental projection differs from a rebuild over the same canonical revision cutoff.",
+      "expect": {"diagnostic": "projection_rebuild_mismatch", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I23-invalid-dimension-selection",
+      "outcome": "reject",
+      "requirements": ["ACC-037"],
+      "given": "A posting omits a required dimension, selects two members on one axis, or references a wrong-book, inactive, unknown, cyclic, or duplicate-coded member.",
+      "expect": {"diagnostic": "invalid_dimension_selection", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I24-canonical-identity-conflict",
+      "outcome": "reject",
+      "requirements": ["ACC-038"],
+      "given": "A canonical identifier is empty, reused, dangling, ambiguous, or paired with conflicting content, or a digest omits its algorithm, canonicalization version, or complete typed object.",
+      "expect": {"diagnostic": "canonical_identity_conflict", "revision_delta": 0, "posting_sequence_delta": 0}
+    },
+    {
+      "id": "I25-chain-head-materialization-divergence",
+      "outcome": "reject",
+      "requirements": ["ACC-031", "ACC-034"],
+      "given": "A state of a book with the chain-head state commitment carries a journal list that no longer equals the ordered revision effects and is re-sealed with its own commitment, which does not depend on that list; recovery proves the list against the chain and rejects it.",
+      "expect": {"diagnostic": "ordered_history_violation", "revision_delta": 0, "posting_sequence_delta": 0}
+    }
+  ]
+}

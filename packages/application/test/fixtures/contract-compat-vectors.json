@@ -1,0 +1,1998 @@
+[
+  {
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: nothing changed",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "note": {
+          "maxLength": 100,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "note": {
+          "maxLength": 100,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: an optional field is added",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "note": {
+          "maxLength": 100,
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "note": {
+          "maxLength": 100,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: a text limit is raised",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 80,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 40,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: a minimum length is lowered",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 3,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: a minimum length is dropped",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 3,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: a choice is added",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["a", "b", "c"],
+          "type": "string"
+        }
+      },
+      "required": ["kind"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["a", "b"],
+          "type": "string"
+        }
+      },
+      "required": ["kind"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: the choices are lifted",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string"
+        }
+      },
+      "required": ["kind"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["a", "b"],
+          "type": "string"
+        }
+      },
+      "required": ["kind"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: a number range is widened",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": ["n"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "maximum": 10,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": ["n"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: a list may be longer",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "xs": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "type": "array"
+        }
+      },
+      "required": ["xs"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "xs": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 5,
+          "type": "array"
+        }
+      },
+      "required": ["xs"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: a field becomes optional",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "note"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: a field may now be null",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": ["note"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["note"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: a shape is added to a union",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "v": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        }
+      },
+      "required": ["v"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "v": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": ["v"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: a format is lifted",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "d": {
+          "type": "string"
+        }
+      },
+      "required": ["d"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "d": {
+          "pattern": "^[0-9]{4}$",
+          "type": "string"
+        }
+      },
+      "required": ["d"],
+      "type": "object"
+    }
+  },
+  {
+    "definitions": {
+      "new": {
+        "Point": {
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "maximum": 20,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": ["x"],
+          "type": "object"
+        }
+      },
+      "old": {
+        "Point": {
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "maximum": 10,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": ["x"],
+          "type": "object"
+        }
+      }
+    },
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: a referenced shape is widened",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "p": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "required": ["p"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "p": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "required": ["p"],
+      "type": "object"
+    }
+  },
+  {
+    "definitions": {
+      "new": {
+        "Spot": {
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "type": "integer"
+            }
+          },
+          "required": ["x"],
+          "type": "object"
+        }
+      },
+      "old": {
+        "Point": {
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "type": "integer"
+            }
+          },
+          "required": ["x"],
+          "type": "object"
+        }
+      }
+    },
+    "direction": "input",
+    "expect": "compatible",
+    "name": "request: the same shape under another name",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "p": {
+          "$ref": "#/$defs/Spot"
+        }
+      },
+      "required": ["p"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "p": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "required": ["p"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a field is removed",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "path": "input.note"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: an optional field becomes required",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "note"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "path": "input.note"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a new field is required",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "extra": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "extra"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "path": "input.extra"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a type changes",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "type": "integer"
+        }
+      },
+      "required": ["n"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "type": "string"
+        }
+      },
+      "required": ["n"],
+      "type": "object"
+    },
+    "path": "input.n"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a choice is removed",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["a"],
+          "type": "string"
+        }
+      },
+      "required": ["kind"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["a", "b"],
+          "type": "string"
+        }
+      },
+      "required": ["kind"],
+      "type": "object"
+    },
+    "path": "input.kind"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a free value becomes a fixed set",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["a"],
+          "type": "string"
+        }
+      },
+      "required": ["kind"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string"
+        }
+      },
+      "required": ["kind"],
+      "type": "object"
+    },
+    "path": "input.kind"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a text limit is lowered",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 40,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 80,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "path": "input.id"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a text limit is added",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 40,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "path": "input.id"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a minimum length is raised",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 3,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "path": "input.id"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a format changes",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "d": {
+          "pattern": "^[0-9]{2}$",
+          "type": "string"
+        }
+      },
+      "required": ["d"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "d": {
+          "pattern": "^[0-9]{4}$",
+          "type": "string"
+        }
+      },
+      "required": ["d"],
+      "type": "object"
+    },
+    "path": "input.d"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a format is added",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "d": {
+          "pattern": "^[0-9]{4}$",
+          "type": "string"
+        }
+      },
+      "required": ["d"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "d": {
+          "type": "string"
+        }
+      },
+      "required": ["d"],
+      "type": "object"
+    },
+    "path": "input.d"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a nullable field must now be a value",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["note"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": ["note"],
+      "type": "object"
+    },
+    "path": "input.note"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a number range is narrowed",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "maximum": 10,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": ["n"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "maximum": 100,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": ["n"],
+      "type": "object"
+    },
+    "path": "input.n"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a list may be shorter only",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "xs": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 5,
+          "type": "array"
+        }
+      },
+      "required": ["xs"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "xs": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "type": "array"
+        }
+      },
+      "required": ["xs"],
+      "type": "object"
+    },
+    "path": "input.xs"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a list needs more items",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "xs": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": ["xs"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "xs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": ["xs"],
+      "type": "object"
+    },
+    "path": "input.xs"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: the items change type",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "xs": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        }
+      },
+      "required": ["xs"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "xs": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": ["xs"],
+      "type": "object"
+    },
+    "path": "input.xs[]"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: extra fields are refused",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "a": {
+          "type": "string"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": true,
+      "properties": {
+        "a": {
+          "type": "string"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
+    "path": "input"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a union loses a shape",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "v": {
+          "type": "string"
+        }
+      },
+      "required": ["v"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "v": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        }
+      },
+      "required": ["v"],
+      "type": "object"
+    },
+    "path": "input.v"
+  },
+  {
+    "definitions": {
+      "new": {
+        "Point": {
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "maximum": 10,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": ["x"],
+          "type": "object"
+        }
+      },
+      "old": {
+        "Point": {
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "maximum": 20,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": ["x"],
+          "type": "object"
+        }
+      }
+    },
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a referenced shape is tightened",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "p": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "required": ["p"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "p": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "required": ["p"],
+      "type": "object"
+    },
+    "path": "input.p.x"
+  },
+  {
+    "direction": "input",
+    "expect": "breaking",
+    "name": "request: a nested field is removed",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "line": {
+          "additionalProperties": false,
+          "properties": {
+            "a": {
+              "type": "string"
+            }
+          },
+          "required": ["a"],
+          "type": "object"
+        }
+      },
+      "required": ["line"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "line": {
+          "additionalProperties": false,
+          "properties": {
+            "a": {
+              "type": "string"
+            },
+            "b": {
+              "type": "string"
+            }
+          },
+          "required": ["a", "b"],
+          "type": "object"
+        }
+      },
+      "required": ["line"],
+      "type": "object"
+    },
+    "path": "input.line.b"
+  },
+  {
+    "direction": "output",
+    "expect": "compatible",
+    "name": "reply: nothing changed",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "note": {
+          "maxLength": 100,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "note": {
+          "maxLength": 100,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "output",
+    "expect": "compatible",
+    "name": "reply: an optional field is added",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "note": {
+          "maxLength": 100,
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 40,
+          "type": "string"
+        },
+        "note": {
+          "maxLength": 100,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "output",
+    "expect": "compatible",
+    "name": "reply: a required field is added",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "extra": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "extra"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "output",
+    "expect": "compatible",
+    "name": "reply: an optional field is now always there",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "note"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "output",
+    "expect": "compatible",
+    "name": "reply: the choices are narrowed",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["a"],
+          "type": "string"
+        }
+      },
+      "required": ["kind"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["a", "b"],
+          "type": "string"
+        }
+      },
+      "required": ["kind"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "output",
+    "expect": "compatible",
+    "name": "reply: a text limit is lowered",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 40,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 80,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "output",
+    "expect": "compatible",
+    "name": "reply: null is no longer returned",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["note"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": ["note"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "output",
+    "expect": "compatible",
+    "name": "reply: a list is shorter at most",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "xs": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 5,
+          "type": "array"
+        }
+      },
+      "required": ["xs"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "xs": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "type": "array"
+        }
+      },
+      "required": ["xs"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "output",
+    "expect": "compatible",
+    "name": "reply: a field is added deep inside",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "line": {
+          "additionalProperties": false,
+          "properties": {
+            "a": {
+              "type": "string"
+            },
+            "z": {
+              "type": "string"
+            }
+          },
+          "required": ["a", "z"],
+          "type": "object"
+        }
+      },
+      "required": ["line"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "line": {
+          "additionalProperties": false,
+          "properties": {
+            "a": {
+              "type": "string"
+            }
+          },
+          "required": ["a"],
+          "type": "object"
+        }
+      },
+      "required": ["line"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "output",
+    "expect": "compatible",
+    "name": "reply: a union loses a shape",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "v": {
+          "type": "string"
+        }
+      },
+      "required": ["v"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "v": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        }
+      },
+      "required": ["v"],
+      "type": "object"
+    }
+  },
+  {
+    "definitions": {
+      "new": {
+        "Point": {
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "maximum": 10,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": ["x"],
+          "type": "object"
+        }
+      },
+      "old": {
+        "Point": {
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "maximum": 20,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": ["x"],
+          "type": "object"
+        }
+      }
+    },
+    "direction": "output",
+    "expect": "compatible",
+    "name": "reply: a referenced shape is narrowed",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "p": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "required": ["p"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "p": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "required": ["p"],
+      "type": "object"
+    }
+  },
+  {
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: a field is removed",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "note"],
+      "type": "object"
+    },
+    "path": "output.note"
+  },
+  {
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: an optional field is removed",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "path": "output.note"
+  },
+  {
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: a required field becomes optional",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "note"],
+      "type": "object"
+    },
+    "path": "output.note"
+  },
+  {
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: a type changes",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "type": "string"
+        }
+      },
+      "required": ["n"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "type": "integer"
+        }
+      },
+      "required": ["n"],
+      "type": "object"
+    },
+    "path": "output.n"
+  },
+  {
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: a new choice appears",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["a", "b"],
+          "type": "string"
+        }
+      },
+      "required": ["kind"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["a"],
+          "type": "string"
+        }
+      },
+      "required": ["kind"],
+      "type": "object"
+    },
+    "path": "output.kind"
+  },
+  {
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: a free value becomes a fixed set",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string"
+        }
+      },
+      "required": ["kind"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": ["a"],
+          "type": "string"
+        }
+      },
+      "required": ["kind"],
+      "type": "object"
+    },
+    "path": "output.kind"
+  },
+  {
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: a text limit is raised",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 80,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 40,
+          "type": "string"
+        }
+      },
+      "required": ["id"],
+      "type": "object"
+    },
+    "path": "output.id"
+  },
+  {
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: a value may now be null",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": ["note"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": ["note"],
+      "type": "object"
+    },
+    "path": "output.note"
+  },
+  {
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: a number may be lower",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": ["n"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": ["n"],
+      "type": "object"
+    },
+    "path": "output.n"
+  },
+  {
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: a number may be higher",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "maximum": 20,
+          "type": "integer"
+        }
+      },
+      "required": ["n"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "maximum": 10,
+          "type": "integer"
+        }
+      },
+      "required": ["n"],
+      "type": "object"
+    },
+    "path": "output.n"
+  },
+  {
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: a list may be longer",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "xs": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "type": "array"
+        }
+      },
+      "required": ["xs"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "xs": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 5,
+          "type": "array"
+        }
+      },
+      "required": ["xs"],
+      "type": "object"
+    },
+    "path": "output.xs"
+  },
+  {
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: a union gains a shape",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "v": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            }
+          ]
+        }
+      },
+      "required": ["v"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "v": {
+          "type": "string"
+        }
+      },
+      "required": ["v"],
+      "type": "object"
+    },
+    "path": "output.v"
+  },
+  {
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: a format changes",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "d": {
+          "pattern": "^[0-9]{2}$",
+          "type": "string"
+        }
+      },
+      "required": ["d"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "d": {
+          "pattern": "^[0-9]{4}$",
+          "type": "string"
+        }
+      },
+      "required": ["d"],
+      "type": "object"
+    },
+    "path": "output.d"
+  },
+  {
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: a nested field is removed",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "line": {
+          "additionalProperties": false,
+          "properties": {
+            "a": {
+              "type": "string"
+            }
+          },
+          "required": ["a"],
+          "type": "object"
+        }
+      },
+      "required": ["line"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "line": {
+          "additionalProperties": false,
+          "properties": {
+            "a": {
+              "type": "string"
+            },
+            "b": {
+              "type": "string"
+            }
+          },
+          "required": ["a", "b"],
+          "type": "object"
+        }
+      },
+      "required": ["line"],
+      "type": "object"
+    },
+    "path": "output.line.b"
+  },
+  {
+    "definitions": {
+      "new": {
+        "Point": {
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "maximum": 20,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": ["x"],
+          "type": "object"
+        }
+      },
+      "old": {
+        "Point": {
+          "additionalProperties": false,
+          "properties": {
+            "x": {
+              "maximum": 10,
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": ["x"],
+          "type": "object"
+        }
+      }
+    },
+    "direction": "output",
+    "expect": "breaking",
+    "name": "reply: a referenced shape is widened",
+    "new": {
+      "additionalProperties": false,
+      "properties": {
+        "p": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "required": ["p"],
+      "type": "object"
+    },
+    "old": {
+      "additionalProperties": false,
+      "properties": {
+        "p": {
+          "$ref": "#/$defs/Point"
+        }
+      },
+      "required": ["p"],
+      "type": "object"
+    },
+    "path": "output.p.x"
+  }
+]

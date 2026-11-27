@@ -1,0 +1,419 @@
+/* ==========================================================================
+   Home: the start of a new book, what needs a person, money in and out, and the accounts. A
+   ruled page, not a wall of boxes: a heavy rule over each section, hairlines between rows, one marker
+   colour with a job (orange: a person must decide). The page asks its own width, not the screen's, so
+   it lays itself out the same in a narrow window and on a narrow screen.
+   ========================================================================== */
+
+.rt-today {
+  display: grid;
+  gap: clamp(1.75rem, 3.5vw, 2.75rem);
+  container: rt-home / inline-size;
+}
+
+/* The page's sections are spaced by the grid's gap, so the header does not add its own margin. */
+.rt-today > .rt-page-header {
+  margin-bottom: 0;
+}
+
+/* ---- The date, in the page header's actions --------------------------------------------------- */
+
+.rt-home-date {
+  margin: 0;
+  font: 500 0.75rem / 1.5 var(--rt-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+/* ---- Section headings ----------------------------------------------------------------------- */
+
+.rt-home-heading {
+  margin: 0;
+  font-size: clamp(1.375rem, 2.4vw, 1.875rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+}
+
+.rt-tiles,
+.rt-needs,
+.rt-inout {
+  border-top: var(--rt-rule);
+  padding-top: 0.875rem;
+}
+
+/* ---- The start of a new book ---------------------------------------------------------------- */
+
+/* One thing to do: a title, a sentence, one button and the other way in beside it. Then, under a
+   hairline, the quiet lines. Nothing else is on the page, so it is set a little larger than a section. */
+.rt-start {
+  display: grid;
+  justify-items: start;
+  gap: 0.875rem;
+  border-top: var(--rt-rule);
+  padding-top: 1.25rem;
+}
+
+.rt-start-title {
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+  text-wrap: balance;
+}
+
+.rt-start-text {
+  margin: 0;
+  max-width: 65ch;
+  font-size: 1.0625rem;
+  color: var(--rt-muted);
+}
+
+.rt-start-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin: 0.5rem 0 0;
+}
+
+.rt-start-lines {
+  display: grid;
+  justify-self: stretch;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--rt-divider);
+  list-style: none;
+}
+
+/* A row is the link: what it does, who it is for, and a chevron. */
+.rt-today a.rt-start-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+  color: var(--rt-text);
+  text-decoration: none;
+}
+
+.rt-today a.rt-start-row:hover {
+  background: var(--rt-hover);
+  color: var(--rt-text);
+}
+
+.rt-start-row-label {
+  font-weight: 600;
+}
+
+.rt-start-row-note {
+  flex: 1;
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+}
+
+.rt-start-row svg {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  color: var(--rt-muted);
+}
+
+/* Links styled as buttons keep the button's colours, not the link's. */
+.rt-today a.rt-button {
+  text-decoration: none;
+}
+
+.rt-today a.rt-button[data-variant="primary"],
+.rt-today a.rt-button[data-variant="primary"]:hover {
+  color: var(--rt-on-action);
+}
+
+.rt-today a.rt-button[data-variant="secondary"],
+.rt-today a.rt-button[data-variant="secondary"]:hover {
+  color: var(--rt-text);
+}
+
+/* ---- Bank and card accounts ----------------------------------------------------------------- */
+
+.rt-tiles {
+  display: grid;
+  gap: 0.875rem;
+}
+
+/* The heading has the section's heavy rule over it, so the band under it keeps only its hairline. */
+.rt-tiles > .rt-bank-tiles {
+  border-top: 1px solid var(--rt-ink);
+}
+
+/* ---- Needs you, and money in and out, side by side ------------------------------------------ */
+
+.rt-home-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: clamp(1.75rem, 4vw, 3rem);
+  align-items: start;
+}
+
+.rt-home-columns > section {
+  align-content: start;
+  min-width: 0;
+}
+
+@container rt-home (max-width: 52rem) {
+  .rt-home-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---- Needs you ------------------------------------------------------------------------------ */
+
+.rt-needs {
+  display: grid;
+}
+
+.rt-needs-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  padding-bottom: 0.75rem;
+}
+
+/* The count is orange because what is counted needs a person. */
+/* How many: the orange cell and a figure, as everywhere something needs the person. */
+.rt-needs-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--rt-ink);
+  font: 600 0.875rem / 1.4 var(--rt-mono);
+}
+
+.rt-needs-count::before {
+  content: "";
+  flex: none;
+  width: 0.5625rem;
+  height: 0.5625rem;
+  background: var(--rt-tone-attention);
+}
+
+.rt-needs-quiet {
+  margin: 0;
+  padding: 0.875rem 0;
+  border-top: 1px solid var(--rt-ink);
+  color: var(--rt-muted);
+}
+
+/* The kit's empty state, sized for a panel and ruled like the list it stands in for. */
+.rt-needs .rt-empty,
+.rt-inout .rt-empty {
+  padding: 0.875rem 0;
+  border-top: 1px solid var(--rt-ink);
+}
+
+.rt-needs-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rt-ink);
+}
+
+.rt-need {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-need-unread {
+  border-top: 1px solid var(--rt-ink);
+  align-items: center;
+}
+
+.rt-need > .rt-tone-marker {
+  align-self: center;
+}
+
+.rt-need-text {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.rt-needs-more {
+  margin: 0;
+  padding-top: 0.75rem;
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+}
+
+/* ---- Money in and out ----------------------------------------------------------------------- */
+
+.rt-inout {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.rt-inout-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+}
+
+.rt-inout-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.rt-inout-swatch {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-inline-end: 0.4rem;
+  vertical-align: -0.15em;
+}
+
+/* In is solid and out is hatched, so the two read apart without a colour, in print and for anyone. */
+.rt-inout-swatch[data-series="in"],
+.rt-inout-bar[data-series="in"] {
+  background: var(--rt-ink);
+}
+
+.rt-inout-swatch[data-series="out"],
+.rt-inout-bar[data-series="out"] {
+  background: repeating-linear-gradient(135deg, var(--rt-ink) 0 1.5px, transparent 1.5px 4px);
+  box-shadow: inset 0 0 0 1px var(--rt-ink);
+}
+
+.rt-inout-chart {
+  margin: 0;
+}
+
+/* The plot is the area the bars stand in; its bottom edge is the zero line, and each month's name
+   hangs below it. The grid and the columns fill the same box. */
+.rt-inout-plot {
+  position: relative;
+  height: 9rem;
+  margin-block-end: 1.75rem;
+  margin-inline-start: 2.75rem;
+  border-bottom: 1px solid var(--rt-ink);
+}
+
+.rt-inout-grid {
+  position: absolute;
+  inset: 0;
+}
+
+.rt-inout-line {
+  position: absolute;
+  inset-inline: 0;
+  height: 0;
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-inout-line[data-axis] {
+  border-top: 0;
+}
+
+.rt-inout-tick {
+  position: absolute;
+  inset-inline-end: 100%;
+  margin-inline-end: 0.5rem;
+  transform: translateY(-50%);
+  font: 600 0.6875rem / 1 var(--rt-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--rt-muted);
+}
+
+.rt-inout-cols {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+
+.rt-inout-col {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  justify-content: center;
+  min-width: 0;
+  height: 100%;
+}
+
+.rt-inout-col[data-seen] {
+  background: var(--rt-hover);
+}
+
+.rt-inout-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 100%;
+}
+
+.rt-inout-bar {
+  display: block;
+  box-sizing: border-box;
+  width: 1.125rem;
+  min-height: 0;
+}
+
+.rt-inout-month {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(100% + 0.375rem);
+  text-align: center;
+  font: 500 0.6875rem / 1.2 var(--rt-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-inout-note {
+  color: var(--rt-muted);
+}
+
+.rt-inout-facts {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--rt-ink);
+}
+
+.rt-inout-facts > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.125rem 1rem;
+}
+
+.rt-inout-facts dt {
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-inout-facts dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.125rem 1.25rem;
+  margin: 0;
+  font-weight: 700;
+}

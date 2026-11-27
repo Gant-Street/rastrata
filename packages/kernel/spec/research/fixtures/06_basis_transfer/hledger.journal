@@ -1,0 +1,7 @@
+commodity UNIT  ; lots: FIFO
+2025-01-02 Buy
+    assets:brokera       2 UNIT {10 USD}
+    assets:cash        -20 USD
+2025-02-02 Transfer
+    assets:brokera      -1 UNIT
+    assets:brokerb       1 UNIT

@@ -1,0 +1,397 @@
+/* Styles for the shadow lane's components. Tokens from base.css only; no one-off colors.
+   Structure comes from rules and space: a heavy rule above each step, hairlines between lines, a
+   double rule under the totals. The figure each screen exists to state is the largest thing on it:
+   the entry's totals on Opening balances, the verdict on the Cutover checklist. */
+
+.rt-shadow-screen {
+  display: grid;
+  gap: var(--rt-space-6);
+}
+
+.rt-shadow-screen > * {
+  min-width: 0;
+}
+
+.rt-shadow-screen h1 {
+  margin: 0;
+  max-width: 18ch;
+  font-size: clamp(2.25rem, 6vw, 4rem);
+  font-weight: 700;
+  letter-spacing: -0.058em;
+  line-height: 0.96;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.rt-shadow-screen h2 {
+  margin: 0;
+  font-size: clamp(1.25rem, 2.4vw, 1.625rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+}
+
+.rt-shadow-screen h3 {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.rt-shadow-screen p {
+  margin: 0;
+}
+
+.rt-shadow-lead {
+  max-width: 42rem;
+  font-size: clamp(1rem, 1.4vw, 1.125rem);
+  line-height: 1.5;
+  color: var(--rt-muted);
+}
+
+.rt-shadow-label {
+  margin: 0;
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+/* ---- Steps and blocks ---------------------------------------------------------------------- */
+
+.rt-shadow-step,
+.rt-shadow-block,
+.rt-shadow-posted {
+  display: grid;
+  gap: var(--rt-space-3);
+  padding-top: var(--rt-space-3);
+  border-top: var(--rt-rule);
+}
+
+.rt-shadow-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-3);
+  align-items: center;
+}
+
+.rt-shadow-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-3);
+  align-items: center;
+}
+
+.rt-shadow-recorded {
+  display: flex;
+  align-items: center;
+  gap: var(--rt-space-2);
+}
+
+.rt-shadow-recorded svg,
+.rt-shadow-done svg {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  stroke-width: 2.5;
+}
+
+.rt-shadow-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 600;
+}
+
+.rt-shadow-amount-text,
+.rt-shadow-screen .amount {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* ---- Step one: the cutover date --------------------------------------------------------------- */
+
+.rt-shadow-cutover-form {
+  display: grid;
+  gap: var(--rt-space-4);
+  max-width: 48rem;
+}
+
+.rt-shadow-fieldset {
+  display: grid;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding: var(--rt-space-3) 0 0;
+  border: 0;
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-shadow-fieldset legend {
+  padding: 0;
+  font-weight: 700;
+}
+
+.rt-shadow-checks {
+  display: grid;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-shadow-sources {
+  display: grid;
+  gap: var(--rt-space-2);
+}
+
+.rt-shadow-effect {
+  margin: 0 0 0.25rem;
+}
+
+.rt-shadow-nowrap {
+  white-space: nowrap;
+}
+
+.rt-shadow-notes-list,
+.rt-shadow-issues {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+  display: grid;
+  gap: var(--rt-space-1);
+}
+
+.rt-shadow-plain {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+  display: grid;
+  gap: var(--rt-space-1);
+}
+
+/* ---- Cells and notes, lowest specificity first -------------------------------------------------- */
+/* Rules that end in the same element are written in ascending order of specificity, so the order
+   in the file never decides which one applies. */
+
+.rt-shadow-entry tfoot th,
+.rt-shadow-entry tfoot td {
+  font-size: 1.1875rem;
+}
+
+.rt-shadow-balances tfoot th,
+.rt-shadow-balances tfoot td {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-shadow-balances tfoot th small {
+  display: block;
+  font-weight: 400;
+  color: var(--rt-muted);
+}
+
+/* ---- Step two: the balances table --------------------------------------------------------------- */
+
+.rt-shadow-offset-choice {
+  max-width: 28rem;
+}
+
+.rt-shadow-balances th[scope="row"] {
+  font-weight: 600;
+}
+
+.rt-shadow-balances .rt-shadow-group th {
+  padding: var(--rt-space-4) 0.875rem var(--rt-space-2);
+  border-bottom: 1px solid var(--rt-ink);
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  background: transparent;
+}
+
+.rt-shadow-balances .rt-shadow-group small {
+  display: block;
+  margin-top: var(--rt-space-1);
+  font: 400 0.8125rem / 1.4 var(--rt-font);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--rt-muted);
+}
+
+.rt-shadow-disclosure {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.rt-shadow-disclosure svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.rt-shadow-disclosure:focus-visible {
+  outline: 2px solid var(--rt-accent);
+  outline-offset: 3px;
+}
+
+.rt-shadow-balances td.amount {
+  white-space: nowrap;
+}
+
+.rt-shadow-amount {
+  min-width: 8.5rem;
+  text-align: end;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.rt-shadow-balances .rt-error {
+  display: block;
+  margin-top: var(--rt-space-1);
+  max-width: 18rem;
+  margin-inline-start: auto;
+  text-align: start;
+  white-space: normal;
+}
+
+.rt-shadow-balances tfoot .rt-shadow-total th,
+.rt-shadow-balances tfoot .rt-shadow-total td {
+  border-top: 1px solid var(--rt-ink);
+  border-bottom: 6px double var(--rt-ink);
+  font-size: 1.1875rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.rt-shadow-balanced {
+  display: flex;
+  align-items: center;
+  gap: var(--rt-space-2);
+  margin-top: var(--rt-space-2);
+  font-weight: 600;
+}
+
+.rt-shadow-balanced svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  stroke-width: 2.5;
+}
+
+/* ---- Step three: the entry ---------------------------------------------------------------------- */
+
+.rt-shadow-entry tr[data-offset] th,
+.rt-shadow-entry tr[data-offset] td {
+  background: var(--rt-surface-subtle);
+}
+
+.rt-shadow-issue-groups {
+  display: grid;
+  gap: var(--rt-space-3);
+}
+
+.rt-shadow-issues a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.rt-shadow-row {
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-shadow-notes {
+  display: grid;
+  gap: var(--rt-space-2);
+  color: var(--rt-muted);
+}
+
+.rt-shadow-prepared {
+  display: grid;
+  gap: var(--rt-space-4);
+  padding: var(--rt-space-4);
+  border: 1px solid var(--rt-divider);
+  border-top: var(--rt-rule);
+}
+
+.rt-shadow-prepared h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--rt-space-2);
+}
+
+.rt-shadow-prepared h3 svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  stroke-width: 2.5;
+}
+
+.rt-shadow-posted h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--rt-space-2);
+}
+
+.rt-shadow-posted h2 svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  stroke-width: 2.5;
+}
+
+/* Three steps, side by side where there is room: what to do next is short, and it should not push the rest of
+   the page (the start date and where each statement source begins) off the screen. */
+.rt-shadow-next ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--rt-space-3) var(--rt-space-6);
+  margin: var(--rt-space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-shadow-next a {
+  font-weight: 700;
+}
+
+/* The month's sections are headed like the page's other tables, not like the page. */
+.rt-shadow-screen .rt-shadow-block > h2 {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+/* ---- Narrow screens ------------------------------------------------------------------------------- */
+
+@media (max-width: 800px) {
+  .rt-shadow-amount {
+    min-width: 7rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  /* The opening balances on a phone: the table scrolls sideways inside its own box and the account
+     name stays put beside its balance, so the debit and credit columns are never cut off at the edge
+     of the page. */
+  .rt-shadow-balances th,
+  .rt-shadow-balances td {
+    padding-inline: 0.5rem;
+  }
+
+  .rt-shadow-balances th[scope="row"],
+  .rt-shadow-balances thead th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--rt-paper);
+  }
+
+  .rt-shadow-amount {
+    min-width: 6.5rem;
+  }
+}

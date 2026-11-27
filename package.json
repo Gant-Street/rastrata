@@ -1,0 +1,61 @@
+{
+  "name": "rastrata",
+  "private": true,
+  "version": "0.1.0",
+  "license": "AGPL-3.0-only",
+  "homepage": "https://rastrata.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gant-Street/rastrata.git"
+  },
+  "packageManager": "bun@1.4.4",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "bun run --cwd apps/web dev",
+    "dev:api": "RASTRATA_LOCAL_DEV=1 bun run --cwd apps/api dev",
+    "dev:mcp": "RASTRATA_LOCAL_DEV=1 bun run --cwd apps/mcp dev",
+    "storybook": "bun run --cwd packages/ui storybook",
+    "build:storybook": "bun run --cwd packages/ui build:storybook",
+    "test:ui": "bun run --cwd packages/ui test",
+    "build": "turbo run build",
+    "build:service": "bun run --cwd apps/api build:service",
+    "package": "bun run --cwd apps/api package",
+    "terminal": "bun run --cwd apps/terminal dev",
+    "test:browser": "bun run --cwd apps/web test:browser",
+    "lint": "biome lint . --error-on-warnings && bun run lint:boundaries",
+    "lint:boundaries": "bun scripts/check-boundaries.ts",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "test:coverage": "bun run --cwd packages/kernel test:coverage",
+    "coverage:check": "bun run --cwd packages/kernel coverage:check",
+    "check:fast": "bun run typecheck && bun run lint && bun run format:check && bun run --cwd packages/kernel test",
+    "check:spec": "bun run --cwd packages/kernel check:spec && bun run --cwd packages/ledger check:spec",
+    "check:trace": "bun run --cwd packages/kernel check:trace",
+    "check:sysml": "bun run check:syside",
+    "check:syside": "bun run --cwd packages/kernel check:syside && bun run --cwd packages/ledger check:syside",
+    "check:native-workflow": "bun run --cwd packages/ledger check:native-workflow",
+    "mutation:check": "bun run --cwd packages/kernel mutation:check",
+    "mutation:self-test": "bun run --cwd packages/kernel mutation:self-test",
+    "check:release": "bun run check && bun run --cwd packages/ledger check:release && bun run --cwd packages/kernel check:release",
+    "generate:contracts": "bun scripts/generate-application-contracts.ts",
+    "check:contracts": "bun scripts/generate-application-contracts.ts --check",
+    "freeze:contract": "bun scripts/freeze-contract.ts",
+    "gate": "bun scripts/gate.ts",
+    "typecheck": "bun run check:contracts && turbo run typecheck && tsc -p tsconfig.json",
+    "test": "turbo run test --concurrency=1 && bun run test:tooling",
+    "test:tooling": "bun test --timeout 120000 scripts/repository.test.ts scripts/biome.test.ts scripts/astro-boundaries.test.ts scripts/gate-retry.test.ts",
+    "check": "bun run typecheck && bun run lint && bun run format:check && bun run test && bun run check:spec && bun run test:coverage && bun run coverage:check && bun run check:trace && bun run test:browser"
+  },
+  "devDependencies": {
+    "@astrojs/compiler": "4.0.0",
+    "@biomejs/biome": "2.6.4",
+    "@swc/core": "1.16.21",
+    "@types/bun": "1.4.4",
+    "dependency-cruiser": "18.7.2",
+    "turbo": "2.11.10",
+    "typescript": "7.0.2"
+  }
+}

@@ -1,0 +1,154 @@
+/* ==========================================================================
+   The shell's Settings screens: facts as ruled rows, connections as columns under a heavy rule, the
+   steps of a move as a numbered list. Rules, not boxes; nothing here is orange, because nothing is
+   waiting for a person.
+   ========================================================================== */
+
+.rt-settings-block {
+  margin: 0 0 2rem;
+}
+
+.rt-settings-block > h2 {
+  margin: 0 0 0.5rem;
+}
+
+/* A notice above a block (a confirmation, a refusal, a word about who may change what) has room under it. */
+.rt-notice + .rt-settings-block {
+  margin-top: 1.5rem;
+}
+
+.rt-settings-block > p {
+  margin: 0 0 0.75rem;
+  color: var(--rt-muted);
+}
+
+/* The last line of a Settings page: a link to a page that is opened from it. */
+/* A place to go from the foot of a settings page is a row that is the link (docs/reference/design-language.md),
+   not a sentence with a link in it. */
+.rt-settings-more {
+  margin: 0;
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-theme .rt-settings-more a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+  color: var(--rt-text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.rt-theme .rt-settings-more a:hover {
+  background: var(--rt-hover);
+}
+
+.rt-theme .rt-settings-more a::after {
+  content: "";
+  flex: none;
+  width: 0.4375rem;
+  height: 0.4375rem;
+  margin-inline-end: 0.25rem;
+  border-top: 1.5px solid var(--rt-muted);
+  border-inline-end: 1.5px solid var(--rt-muted);
+  transform: rotate(45deg);
+}
+
+/* ---- Facts ------------------------------------------------------------------------------------------- */
+
+.rt-facts {
+  margin: 0;
+  border-top: var(--rt-rule);
+}
+
+.rt-facts .rt-fact {
+  display: grid;
+  grid-template-columns: minmax(9rem, 14rem) minmax(0, 1fr);
+  gap: 0.25rem 1.5rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-facts dt {
+  padding-top: 0.125rem;
+  color: var(--rt-muted);
+  font: 500 0.6875rem / 1.6 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+}
+
+.rt-facts dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 40rem) {
+  .rt-facts .rt-fact {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---- Connections ------------------------------------------------------------------------------------- */
+
+.rt-connections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: 0 2.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-connection {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+  padding: 0.75rem 0 1.5rem;
+  border-top: var(--rt-rule);
+}
+
+.rt-connection-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.rt-connection-head h2 {
+  font-size: 1.375rem;
+}
+
+.rt-connection p {
+  margin: 0;
+}
+
+.rt-connection-detail {
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+}
+
+.rt-connection-action {
+  margin-top: 0.25rem;
+}
+
+.rt-connection-body {
+  color: var(--rt-muted);
+  font-size: 0.9375rem;
+}
+
+/* ---- The fiscal year ---------------------------------------------------------------------------------- */
+
+.rt-year-start-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-3, 0.75rem);
+}
+
+.rt-settings-block > .rt-stack {
+  max-width: 28rem;
+}

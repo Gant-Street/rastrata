@@ -1,0 +1,2592 @@
+{
+  "note": "Compact subset of Stripe's OpenAPI schemas used to check the fixtures. References outside the subset are x-opaque (accepted without checking).",
+  "schemas": {
+    "account": {
+      "properties": {
+        "business_profile": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "business_type": {
+          "enum": ["company", "government_entity", "individual", "non_profit"],
+          "nullable": true,
+          "type": "string"
+        },
+        "capabilities": {
+          "x-opaque": true
+        },
+        "charges_enabled": {
+          "type": "boolean"
+        },
+        "company": {
+          "x-opaque": true
+        },
+        "controller": {
+          "x-opaque": true
+        },
+        "country": {
+          "type": "string"
+        },
+        "created": {
+          "format": "unix-time",
+          "type": "integer"
+        },
+        "default_currency": {
+          "type": "string"
+        },
+        "details_submitted": {
+          "type": "boolean"
+        },
+        "email": {
+          "nullable": true,
+          "type": "string"
+        },
+        "external_accounts": {
+          "properties": {
+            "data": {
+              "items": {
+                "anyOf": [
+                  {
+                    "x-opaque": true
+                  },
+                  {
+                    "x-opaque": true
+                  }
+                ]
+              },
+              "type": "array"
+            },
+            "has_more": {
+              "type": "boolean"
+            },
+            "object": {
+              "enum": ["list"],
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "required": ["data", "has_more", "object", "url"],
+          "type": "object"
+        },
+        "future_requirements": {
+          "x-opaque": true
+        },
+        "groups": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "id": {
+          "type": "string"
+        },
+        "individual": {
+          "x-opaque": true
+        },
+        "metadata": {
+          "type": "object"
+        },
+        "object": {
+          "enum": ["account"],
+          "type": "string"
+        },
+        "payouts_enabled": {
+          "type": "boolean"
+        },
+        "requirements": {
+          "x-opaque": true
+        },
+        "settings": {
+          "anyOf": [
+            {
+              "$ref": "account_settings"
+            }
+          ],
+          "nullable": true
+        },
+        "tos_acceptance": {
+          "x-opaque": true
+        },
+        "type": {
+          "enum": ["custom", "express", "none", "standard"],
+          "type": "string"
+        }
+      },
+      "required": ["id", "object"],
+      "type": "object"
+    },
+    "account_dashboard_settings": {
+      "properties": {
+        "display_name": {
+          "nullable": true,
+          "type": "string"
+        },
+        "timezone": {
+          "nullable": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "account_settings": {
+      "properties": {
+        "bacs_debit_payments": {
+          "x-opaque": true
+        },
+        "branding": {
+          "x-opaque": true
+        },
+        "card_issuing": {
+          "x-opaque": true
+        },
+        "card_payments": {
+          "x-opaque": true
+        },
+        "dashboard": {
+          "$ref": "account_dashboard_settings"
+        },
+        "invoices": {
+          "x-opaque": true
+        },
+        "payments": {
+          "x-opaque": true
+        },
+        "payouts": {
+          "x-opaque": true
+        },
+        "paypay_payments": {
+          "x-opaque": true
+        },
+        "sepa_debit_payments": {
+          "x-opaque": true
+        },
+        "treasury": {
+          "x-opaque": true
+        }
+      },
+      "required": ["branding", "card_payments", "dashboard", "payments"],
+      "type": "object"
+    },
+    "address": {
+      "properties": {
+        "city": {
+          "nullable": true,
+          "type": "string"
+        },
+        "country": {
+          "nullable": true,
+          "type": "string"
+        },
+        "line1": {
+          "nullable": true,
+          "type": "string"
+        },
+        "line2": {
+          "nullable": true,
+          "type": "string"
+        },
+        "postal_code": {
+          "nullable": true,
+          "type": "string"
+        },
+        "state": {
+          "nullable": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "balance": {
+      "properties": {
+        "available": {
+          "items": {
+            "$ref": "balance_amount"
+          },
+          "type": "array"
+        },
+        "connect_reserved": {
+          "items": {
+            "$ref": "balance_amount"
+          },
+          "type": "array"
+        },
+        "instant_available": {
+          "items": {
+            "$ref": "balance_amount_net"
+          },
+          "type": "array"
+        },
+        "issuing": {
+          "x-opaque": true
+        },
+        "livemode": {
+          "type": "boolean"
+        },
+        "object": {
+          "enum": ["balance"],
+          "type": "string"
+        },
+        "pending": {
+          "items": {
+            "$ref": "balance_amount"
+          },
+          "type": "array"
+        },
+        "refund_and_dispute_prefunding": {
+          "x-opaque": true
+        }
+      },
+      "required": ["available", "livemode", "object", "pending"],
+      "type": "object"
+    },
+    "balance_amount": {
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "currency": {
+          "format": "currency",
+          "type": "string"
+        },
+        "source_types": {
+          "$ref": "balance_amount_by_source_type"
+        }
+      },
+      "required": ["amount", "currency"],
+      "type": "object"
+    },
+    "balance_amount_by_source_type": {
+      "properties": {
+        "bank_account": {
+          "type": "integer"
+        },
+        "card": {
+          "type": "integer"
+        },
+        "fpx": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "balance_amount_net": {
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "currency": {
+          "format": "currency",
+          "type": "string"
+        },
+        "net_available": {
+          "items": {
+            "$ref": "balance_net_available"
+          },
+          "type": "array"
+        },
+        "source_types": {
+          "$ref": "balance_amount_by_source_type"
+        }
+      },
+      "required": ["amount", "currency"],
+      "type": "object"
+    },
+    "balance_net_available": {
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "destination": {
+          "type": "string"
+        },
+        "source_types": {
+          "$ref": "balance_amount_by_source_type"
+        }
+      },
+      "required": ["amount", "destination"],
+      "type": "object"
+    },
+    "balance_transaction": {
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "available_on": {
+          "format": "unix-time",
+          "type": "integer"
+        },
+        "balance_type": {
+          "enum": ["issuing", "payments", "refund_and_dispute_prefunding", "risk_reserved"],
+          "type": "string"
+        },
+        "created": {
+          "format": "unix-time",
+          "type": "integer"
+        },
+        "currency": {
+          "format": "currency",
+          "type": "string"
+        },
+        "description": {
+          "nullable": true,
+          "type": "string"
+        },
+        "exchange_rate": {
+          "nullable": true,
+          "type": "number"
+        },
+        "fee": {
+          "type": "integer"
+        },
+        "fee_details": {
+          "items": {
+            "$ref": "fee"
+          },
+          "type": "array"
+        },
+        "id": {
+          "type": "string"
+        },
+        "net": {
+          "type": "integer"
+        },
+        "object": {
+          "enum": ["balance_transaction"],
+          "type": "string"
+        },
+        "reporting_category": {
+          "type": "string"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "$ref": "charge"
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "$ref": "dispute"
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "$ref": "payout"
+            },
+            {
+              "$ref": "refund"
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "status": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "adjustment",
+            "advance",
+            "advance_funding",
+            "anticipation_repayment",
+            "application_fee",
+            "application_fee_refund",
+            "charge",
+            "climate_order_purchase",
+            "climate_order_refund",
+            "connect_collection_transfer",
+            "contribution",
+            "fee_credit_funding",
+            "inbound_transfer",
+            "inbound_transfer_reversal",
+            "issuing_authorization_hold",
+            "issuing_authorization_release",
+            "issuing_dispute",
+            "issuing_dispute_provisional_credit",
+            "issuing_dispute_provisional_credit_reversal",
+            "issuing_transaction",
+            "obligation_outbound",
+            "obligation_reversal_inbound",
+            "payment",
+            "payment_failure_refund",
+            "payment_network_reserve_hold",
+            "payment_network_reserve_release",
+            "payment_refund",
+            "payment_reversal",
+            "payment_unreconciled",
+            "payout",
+            "payout_cancel",
+            "payout_failure",
+            "payout_minimum_balance_hold",
+            "payout_minimum_balance_release",
+            "refund",
+            "refund_failure",
+            "reserve_hold",
+            "reserve_release",
+            "reserve_transaction",
+            "reserved_funds",
+            "stripe_balance_payment_debit",
+            "stripe_balance_payment_debit_reversal",
+            "stripe_fee",
+            "stripe_fx_fee",
+            "tax_fee",
+            "tax_fund",
+            "topup",
+            "topup_reversal",
+            "transfer",
+            "transfer_cancel",
+            "transfer_failure",
+            "transfer_refund"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount",
+        "available_on",
+        "balance_type",
+        "created",
+        "currency",
+        "fee",
+        "fee_details",
+        "id",
+        "net",
+        "object",
+        "reporting_category",
+        "status",
+        "type"
+      ],
+      "type": "object"
+    },
+    "billing_bill_resource_invoicing_taxes_tax": {
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "tax_behavior": {
+          "enum": ["exclusive", "inclusive"],
+          "type": "string"
+        },
+        "tax_rate_details": {
+          "anyOf": [
+            {
+              "$ref": "billing_bill_resource_invoicing_taxes_tax_rate_details"
+            }
+          ],
+          "nullable": true
+        },
+        "taxability_reason": {
+          "enum": [
+            "customer_exempt",
+            "not_available",
+            "not_collecting",
+            "not_subject_to_tax",
+            "not_supported",
+            "portion_product_exempt",
+            "portion_reduced_rated",
+            "portion_standard_rated",
+            "product_exempt",
+            "product_exempt_holiday",
+            "proportionally_rated",
+            "reduced_rated",
+            "reverse_charge",
+            "standard_rated",
+            "taxable_basis_reduced",
+            "zero_rated"
+          ],
+          "type": "string"
+        },
+        "taxable_amount": {
+          "nullable": true,
+          "type": "integer"
+        },
+        "type": {
+          "enum": ["tax_rate_details"],
+          "type": "string"
+        }
+      },
+      "required": ["amount", "tax_behavior", "taxability_reason", "type"],
+      "type": "object"
+    },
+    "billing_bill_resource_invoicing_taxes_tax_rate_details": {
+      "properties": {
+        "tax_rate": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ]
+        }
+      },
+      "required": ["tax_rate"],
+      "type": "object"
+    },
+    "billing_details": {
+      "properties": {
+        "address": {
+          "anyOf": [
+            {
+              "$ref": "address"
+            }
+          ],
+          "nullable": true
+        },
+        "email": {
+          "nullable": true,
+          "type": "string"
+        },
+        "name": {
+          "nullable": true,
+          "type": "string"
+        },
+        "phone": {
+          "nullable": true,
+          "type": "string"
+        },
+        "tax_id": {
+          "nullable": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "charge": {
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "amount_captured": {
+          "type": "integer"
+        },
+        "amount_refunded": {
+          "type": "integer"
+        },
+        "application": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "application_fee": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "application_fee_amount": {
+          "nullable": true,
+          "type": "integer"
+        },
+        "balance_transaction": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "balance_transaction"
+            }
+          ],
+          "nullable": true
+        },
+        "billing_details": {
+          "$ref": "billing_details"
+        },
+        "calculated_statement_descriptor": {
+          "nullable": true,
+          "type": "string"
+        },
+        "captured": {
+          "type": "boolean"
+        },
+        "created": {
+          "format": "unix-time",
+          "type": "integer"
+        },
+        "currency": {
+          "format": "currency",
+          "type": "string"
+        },
+        "customer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "description": {
+          "nullable": true,
+          "type": "string"
+        },
+        "disputed": {
+          "type": "boolean"
+        },
+        "failure_balance_transaction": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "balance_transaction"
+            }
+          ],
+          "nullable": true
+        },
+        "failure_code": {
+          "nullable": true,
+          "type": "string"
+        },
+        "failure_message": {
+          "nullable": true,
+          "type": "string"
+        },
+        "fraud_details": {
+          "anyOf": [
+            {
+              "$ref": "charge_fraud_details"
+            }
+          ],
+          "nullable": true
+        },
+        "id": {
+          "type": "string"
+        },
+        "livemode": {
+          "type": "boolean"
+        },
+        "metadata": {
+          "type": "object"
+        },
+        "object": {
+          "enum": ["charge"],
+          "type": "string"
+        },
+        "on_behalf_of": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "account"
+            }
+          ],
+          "nullable": true
+        },
+        "outcome": {
+          "anyOf": [
+            {
+              "$ref": "charge_outcome"
+            }
+          ],
+          "nullable": true
+        },
+        "paid": {
+          "type": "boolean"
+        },
+        "payment_intent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "payment_method": {
+          "nullable": true,
+          "type": "string"
+        },
+        "payment_method_details": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "presentment_details": {
+          "x-opaque": true
+        },
+        "radar_options": {
+          "x-opaque": true
+        },
+        "receipt_email": {
+          "nullable": true,
+          "type": "string"
+        },
+        "receipt_number": {
+          "nullable": true,
+          "type": "string"
+        },
+        "receipt_url": {
+          "nullable": true,
+          "type": "string"
+        },
+        "refunded": {
+          "type": "boolean"
+        },
+        "refunds": {
+          "nullable": true,
+          "properties": {
+            "data": {
+              "items": {
+                "$ref": "refund"
+              },
+              "type": "array"
+            },
+            "has_more": {
+              "type": "boolean"
+            },
+            "object": {
+              "enum": ["list"],
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "required": ["data", "has_more", "object", "url"],
+          "type": "object"
+        },
+        "review": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "shipping": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "source_transfer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "statement_descriptor": {
+          "nullable": true,
+          "type": "string"
+        },
+        "statement_descriptor_suffix": {
+          "nullable": true,
+          "type": "string"
+        },
+        "status": {
+          "enum": ["failed", "pending", "succeeded"],
+          "type": "string"
+        },
+        "transfer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ]
+        },
+        "transfer_data": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "transfer_group": {
+          "nullable": true,
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount",
+        "amount_captured",
+        "amount_refunded",
+        "billing_details",
+        "captured",
+        "created",
+        "currency",
+        "disputed",
+        "id",
+        "livemode",
+        "metadata",
+        "object",
+        "paid",
+        "refunded",
+        "status"
+      ],
+      "type": "object"
+    },
+    "charge_fraud_details": {
+      "properties": {
+        "stripe_report": {
+          "type": "string"
+        },
+        "user_report": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "charge_outcome": {
+      "properties": {
+        "advice_code": {
+          "enum": ["confirm_card_data", "do_not_try_again", "try_again_later"],
+          "nullable": true,
+          "type": "string"
+        },
+        "network_advice_code": {
+          "nullable": true,
+          "type": "string"
+        },
+        "network_decline_code": {
+          "nullable": true,
+          "type": "string"
+        },
+        "network_status": {
+          "nullable": true,
+          "type": "string"
+        },
+        "reason": {
+          "nullable": true,
+          "type": "string"
+        },
+        "risk_level": {
+          "type": "string"
+        },
+        "risk_score": {
+          "type": "integer"
+        },
+        "rule": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ]
+        },
+        "seller_message": {
+          "nullable": true,
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": ["type"],
+      "type": "object"
+    },
+    "checkout.session": {
+      "properties": {
+        "adaptive_pricing": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "after_expiration": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "allow_promotion_codes": {
+          "nullable": true,
+          "type": "boolean"
+        },
+        "allowed_payment_method_types": {
+          "items": {
+            "type": "string"
+          },
+          "nullable": true,
+          "type": "array"
+        },
+        "amount_subtotal": {
+          "nullable": true,
+          "type": "integer"
+        },
+        "amount_total": {
+          "nullable": true,
+          "type": "integer"
+        },
+        "automatic_tax": {
+          "x-opaque": true
+        },
+        "billing_address_collection": {
+          "enum": ["auto", "required"],
+          "nullable": true,
+          "type": "string"
+        },
+        "branding_settings": {
+          "x-opaque": true
+        },
+        "cancel_url": {
+          "nullable": true,
+          "type": "string"
+        },
+        "client_reference_id": {
+          "nullable": true,
+          "type": "string"
+        },
+        "client_secret": {
+          "nullable": true,
+          "type": "string"
+        },
+        "collected_information": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "consent": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "consent_collection": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "created": {
+          "format": "unix-time",
+          "type": "integer"
+        },
+        "currency": {
+          "format": "currency",
+          "nullable": true,
+          "type": "string"
+        },
+        "currency_conversion": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "custom_fields": {
+          "items": {
+            "x-opaque": true
+          },
+          "type": "array"
+        },
+        "custom_text": {
+          "x-opaque": true
+        },
+        "customer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "customer_account": {
+          "nullable": true,
+          "type": "string"
+        },
+        "customer_creation": {
+          "enum": ["always", "if_required"],
+          "nullable": true,
+          "type": "string"
+        },
+        "customer_details": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "customer_email": {
+          "nullable": true,
+          "type": "string"
+        },
+        "discounts": {
+          "items": {
+            "x-opaque": true
+          },
+          "nullable": true,
+          "type": "array"
+        },
+        "excluded_payment_method_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "expires_at": {
+          "format": "unix-time",
+          "type": "integer"
+        },
+        "id": {
+          "type": "string"
+        },
+        "integration_identifier": {
+          "nullable": true,
+          "type": "string"
+        },
+        "invoice": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "invoice"
+            }
+          ],
+          "nullable": true
+        },
+        "invoice_creation": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "line_items": {
+          "properties": {
+            "data": {
+              "items": {
+                "x-opaque": true
+              },
+              "type": "array"
+            },
+            "has_more": {
+              "type": "boolean"
+            },
+            "object": {
+              "enum": ["list"],
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "required": ["data", "has_more", "object", "url"],
+          "type": "object"
+        },
+        "livemode": {
+          "type": "boolean"
+        },
+        "locale": {
+          "enum": [
+            "auto",
+            "bg",
+            "cs",
+            "da",
+            "de",
+            "el",
+            "en",
+            "en-GB",
+            "es",
+            "es-419",
+            "et",
+            "fi",
+            "fil",
+            "fr",
+            "fr-CA",
+            "hr",
+            "hu",
+            "id",
+            "it",
+            "ja",
+            "ko",
+            "lt",
+            "lv",
+            "ms",
+            "mt",
+            "nb",
+            "nl",
+            "pl",
+            "pt",
+            "pt-BR",
+            "ro",
+            "ru",
+            "sk",
+            "sl",
+            "sv",
+            "th",
+            "tr",
+            "vi",
+            "zh",
+            "zh-HK",
+            "zh-TW"
+          ],
+          "nullable": true,
+          "type": "string"
+        },
+        "managed_payments": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "metadata": {
+          "nullable": true,
+          "type": "object"
+        },
+        "mode": {
+          "enum": ["payment", "setup", "subscription"],
+          "type": "string"
+        },
+        "name_collection": {
+          "x-opaque": true
+        },
+        "object": {
+          "enum": ["checkout.session"],
+          "type": "string"
+        },
+        "optional_items": {
+          "items": {
+            "x-opaque": true
+          },
+          "nullable": true,
+          "type": "array"
+        },
+        "origin_context": {
+          "enum": ["mobile_app", "web"],
+          "nullable": true,
+          "type": "string"
+        },
+        "payment_intent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "payment_link": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "payment_method_collection": {
+          "enum": ["always", "if_required"],
+          "nullable": true,
+          "type": "string"
+        },
+        "payment_method_configuration_details": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "payment_method_options": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "payment_method_types": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "payment_status": {
+          "enum": ["no_payment_required", "paid", "unpaid"],
+          "type": "string"
+        },
+        "permissions": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "phone_number_collection": {
+          "x-opaque": true
+        },
+        "presentment_details": {
+          "x-opaque": true
+        },
+        "recovered_from": {
+          "nullable": true,
+          "type": "string"
+        },
+        "redirect_on_completion": {
+          "enum": ["always", "if_required", "never"],
+          "type": "string"
+        },
+        "return_url": {
+          "type": "string"
+        },
+        "saved_payment_method_options": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "setup_intent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "shipping_address_collection": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "shipping_cost": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "shipping_options": {
+          "items": {
+            "x-opaque": true
+          },
+          "type": "array"
+        },
+        "status": {
+          "enum": ["complete", "expired", "open"],
+          "nullable": true,
+          "type": "string"
+        },
+        "submit_type": {
+          "enum": ["auto", "book", "donate", "pay", "subscribe"],
+          "nullable": true,
+          "type": "string"
+        },
+        "subscription": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "success_url": {
+          "nullable": true,
+          "type": "string"
+        },
+        "tax_id_collection": {
+          "x-opaque": true
+        },
+        "total_details": {
+          "anyOf": [
+            {
+              "$ref": "payment_pages_checkout_session_total_details"
+            }
+          ],
+          "nullable": true
+        },
+        "ui_mode": {
+          "enum": ["elements", "embedded_page", "form", "hosted_page"],
+          "nullable": true,
+          "type": "string"
+        },
+        "url": {
+          "nullable": true,
+          "type": "string"
+        },
+        "wallet_options": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        }
+      },
+      "required": [
+        "automatic_tax",
+        "created",
+        "custom_fields",
+        "custom_text",
+        "expires_at",
+        "id",
+        "livemode",
+        "mode",
+        "object",
+        "payment_method_types",
+        "payment_status",
+        "shipping_options"
+      ],
+      "type": "object"
+    },
+    "dispute": {
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "balance_transactions": {
+          "items": {
+            "$ref": "balance_transaction"
+          },
+          "type": "array"
+        },
+        "charge": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "charge"
+            }
+          ]
+        },
+        "created": {
+          "format": "unix-time",
+          "type": "integer"
+        },
+        "currency": {
+          "format": "currency",
+          "type": "string"
+        },
+        "enhanced_eligibility_types": {
+          "items": {
+            "enum": ["mastercard_compliance", "visa_compelling_evidence_3", "visa_compliance"],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "evidence": {
+          "x-opaque": true
+        },
+        "evidence_details": {
+          "x-opaque": true
+        },
+        "id": {
+          "type": "string"
+        },
+        "is_charge_refundable": {
+          "type": "boolean"
+        },
+        "livemode": {
+          "type": "boolean"
+        },
+        "metadata": {
+          "type": "object"
+        },
+        "object": {
+          "enum": ["dispute"],
+          "type": "string"
+        },
+        "payment_intent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "payment_method_details": {
+          "x-opaque": true
+        },
+        "reason": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "lost",
+            "needs_response",
+            "prevented",
+            "under_review",
+            "warning_closed",
+            "warning_needs_response",
+            "warning_under_review",
+            "won"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount",
+        "balance_transactions",
+        "charge",
+        "created",
+        "currency",
+        "enhanced_eligibility_types",
+        "evidence",
+        "evidence_details",
+        "id",
+        "is_charge_refundable",
+        "livemode",
+        "metadata",
+        "object",
+        "reason",
+        "status"
+      ],
+      "type": "object"
+    },
+    "fee": {
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "application": {
+          "nullable": true,
+          "type": "string"
+        },
+        "currency": {
+          "format": "currency",
+          "type": "string"
+        },
+        "description": {
+          "nullable": true,
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": ["amount", "currency", "type"],
+      "type": "object"
+    },
+    "invoice": {
+      "properties": {
+        "account_country": {
+          "nullable": true,
+          "type": "string"
+        },
+        "account_name": {
+          "nullable": true,
+          "type": "string"
+        },
+        "account_tax_ids": {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "x-opaque": true
+              },
+              {
+                "x-opaque": true
+              }
+            ]
+          },
+          "nullable": true,
+          "type": "array"
+        },
+        "amount_due": {
+          "type": "integer"
+        },
+        "amount_overpaid": {
+          "type": "integer"
+        },
+        "amount_paid": {
+          "type": "integer"
+        },
+        "amount_paid_off_stripe": {
+          "type": "integer"
+        },
+        "amount_remaining": {
+          "type": "integer"
+        },
+        "amount_shipping": {
+          "type": "integer"
+        },
+        "application": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "attempt_count": {
+          "type": "integer"
+        },
+        "attempted": {
+          "type": "boolean"
+        },
+        "auto_advance": {
+          "type": "boolean"
+        },
+        "automatic_tax": {
+          "x-opaque": true
+        },
+        "automatically_finalizes_at": {
+          "format": "unix-time",
+          "nullable": true,
+          "type": "integer"
+        },
+        "billing_reason": {
+          "enum": [
+            "automatic_pending_invoice_item_invoice",
+            "manual",
+            "quote_accept",
+            "subscription",
+            "subscription_create",
+            "subscription_cycle",
+            "subscription_threshold",
+            "subscription_update",
+            "upcoming"
+          ],
+          "nullable": true,
+          "type": "string"
+        },
+        "collection_method": {
+          "enum": ["charge_automatically", "send_invoice"],
+          "type": "string"
+        },
+        "confirmation_secret": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "created": {
+          "format": "unix-time",
+          "type": "integer"
+        },
+        "currency": {
+          "format": "currency",
+          "type": "string"
+        },
+        "custom_fields": {
+          "items": {
+            "x-opaque": true
+          },
+          "nullable": true,
+          "type": "array"
+        },
+        "customer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            }
+          ]
+        },
+        "customer_account": {
+          "nullable": true,
+          "type": "string"
+        },
+        "customer_address": {
+          "anyOf": [
+            {
+              "$ref": "address"
+            }
+          ],
+          "nullable": true
+        },
+        "customer_email": {
+          "nullable": true,
+          "type": "string"
+        },
+        "customer_name": {
+          "nullable": true,
+          "type": "string"
+        },
+        "customer_phone": {
+          "nullable": true,
+          "type": "string"
+        },
+        "customer_shipping": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "customer_tax_exempt": {
+          "enum": ["exempt", "none", "reverse"],
+          "nullable": true,
+          "type": "string"
+        },
+        "customer_tax_ids": {
+          "items": {
+            "x-opaque": true
+          },
+          "nullable": true,
+          "type": "array"
+        },
+        "default_payment_method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "default_source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "default_tax_rates": {
+          "items": {
+            "x-opaque": true
+          },
+          "type": "array"
+        },
+        "description": {
+          "nullable": true,
+          "type": "string"
+        },
+        "discounts": {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "x-opaque": true
+              },
+              {
+                "x-opaque": true
+              }
+            ]
+          },
+          "type": "array"
+        },
+        "due_date": {
+          "format": "unix-time",
+          "nullable": true,
+          "type": "integer"
+        },
+        "effective_at": {
+          "format": "unix-time",
+          "nullable": true,
+          "type": "integer"
+        },
+        "ending_balance": {
+          "nullable": true,
+          "type": "integer"
+        },
+        "footer": {
+          "nullable": true,
+          "type": "string"
+        },
+        "from_invoice": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "hosted_invoice_url": {
+          "nullable": true,
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "invoice_pdf": {
+          "nullable": true,
+          "type": "string"
+        },
+        "issuer": {
+          "x-opaque": true
+        },
+        "last_finalization_error": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "latest_revision": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "invoice"
+            }
+          ],
+          "nullable": true
+        },
+        "lines": {
+          "properties": {
+            "data": {
+              "items": {
+                "x-opaque": true
+              },
+              "type": "array"
+            },
+            "has_more": {
+              "type": "boolean"
+            },
+            "object": {
+              "enum": ["list"],
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "required": ["data", "has_more", "object", "url"],
+          "type": "object"
+        },
+        "livemode": {
+          "type": "boolean"
+        },
+        "metadata": {
+          "nullable": true,
+          "type": "object"
+        },
+        "next_payment_attempt": {
+          "format": "unix-time",
+          "nullable": true,
+          "type": "integer"
+        },
+        "number": {
+          "nullable": true,
+          "type": "string"
+        },
+        "object": {
+          "enum": ["invoice"],
+          "type": "string"
+        },
+        "on_behalf_of": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "account"
+            }
+          ],
+          "nullable": true
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "payment_settings": {
+          "x-opaque": true
+        },
+        "payments": {
+          "properties": {
+            "data": {
+              "items": {
+                "$ref": "invoice_payment"
+              },
+              "type": "array"
+            },
+            "has_more": {
+              "type": "boolean"
+            },
+            "object": {
+              "enum": ["list"],
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "required": ["data", "has_more", "object", "url"],
+          "type": "object"
+        },
+        "period_end": {
+          "format": "unix-time",
+          "type": "integer"
+        },
+        "period_start": {
+          "format": "unix-time",
+          "type": "integer"
+        },
+        "post_payment_credit_notes_amount": {
+          "type": "integer"
+        },
+        "pre_payment_credit_notes_amount": {
+          "type": "integer"
+        },
+        "receipt_number": {
+          "nullable": true,
+          "type": "string"
+        },
+        "rendering": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "shipping_cost": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "shipping_details": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "starting_balance": {
+          "type": "integer"
+        },
+        "statement_descriptor": {
+          "nullable": true,
+          "type": "string"
+        },
+        "status": {
+          "enum": ["draft", "open", "paid", "uncollectible", "void"],
+          "nullable": true,
+          "type": "string"
+        },
+        "status_details": {
+          "x-opaque": true
+        },
+        "status_transitions": {
+          "x-opaque": true
+        },
+        "subtotal": {
+          "type": "integer"
+        },
+        "subtotal_excluding_tax": {
+          "nullable": true,
+          "type": "integer"
+        },
+        "test_clock": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "threshold_reason": {
+          "x-opaque": true
+        },
+        "total": {
+          "type": "integer"
+        },
+        "total_discount_amounts": {
+          "items": {
+            "x-opaque": true
+          },
+          "nullable": true,
+          "type": "array"
+        },
+        "total_excluding_tax": {
+          "nullable": true,
+          "type": "integer"
+        },
+        "total_pretax_credit_amounts": {
+          "items": {
+            "x-opaque": true
+          },
+          "nullable": true,
+          "type": "array"
+        },
+        "total_taxes": {
+          "items": {
+            "$ref": "billing_bill_resource_invoicing_taxes_tax"
+          },
+          "nullable": true,
+          "type": "array"
+        },
+        "webhooks_delivered_at": {
+          "format": "unix-time",
+          "nullable": true,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "amount_due",
+        "amount_overpaid",
+        "amount_paid",
+        "amount_paid_off_stripe",
+        "amount_remaining",
+        "amount_shipping",
+        "attempt_count",
+        "attempted",
+        "auto_advance",
+        "automatic_tax",
+        "collection_method",
+        "created",
+        "currency",
+        "customer",
+        "default_tax_rates",
+        "discounts",
+        "id",
+        "issuer",
+        "lines",
+        "livemode",
+        "object",
+        "payment_settings",
+        "period_end",
+        "period_start",
+        "post_payment_credit_notes_amount",
+        "pre_payment_credit_notes_amount",
+        "starting_balance",
+        "status_transitions",
+        "subtotal",
+        "total"
+      ],
+      "type": "object"
+    },
+    "invoice_payment": {
+      "properties": {
+        "amount_paid": {
+          "nullable": true,
+          "type": "integer"
+        },
+        "amount_requested": {
+          "type": "integer"
+        },
+        "created": {
+          "format": "unix-time",
+          "type": "integer"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "invoice": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "invoice"
+            },
+            {
+              "x-opaque": true
+            }
+          ]
+        },
+        "is_default": {
+          "type": "boolean"
+        },
+        "livemode": {
+          "type": "boolean"
+        },
+        "object": {
+          "enum": ["invoice_payment"],
+          "type": "string"
+        },
+        "payment": {
+          "$ref": "invoices_payments_invoice_payment_associated_payment"
+        },
+        "status": {
+          "type": "string"
+        },
+        "status_transitions": {
+          "$ref": "invoices_payments_invoice_payment_status_transitions"
+        }
+      },
+      "required": [
+        "amount_requested",
+        "created",
+        "currency",
+        "id",
+        "invoice",
+        "is_default",
+        "livemode",
+        "object",
+        "payment",
+        "status",
+        "status_transitions"
+      ],
+      "type": "object"
+    },
+    "invoices_payments_invoice_payment_associated_payment": {
+      "properties": {
+        "charge": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "charge"
+            }
+          ]
+        },
+        "payment_intent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ]
+        },
+        "payment_record": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ]
+        },
+        "type": {
+          "enum": ["charge", "payment_intent", "payment_record"],
+          "type": "string"
+        }
+      },
+      "required": ["type"],
+      "type": "object"
+    },
+    "invoices_payments_invoice_payment_status_transitions": {
+      "properties": {
+        "canceled_at": {
+          "format": "unix-time",
+          "nullable": true,
+          "type": "integer"
+        },
+        "paid_at": {
+          "format": "unix-time",
+          "nullable": true,
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "payment_pages_checkout_session_total_details": {
+      "properties": {
+        "amount_discount": {
+          "type": "integer"
+        },
+        "amount_shipping": {
+          "nullable": true,
+          "type": "integer"
+        },
+        "amount_tax": {
+          "type": "integer"
+        },
+        "breakdown": {
+          "$ref": "payment_pages_checkout_session_total_details_resource_breakdown"
+        }
+      },
+      "required": ["amount_discount", "amount_tax"],
+      "type": "object"
+    },
+    "payment_pages_checkout_session_total_details_resource_breakdown": {
+      "properties": {
+        "discounts": {
+          "items": {
+            "x-opaque": true
+          },
+          "type": "array"
+        },
+        "taxes": {
+          "items": {
+            "x-opaque": true
+          },
+          "type": "array"
+        }
+      },
+      "required": ["discounts", "taxes"],
+      "type": "object"
+    },
+    "payout": {
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "application_fee": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "application_fee_amount": {
+          "nullable": true,
+          "type": "integer"
+        },
+        "arrival_date": {
+          "format": "unix-time",
+          "type": "integer"
+        },
+        "automatic": {
+          "type": "boolean"
+        },
+        "balance_transaction": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "balance_transaction"
+            }
+          ],
+          "nullable": true
+        },
+        "created": {
+          "format": "unix-time",
+          "type": "integer"
+        },
+        "currency": {
+          "format": "currency",
+          "type": "string"
+        },
+        "description": {
+          "nullable": true,
+          "type": "string"
+        },
+        "destination": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "failure_balance_transaction": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "balance_transaction"
+            }
+          ],
+          "nullable": true
+        },
+        "failure_code": {
+          "nullable": true,
+          "type": "string"
+        },
+        "failure_message": {
+          "nullable": true,
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "livemode": {
+          "type": "boolean"
+        },
+        "metadata": {
+          "nullable": true,
+          "type": "object"
+        },
+        "method": {
+          "type": "string"
+        },
+        "object": {
+          "enum": ["payout"],
+          "type": "string"
+        },
+        "original_payout": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "payout"
+            }
+          ],
+          "nullable": true
+        },
+        "payout_method": {
+          "nullable": true,
+          "type": "string"
+        },
+        "reconciliation_status": {
+          "enum": ["completed", "in_progress", "not_applicable"],
+          "type": "string"
+        },
+        "reversed_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "payout"
+            }
+          ],
+          "nullable": true
+        },
+        "source_type": {
+          "type": "string"
+        },
+        "statement_descriptor": {
+          "nullable": true,
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "trace_id": {
+          "anyOf": [
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "type": {
+          "enum": ["bank_account", "card"],
+          "type": "string"
+        }
+      },
+      "required": [
+        "amount",
+        "arrival_date",
+        "automatic",
+        "created",
+        "currency",
+        "id",
+        "livemode",
+        "method",
+        "object",
+        "reconciliation_status",
+        "source_type",
+        "status",
+        "type"
+      ],
+      "type": "object"
+    },
+    "refund": {
+      "properties": {
+        "amount": {
+          "type": "integer"
+        },
+        "balance_transaction": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "balance_transaction"
+            }
+          ],
+          "nullable": true
+        },
+        "charge": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "charge"
+            }
+          ],
+          "nullable": true
+        },
+        "created": {
+          "format": "unix-time",
+          "type": "integer"
+        },
+        "currency": {
+          "format": "currency",
+          "type": "string"
+        },
+        "customer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "customer_account": {
+          "nullable": true,
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "destination_details": {
+          "x-opaque": true
+        },
+        "failure_balance_transaction": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "balance_transaction"
+            }
+          ]
+        },
+        "failure_reason": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "instructions_email": {
+          "type": "string"
+        },
+        "metadata": {
+          "nullable": true,
+          "type": "object"
+        },
+        "next_action": {
+          "x-opaque": true
+        },
+        "object": {
+          "enum": ["refund"],
+          "type": "string"
+        },
+        "payment_intent": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "payment_method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "pending_reason": {
+          "enum": ["charge_pending", "insufficient_funds", "processing"],
+          "type": "string"
+        },
+        "presentment_details": {
+          "x-opaque": true
+        },
+        "reason": {
+          "enum": ["duplicate", "expired_uncaptured_charge", "fraudulent", "requested_by_customer"],
+          "nullable": true,
+          "type": "string"
+        },
+        "receipt_number": {
+          "nullable": true,
+          "type": "string"
+        },
+        "source_transfer_reversal": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        },
+        "status": {
+          "nullable": true,
+          "type": "string"
+        },
+        "transfer_reversal": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "x-opaque": true
+            }
+          ],
+          "nullable": true
+        }
+      },
+      "required": ["amount", "created", "currency", "id", "object"],
+      "type": "object"
+    }
+  },
+  "source": "https://raw.githubusercontent.com/stripe/openapi/master/openapi/spec3.json",
+  "specVersion": "2026-09-30.endive"
+}

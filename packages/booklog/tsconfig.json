@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "types": ["bun"], "lib": ["ESNext", "DOM"] },
+  "include": ["src/**/*.ts", "test/**/*.ts", "experiments/**/*.ts"],
+  "exclude": ["experiments/x2-better-auth-d1"]
+}

@@ -1,0 +1,10 @@
+2025-01-02 Lot A
+    Assets:Stock       1 UNIT {$10} [2025-01-02]
+    Assets:Cash      -10 USD
+2025-02-02 Lot B
+    Assets:Stock       1 UNIT {$20} [2025-02-02]
+    Assets:Cash      -20 USD
+2025-03-02 Ambiguous sale
+    Assets:Stock      -1 UNIT @ $30
+    Assets:Cash        $30
+    Income:Gain

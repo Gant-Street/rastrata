@@ -1,0 +1,360 @@
+/* ==========================================================================
+   The main navigation: the four places, then Search, "+ New" and Settings;
+   on a phone, one Menu button. It sits at the foot of the application's header, whose heavy rule it
+   underlines in blue to say where you are (blue means "where you are"; hover is ink, never orange).
+   The section's own pages are a row of tabs under the header (section-tabs.css).
+
+   Every rule that styles a link or a button starts with `.rt-appnav`, because the themed shell
+   (`.rt-theme a`) colours links blue and has to be outweighed.
+   ========================================================================== */
+
+.rt-appnav {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0 1.5rem;
+  min-width: 0;
+  font-size: 0.9375rem;
+}
+
+.rt-appnav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-appnav .rt-appnav-bar,
+.rt-appnav .rt-appnav-tools {
+  display: flex;
+  align-items: flex-end;
+}
+
+.rt-appnav .rt-appnav-bar {
+  gap: 0 1.75rem;
+}
+
+.rt-appnav .rt-appnav-tools {
+  gap: 0 1.25rem;
+}
+
+.rt-appnav .rt-appnav-group {
+  position: relative;
+}
+
+.rt-appnav .rt-appnav-link,
+.rt-appnav .rt-appnav-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0 0 -1px;
+  padding: 0.75rem 0 0.75rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: none;
+  color: var(--rt-muted);
+  font: inherit;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  line-height: 1.55;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.rt-appnav .rt-appnav-toggle svg {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+}
+
+.rt-appnav .rt-appnav-link:hover,
+.rt-appnav .rt-appnav-toggle:hover {
+  color: var(--rt-ink);
+}
+
+/* Where you are: in ink, with a line sitting on the header's own. */
+.rt-appnav .rt-appnav-link[aria-current] {
+  border-bottom-color: var(--rt-ink);
+  color: var(--rt-ink);
+  font-weight: 600;
+}
+
+/* ---- Search and "+ New": the two tools the bar adds to the sections ------------------------------- */
+
+.rt-appnav .rt-appnav-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 11.5rem;
+  min-height: 2.125rem;
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--rt-field-border);
+  border-radius: var(--rt-radius-control);
+  background: var(--rt-surface);
+  color: var(--rt-muted);
+  font: inherit;
+  font-size: 0.875rem;
+  text-align: start;
+  cursor: pointer;
+}
+
+.rt-appnav .rt-appnav-search:hover {
+  background: var(--rt-surface-subtle);
+  color: var(--rt-ink);
+}
+
+.rt-appnav .rt-appnav-search svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.rt-appnav .rt-appnav-search .rt-appnav-kbd {
+  margin-inline-start: auto;
+  padding: 0.125rem 0.375rem;
+  border: 1px solid var(--rt-border-subtle);
+  color: var(--rt-muted);
+  font: 600 0.6875rem / 1.1 var(--rt-mono);
+  letter-spacing: 0.04em;
+}
+
+.rt-appnav .rt-appnav-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.125rem;
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0.75rem 0.25rem 0.625rem;
+  border: 1px solid var(--rt-ink);
+  border-radius: var(--rt-radius-control);
+  background: var(--rt-surface);
+  color: var(--rt-ink);
+  font: inherit;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition:
+    background-color var(--rt-motion),
+    box-shadow var(--rt-motion),
+    transform var(--rt-motion);
+}
+
+.rt-appnav .rt-appnav-new:hover {
+  background: var(--rt-hover);
+}
+
+.rt-appnav .rt-appnav-new[aria-expanded="true"] {
+  background: var(--rt-pressed);
+}
+
+.rt-appnav .rt-appnav-new svg {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+}
+
+.rt-appnav .rt-appnav-new .rt-appnav-chevron {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.rt-appnav .rt-appnav-new[aria-expanded="true"] .rt-appnav-chevron {
+  transform: rotate(180deg);
+}
+
+/* ---- The list under "+ New", and the phone's menu --------------------------------------------------- */
+
+.rt-appnav .rt-appnav-panel {
+  position: absolute;
+  z-index: var(--rt-overlay);
+  inset-inline-end: 0;
+  top: 100%;
+  min-width: 15rem;
+  margin-top: 6px;
+  background: var(--rt-paper);
+  border: 1px solid var(--rt-border-subtle);
+  border-radius: var(--rt-radius-overlay);
+  overflow: hidden;
+  box-shadow: var(--rt-shadow-popup);
+}
+
+.rt-appnav .rt-appnav-panel[hidden] {
+  display: none;
+}
+
+.rt-appnav .rt-appnav-panel li + li {
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-appnav .rt-appnav-panel .rt-appnav-link {
+  display: flex;
+  width: 100%;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border: 0;
+  border-inline-start: 4px solid transparent;
+  font-weight: 600;
+  text-align: start;
+}
+
+/* Under the pointer, or the item of the menu the arrow keys are on. */
+.rt-appnav .rt-appnav-panel .rt-appnav-link:hover,
+.rt-appnav .rt-appnav-panel .rt-appnav-link[data-highlighted] {
+  background: var(--rt-pressed);
+  color: var(--rt-ink);
+}
+
+.rt-appnav .rt-appnav-panel .rt-appnav-link[aria-current] {
+  border-inline-start-color: var(--rt-ink);
+  color: var(--rt-ink);
+  font-weight: 600;
+}
+
+.rt-appnav .rt-appnav-label {
+  margin: 0;
+  padding: 0.625rem 1rem 0.375rem;
+  border-top: 1px solid var(--rt-divider);
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-appnav .rt-appnav-actions {
+  min-width: 14rem;
+}
+
+/* The menu's items are its own children: a hairline between them, as between the rows of the phone's list,
+   and a pointer on the one that is not a link. Focus is on the menu itself while it is open, and the
+   highlighted item shows where the keys are. */
+.rt-appnav .rt-appnav-actions .rt-appnav-action {
+  cursor: pointer;
+}
+
+.rt-appnav .rt-appnav-actions .rt-appnav-action + .rt-appnav-action {
+  border-top: 1px solid var(--rt-divider);
+}
+
+.rt-appnav .rt-appnav-actions:focus-visible {
+  outline: none;
+}
+
+/* What waits in a place (the transactions for review): the orange cell and a figure, as everywhere something
+   needs the person (design-language.md). */
+.rt-appnav .rt-appnav-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-inline-start: 0.25rem;
+  color: var(--rt-ink);
+  font: 600 0.75rem / 1.3 var(--rt-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.rt-appnav .rt-appnav-count::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--rt-tone-attention);
+}
+
+.rt-appnav .rt-appnav-panel .rt-appnav-link:hover .rt-appnav-count {
+  border-color: var(--rt-paper);
+  color: var(--rt-paper);
+}
+
+.rt-appnav .rt-appnav-phone {
+  display: none;
+}
+
+/* ---- Narrower than a wide laptop: Search keeps its place and loses its words, and the gaps close up so
+   the bar stays on one line down to a small laptop window ------------------------------------------------ */
+
+@media (max-width: 78rem) {
+  .rt-appnav .rt-appnav-bar {
+    gap: 0 1.25rem;
+  }
+
+  .rt-appnav .rt-appnav-tools {
+    gap: 0 1rem;
+  }
+
+  .rt-appnav .rt-appnav-search {
+    min-width: 0;
+  }
+
+  .rt-appnav .rt-appnav-search-label,
+  .rt-appnav .rt-appnav-search .rt-appnav-kbd {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+/* ---- A phone ----------------------------------------------------------------------------------------- */
+
+@media (max-width: 56rem) {
+  .rt-appnav {
+    justify-content: flex-end;
+  }
+
+  .rt-appnav .rt-appnav-bar,
+  .rt-appnav .rt-appnav-tools {
+    display: none;
+  }
+
+  .rt-appnav .rt-appnav-phone {
+    display: block;
+  }
+
+  .rt-appnav .rt-appnav-toggle {
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding-block: 0.5rem;
+  }
+
+  .rt-appnav .rt-appnav-toggle[aria-expanded="true"] {
+    border-bottom-color: var(--rt-ink);
+  }
+
+  /* The phone's menu spans the header, over the page, so opening it moves nothing underneath. */
+  .rt-appnav .rt-appnav-sheet {
+    inset-inline: 0;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+  }
+
+  .rt-appnav .rt-appnav-sheet .rt-appnav-link {
+    min-height: 2.75rem;
+    align-items: center;
+  }
+
+  /* On a phone Search is a field-sized button at the top of the list, with its words and its keys. */
+  .rt-appnav .rt-appnav-sheet-search {
+    display: flex;
+    width: calc(100% - 2rem);
+    min-height: 2.75rem;
+    margin: 0.75rem 1rem;
+  }
+
+  .rt-appnav .rt-appnav-sheet-search .rt-appnav-search-label {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+  }
+
+  .rt-appnav .rt-appnav-sheet-search .rt-appnav-kbd {
+    display: none;
+  }
+}

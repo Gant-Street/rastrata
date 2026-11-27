@@ -1,0 +1,53 @@
+{
+  "name": "@rastrata/application",
+  "private": true,
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./contracts": "./src/contracts.ts",
+    "./local": "./src/local.ts",
+    "./hosted": "./src/local/hosted.ts",
+    "./reports": "./src/reports.ts",
+    "./http": "./src/http.ts",
+    "./schema": "./src/schema.ts",
+    "./legacy-http": "./src/legacy-http.ts",
+    "./client-contracts": "./src/client-contracts.gen.ts",
+    "./money": "./src/money.ts",
+    "./replay-cost": "./src/replay-cost.ts",
+    "./telemetry": "./src/telemetry.ts",
+    "./reconcile-engine": "./src/reconcile/engine.ts",
+    "./rules-browser": "./src/rules/browser.ts",
+    "./shadow-opening": "./src/shadow/opening.ts",
+    "./agent": "./src/agent/index.ts",
+    "./member-token": "./src/agent/member-token.ts",
+    "./member": "./src/agent/member.ts",
+    "./agent/local": "./src/agent/local.ts",
+    "./testing/bulk-book": "./test/support/bulk-book.ts",
+    "./testing/legacy-book": "./test/support/legacy-book.ts",
+    "./testing/materializations": "./test/support/materializations.ts",
+    "./testing/evaluation-fixtures": "./test/evaluation-fixtures.ts",
+    "./testing/intake-corpus": "./test/support/intake-corpus.ts",
+    "./testing/fake-stripe": "./test/stripe/fake-stripe.ts",
+    "./testing/stripe-bundle": "./test/stripe/bundle.ts",
+    "./testing/stripe-fixtures": "./test/stripe/fixtures.ts",
+    "./testing/stripe-world": "./test/stripe/slice-support.ts",
+    "./testing/stripe-year": "./test/stripe/year.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "bun test --timeout 60000 ./test",
+    "test:slow": "bun test --timeout 3600000 ./slow"
+  },
+  "dependencies": {
+    "@rastrata/kernel": "workspace:*",
+    "@rastrata/ledger": "workspace:*",
+    "@rastrata/telemetry": "workspace:*",
+    "jose": "6.2.15"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.4",
+    "typescript": "7.0.2"
+  }
+}

@@ -1,0 +1,3 @@
+# Keep the first-party models visible together without loading research checkouts.
+include = ["packages/kernel/spec", "packages/ledger/spec"]
+exclude = ["references", "node_modules", ".git", "coverage"]

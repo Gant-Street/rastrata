@@ -1,0 +1,205 @@
+/* Styles for the catch-all lane's components: the notes on Close the books, the Change account dialog and the
+   Watch this account dialog. Tokens from base.css only; no one-off colors, sizes or fonts. A note is calm:
+   orange is kept for "a person must decide" and red for a failure, so a note that only informs has neither. */
+
+/* ---- Notes on a month ------------------------------------------------------------------- */
+
+.rt-close-notes {
+  display: grid;
+  gap: var(--rt-space-3);
+}
+
+.rt-close-note {
+  display: grid;
+  gap: var(--rt-space-2);
+  padding: var(--rt-space-3);
+  border: 1px solid var(--rt-divider);
+  border-left: 4px solid var(--rt-ink);
+  background: var(--rt-paper);
+}
+
+.rt-close-note[data-state="not_checked"] {
+  border-left-color: var(--rt-tone-attention);
+}
+
+.rt-close-note h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.rt-close-note p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.rt-close-note .rt-close-note-heading {
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.rt-close-note-places {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rt-close-note-places li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--rt-space-3);
+  padding: var(--rt-space-1) 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-close-note-name {
+  display: grid;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* The figure keeps its room and its place at the right edge; the name wraps. */
+.rt-close-note-places .rt-number {
+  flex: 0 0 auto;
+}
+
+.rt-close-note-name small {
+  color: var(--rt-muted);
+}
+
+.rt-close-note-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-2);
+}
+
+/* ---- Change account --------------------------------------------------------------------- */
+
+/* The dialog is as wide as the plan needs and never wider than the screen, with its padding inside its width. A
+   tall one scrolls in the window, as every dialog does. */
+.rt-dialog.rt-change-account,
+.rt-dialog.rt-watch-account {
+  box-sizing: border-box;
+}
+
+.rt-dialog.rt-change-account {
+  width: min(64rem, 100%);
+}
+
+.rt-change-account-form {
+  display: grid;
+  gap: var(--rt-space-3);
+}
+
+.rt-change-summary {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.rt-change-summary:focus {
+  outline-offset: 2px;
+}
+
+.rt-change-scroll {
+  max-height: min(24rem, 50vh);
+}
+
+.rt-change-table th,
+.rt-change-table td {
+  vertical-align: top;
+}
+
+.rt-change-description {
+  min-width: 10rem;
+  max-width: 22rem;
+  overflow-wrap: anywhere;
+}
+
+.rt-change-result {
+  min-width: 10rem;
+}
+
+.rt-change-result span {
+  display: grid;
+  gap: var(--rt-space-1);
+}
+
+.rt-change-result small,
+.rt-change-left small {
+  color: var(--rt-muted);
+}
+
+.rt-change-table tr[data-outcome="skipped"] .rt-change-description,
+.rt-change-table tr[data-outcome="failed"] .rt-change-description {
+  color: var(--rt-muted);
+}
+
+.rt-change-working {
+  display: grid;
+  gap: var(--rt-space-2);
+}
+
+.rt-change-working p {
+  margin: 0;
+}
+
+/* A long list of what was not moved scrolls in its own region, which the keyboard can reach. */
+.rt-change-left-scroll {
+  max-height: 16rem;
+  overflow-y: auto;
+}
+
+.rt-change-left {
+  display: grid;
+  gap: var(--rt-space-2);
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.rt-change-left li {
+  display: grid;
+  gap: var(--rt-space-1);
+  overflow-wrap: anywhere;
+}
+
+/* What is shown under a transaction's description on a phone is what the columns after it say on a wider screen. */
+.rt-change-narrow {
+  display: none;
+}
+
+@media (max-width: 40rem) {
+  .rt-change-wide {
+    display: none;
+  }
+
+  .rt-change-narrow {
+    display: grid;
+    gap: var(--rt-space-1);
+    margin-top: var(--rt-space-1);
+  }
+
+  .rt-change-narrow small {
+    color: var(--rt-muted);
+  }
+
+  .rt-change-narrow > span {
+    display: grid;
+    gap: var(--rt-space-1);
+  }
+
+  .rt-change-description {
+    min-width: 0;
+  }
+
+  .rt-change-table th,
+  .rt-change-table td {
+    padding-inline: var(--rt-space-2);
+  }
+}

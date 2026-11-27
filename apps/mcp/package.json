@@ -1,0 +1,25 @@
+{
+  "name": "@rastrata/mcp",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "bun src/main.ts",
+    "build": "bun build --target=bun --outdir=dist src/main.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "bun test test",
+    "package:plugin": "bun tooling/package-plugin.ts",
+    "eval:agent": "bun tooling/evaluation/main.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "@rastrata/application": "workspace:*",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "fflate": "0.8.3",
+    "@types/bun": "1.4.4",
+    "typescript": "7.0.2"
+  }
+}

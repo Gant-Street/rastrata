@@ -1,0 +1,4 @@
+P 2025-01-02 EUR 1.2 USD
+2025-01-02 Exchange
+    assets:eur       400 EUR @ 1.2 USD
+    assets:usd      -480 USD

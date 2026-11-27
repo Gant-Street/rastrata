@@ -1,0 +1,1293 @@
+/-
+Exact numbers: the Lean model of `packages/kernel/src/numeric.ts`.
+
+Every definition mirrors one TypeScript member, named in its doc comment. The model is
+executable (it is run against the TypeScript on the same inputs) and keeps the limits the
+TypeScript enforces, so an operation that throws there returns `.error` here.
+
+`toRat` is the meaning of a value as a rational number. The laws of the kernel are stated
+about meanings, and the lemmas at the end of this file carry a law from the meaning back to
+the executable model.
+-/
+import Rastrata.Prelude
+
+namespace Rastrata.Kernel
+
+/-- `ExactNumberErrorCode`. -/
+inductive NumErr where
+  | invalidDecimal
+  | invalidRational
+  | representationLimitExceeded
+  | scaleLimitExceeded
+  deriving DecidableEq, Repr, Inhabited
+
+/-- `MAX_DECIMAL_SCALE`. -/
+def maxDecimalScale : Int := 1000
+
+/-- `MAX_EXACT_INTEGER_BITS`. -/
+def maxExactIntegerBits : Nat := 16384
+
+/-- BigInt `/`: division that truncates toward zero. -/
+abbrev jsDiv (a b : Int) : Int := Int.tdiv a b
+
+/-- BigInt `%`: the remainder of `jsDiv`, with the sign of the dividend. -/
+abbrev jsMod (a b : Int) : Int := Int.tmod a b
+
+/-- `requireMagnitude` does not throw: zero, or at most `MAX_EXACT_INTEGER_BITS` binary digits. -/
+def withinMagnitude (v : Int) : Bool := decide (v.natAbs < 2 ^ maxExactIntegerBits)
+
+/-- `requireScale` does not throw. -/
+def scaleError (scale : Int) : Option NumErr :=
+  if scale < 0 then some .invalidDecimal
+  else if scale > maxDecimalScale then some .scaleLimitExceeded
+  else none
+
+/-- `ExactRational`. Built only by `of`, `zero` and `negate`, as in the TypeScript. -/
+structure ExactRational where
+  numerator : Int
+  denominator : Int
+  deriving DecidableEq, Repr, Inhabited
+
+/-- `ExactDecimal`. Built only by `of`, `parse` and `negate`, as in the TypeScript. -/
+structure ExactDecimal where
+  coefficient : Int
+  scale : Int
+  deriving DecidableEq, Repr, Inhabited
+
+namespace ExactRational
+
+/-- `ExactRational.of`. -/
+def of (numerator denominator : Int) : Except NumErr ExactRational :=
+  if denominator ≤ 0 then .error .invalidRational
+  else if numerator = 0 then .ok ⟨0, 1⟩
+  else if !withinMagnitude numerator then .error .representationLimitExceeded
+  else if !withinMagnitude denominator then .error .representationLimitExceeded
+  else
+    let divisor : Int := (Int.gcd numerator denominator : Nat)
+    .ok ⟨jsDiv numerator divisor, jsDiv denominator divisor⟩
+
+/-- `ExactRational.zero`. -/
+def zero : ExactRational := ⟨0, 1⟩
+
+/-- `negate`. -/
+def negate (r : ExactRational) : ExactRational := ⟨-r.numerator, r.denominator⟩
+
+/-- `add`. -/
+def add (a b : ExactRational) : Except NumErr ExactRational :=
+  of (a.numerator * b.denominator + b.numerator * a.denominator) (a.denominator * b.denominator)
+
+/-- `subtract`. -/
+def subtract (a b : ExactRational) : Except NumErr ExactRational := a.add b.negate
+
+/-- `multiply`. -/
+def multiply (a b : ExactRational) : Except NumErr ExactRational :=
+  of (a.numerator * b.numerator) (a.denominator * b.denominator)
+
+/-- `divide`. -/
+def divide (a b : ExactRational) : Except NumErr ExactRational :=
+  if b.numerator = 0 then .error .invalidRational
+  else
+    let numerator := a.numerator * b.denominator
+    let denominator := a.denominator * b.numerator
+    if denominator < 0 then of (-numerator) (-denominator) else of numerator denominator
+
+/-- `compare`: `.lt`, `.eq`, `.gt` for the TypeScript's `-1`, `0`, `1`. -/
+def compare (a b : ExactRational) : Ordering :=
+  let difference := a.numerator * b.denominator - b.numerator * a.denominator
+  if difference < 0 then .lt else if difference > 0 then .gt else .eq
+
+/-- `isNegative`. -/
+def isNegative (r : ExactRational) : Bool := decide (r.numerator < 0)
+
+/-- `abs`. -/
+def abs (r : ExactRational) : ExactRational := if r.numerator < 0 then r.negate else r
+
+/-- `equals`. -/
+def equals (a b : ExactRational) : Bool :=
+  decide (a.numerator = b.numerator ∧ a.denominator = b.denominator)
+
+/-- `isZero`. -/
+def isZero (r : ExactRational) : Bool := decide (r.numerator = 0)
+
+/-- The meaning of a value. -/
+def toRat (r : ExactRational) : ℚ := (r.numerator : ℚ) / (r.denominator : ℚ)
+
+/-- What every value the TypeScript can construct satisfies: lowest terms, a positive
+denominator, and both parts within the admitted size. -/
+structure WF (r : ExactRational) : Prop where
+  denominator_pos : 0 < r.denominator
+  coprime : Int.gcd r.numerator r.denominator = 1
+  numerator_within : withinMagnitude r.numerator = true
+  denominator_within : withinMagnitude r.denominator = true
+
+end ExactRational
+
+namespace ExactDecimal
+
+/-- `ExactDecimal.of`. -/
+def of (coefficient scale : Int) : Except NumErr ExactDecimal :=
+  match scaleError scale with
+  | some e => .error e
+  | none =>
+    if !withinMagnitude coefficient then .error .representationLimitExceeded
+    else .ok ⟨coefficient, scale⟩
+
+/-- `isZero`. -/
+def isZero (d : ExactDecimal) : Bool := decide (d.coefficient = 0)
+
+/-- `negate`. -/
+def negate (d : ExactDecimal) : ExactDecimal := ⟨-d.coefficient, d.scale⟩
+
+/-- `toRational`. -/
+def toRational (d : ExactDecimal) : Except NumErr ExactRational :=
+  ExactRational.of d.coefficient (10 ^ d.scale.toNat)
+
+/-- The meaning of a value. -/
+def toRat (d : ExactDecimal) : ℚ := (d.coefficient : ℚ) / (10 : ℚ) ^ d.scale.toNat
+
+/-- What every value the TypeScript can construct satisfies. -/
+structure WF (d : ExactDecimal) : Prop where
+  scale_nonneg : 0 ≤ d.scale
+  scale_le : d.scale ≤ maxDecimalScale
+  coefficient_within : withinMagnitude d.coefficient = true
+
+end ExactDecimal
+
+/-! ## The contract the rest of the kernel relies on
+
+Statements are fixed. Other modules use them as they stand. -/
+
+section Helpers
+
+private theorem withinMagnitude_iff (v : Int) :
+    withinMagnitude v = true ↔ v.natAbs < 2 ^ maxExactIntegerBits := by
+  simp [withinMagnitude]
+
+private theorem withinMagnitude_zero : withinMagnitude 0 = true := by
+  rw [withinMagnitude_iff]
+  positivity
+
+private theorem withinMagnitude_one : withinMagnitude 1 = true := by
+  rw [withinMagnitude_iff]
+  change 1 < 2 ^ 16384
+  exact Nat.one_lt_two_pow (by decide)
+
+private theorem withinMagnitude_neg (v : Int) :
+    withinMagnitude (-v) = withinMagnitude v := by
+  simp [withinMagnitude, Int.natAbs_neg]
+
+private theorem withinMagnitude_mono {a b : Int} (h : a.natAbs ≤ b.natAbs)
+    (hb : withinMagnitude b = true) : withinMagnitude a = true := by
+  rw [withinMagnitude_iff] at hb ⊢
+  exact lt_of_le_of_lt h hb
+
+private theorem coprime_pair_unique {n₁ d₁ n₂ d₂ : Int}
+    (hd₁ : 0 < d₁) (hd₂ : 0 < d₂)
+    (hc₁ : Int.gcd n₁ d₁ = 1) (hc₂ : Int.gcd n₂ d₂ = 1)
+    (heq : (n₁ : ℚ) / (d₁ : ℚ) = (n₂ : ℚ) / (d₂ : ℚ)) :
+    n₁ = n₂ ∧ d₁ = d₂ := by
+  have hd₁_ne : (d₁ : ℚ) ≠ 0 := by exact_mod_cast (show d₁ ≠ 0 by omega)
+  have hd₂_ne : (d₂ : ℚ) ≠ 0 := by exact_mod_cast (show d₂ ≠ 0 by omega)
+  have hmul_q : (n₁ : ℚ) * (d₂ : ℚ) = (n₂ : ℚ) * (d₁ : ℚ) := by
+    field_simp at heq
+    linarith
+  have hmul : n₁ * d₂ = n₂ * d₁ := by exact_mod_cast hmul_q
+  have hmul_abs : n₁.natAbs * d₂.natAbs = n₂.natAbs * d₁.natAbs := by
+    have h := congrArg Int.natAbs hmul
+    simpa [Int.natAbs_mul] using h
+  have hcop1 : Nat.Coprime d₁.natAbs n₁.natAbs := (hc₁ : n₁.natAbs.Coprime d₁.natAbs).symm
+  have hcop2 : Nat.Coprime d₂.natAbs n₂.natAbs := (hc₂ : n₂.natAbs.Coprime d₂.natAbs).symm
+  have hdvd12 : d₁.natAbs ∣ d₂.natAbs :=
+    hcop1.dvd_of_dvd_mul_left ⟨n₂.natAbs, by linarith⟩
+  have hdvd21 : d₂.natAbs ∣ d₁.natAbs :=
+    hcop2.dvd_of_dvd_mul_left ⟨n₁.natAbs, by linarith⟩
+  have habs_eq : d₁.natAbs = d₂.natAbs := Nat.dvd_antisymm hdvd12 hdvd21
+  have hd_eq : d₁ = d₂ := by
+    have := congrArg (Int.ofNat) habs_eq
+    simpa [Int.natAbs_of_nonneg (by omega : 0 ≤ d₁),
+      Int.natAbs_of_nonneg (by omega : 0 ≤ d₂)] using this
+  have hn_eq : n₁ = n₂ := by
+    subst hd_eq
+    exact mul_right_cancel₀ (by omega : d₁ ≠ 0) hmul
+  exact ⟨hn_eq, hd_eq⟩
+
+private theorem rat_eq_coprime_parts {q : ℚ} {n d : Int}
+    (hq : q = (n : ℚ) / (d : ℚ)) (hd : 0 < d) (hc : Int.gcd n d = 1) :
+    q.num = n ∧ (q.den : Int) = d := by
+  have hq_den_pos : (0 : Int) < (q.den : Int) := Int.natCast_pos.mpr q.den_pos
+  have hq_cop : Int.gcd q.num (q.den : Int) = 1 := by
+    change q.num.natAbs.gcd (q.den : Int).natAbs = 1
+    rw [Int.natAbs_natCast]
+    exact q.reduced
+  have hq_eq : (q.num : ℚ) / ((q.den : Int) : ℚ) = (n : ℚ) / (d : ℚ) := by
+    simpa [Rat.num_div_den] using hq
+  exact coprime_pair_unique hq_den_pos hd hq_cop hc hq_eq
+
+private theorem int_gcd_add_mul_right (x y m : Int) :
+    Int.gcd (x + y * m) m = Int.gcd x m := by
+  apply Nat.dvd_antisymm
+  · apply Nat.dvd_gcd
+    · have h1 : (Int.gcd (x + y * m) m : Int) ∣ x + y * m := Int.gcd_dvd_left _ _
+      have h2 : (Int.gcd (x + y * m) m : Int) ∣ m := Int.gcd_dvd_right _ _
+      have h3 : (Int.gcd (x + y * m) m : Int) ∣ x := by
+        simpa using dvd_sub h1 (dvd_mul_of_dvd_right h2 y)
+      exact Int.natCast_dvd.mp h3
+    · exact Nat.gcd_dvd_right _ _
+  · apply Nat.dvd_gcd
+    · have h1 : (Int.gcd x m : Int) ∣ x := Int.gcd_dvd_left _ _
+      have h2 : (Int.gcd x m : Int) ∣ m := Int.gcd_dvd_right _ _
+      have h3 : (Int.gcd x m : Int) ∣ x + y * m := dvd_add h1 (dvd_mul_of_dvd_right h2 y)
+      exact Int.natCast_dvd.mp h3
+    · exact Nat.gcd_dvd_right _ _
+
+end Helpers
+
+namespace ExactRational
+
+theorem zero_wf : zero.WF := by
+  refine ⟨by omega, ?_, withinMagnitude_zero, withinMagnitude_one⟩
+  decide
+
+theorem zero_toRat : zero.toRat = 0 := by
+  simp [zero, toRat]
+
+theorem of_ok {n d : Int} {r : ExactRational} (h : of n d = .ok r) :
+    r.WF ∧ r.toRat = (n : ℚ) / (d : ℚ) ∧ 0 < d := by
+  unfold of at h
+  split_ifs at h with hd hn hwn hwd
+  · contradiction
+  · cases h
+    refine ⟨zero_wf, ?_, by omega⟩
+    simp [zero, toRat]
+  · contradiction
+  · contradiction
+  · cases h
+    have hd_pos : 0 < d := by omega
+    have hwn' : withinMagnitude n = true := by simpa using hwn
+    have hwd' : withinMagnitude d = true := by simpa using hwd
+    set gNat : Nat := Int.gcd n d
+    have hg_pos : 0 < gNat := Nat.gcd_pos_of_pos_right _ (Int.natAbs_pos.mpr (by omega))
+    have hg_int_pos : (0 : Int) < (gNat : Int) := Int.natCast_pos.mpr hg_pos
+    have hg_int_ne : (gNat : Int) ≠ 0 := by omega
+    have hgdvd_n : (gNat : Int) ∣ n := Int.gcd_dvd_left n d
+    have hgdvd_d : (gNat : Int) ∣ d := Int.gcd_dvd_right n d
+    have hn_mul : jsDiv n (gNat : Int) * (gNat : Int) = n := Int.tdiv_mul_cancel hgdvd_n
+    have hd_mul : jsDiv d (gNat : Int) * (gNat : Int) = d := Int.tdiv_mul_cancel hgdvd_d
+    have hd_div_pos : 0 < jsDiv d (gNat : Int) := by
+      have : 0 < jsDiv d (gNat : Int) * (gNat : Int) := by rw [hd_mul]; exact hd_pos
+      exact Int.pos_of_mul_pos_left this hg_int_pos
+    have hcop : Int.gcd (jsDiv n (gNat : Int)) (jsDiv d (gNat : Int)) = 1 := by
+      change (jsDiv n (gNat : Int)).natAbs.gcd (jsDiv d (gNat : Int)).natAbs = 1
+      rw [Int.natAbs_tdiv, Int.natAbs_tdiv, Int.natAbs_natCast]
+      exact Nat.coprime_div_gcd_div_gcd hg_pos
+    have hwn_div : withinMagnitude (jsDiv n (gNat : Int)) = true := by
+      apply withinMagnitude_mono _ hwn'
+      rw [Int.natAbs_tdiv, Int.natAbs_natCast]
+      exact Nat.div_le_self _ _
+    have hwd_div : withinMagnitude (jsDiv d (gNat : Int)) = true := by
+      apply withinMagnitude_mono _ hwd'
+      rw [Int.natAbs_tdiv, Int.natAbs_natCast]
+      exact Nat.div_le_self _ _
+    have hr_wf : ExactRational.WF ⟨jsDiv n (gNat : Int), jsDiv d (gNat : Int)⟩ :=
+      ⟨hd_div_pos, hcop, hwn_div, hwd_div⟩
+    have hr_rat : (ExactRational.mk (jsDiv n (gNat : Int)) (jsDiv d (gNat : Int))).toRat =
+        (n : ℚ) / (d : ℚ) := by
+      simp only [toRat]
+      have hg_q_ne : ((gNat : Int) : ℚ) ≠ 0 := by exact_mod_cast hg_int_ne
+      have hn_q : ((jsDiv n (gNat : Int) : Int) : ℚ) * ((gNat : Int) : ℚ) = (n : ℚ) := by
+        exact_mod_cast hn_mul
+      have hd_q : ((jsDiv d (gNat : Int) : Int) : ℚ) * ((gNat : Int) : ℚ) = (d : ℚ) := by
+        exact_mod_cast hd_mul
+      calc
+        ((jsDiv n (gNat : Int) : Int) : ℚ) / ((jsDiv d (gNat : Int) : Int) : ℚ)
+            = (((jsDiv n (gNat : Int) : Int) : ℚ) * ((gNat : Int) : ℚ)) /
+              (((jsDiv d (gNat : Int) : Int) : ℚ) * ((gNat : Int) : ℚ)) := by
+              rw [mul_div_mul_right _ _ hg_q_ne]
+        _ = (n : ℚ) / (d : ℚ) := by rw [hn_q, hd_q]
+    exact ⟨hr_wf, hr_rat, hd_pos⟩
+
+/-- `of` fails only on a non-positive denominator or a part beyond the admitted size. -/
+theorem of_isOk_iff (n d : Int) :
+    (∃ r, of n d = .ok r) ↔ 0 < d ∧ (n = 0 ∨ (withinMagnitude n = true ∧ withinMagnitude d = true)) := by
+  unfold of
+  split_ifs with hd hn hwn hwd
+  · constructor
+    · rintro ⟨r, hr⟩; contradiction
+    · rintro ⟨hd_pos, _⟩; omega
+  · simp [show 0 < d by omega]
+  · constructor
+    · rintro ⟨r, hr⟩; contradiction
+    · rintro ⟨_, hn0 | ⟨hwn', _⟩⟩
+      · exact absurd hn0 hn
+      · simp [hwn'] at hwn
+  · constructor
+    · rintro ⟨r, hr⟩; contradiction
+    · rintro ⟨_, hn0 | ⟨_, hwd'⟩⟩
+      · exact absurd hn0 hn
+      · simp [hwd'] at hwd
+  · refine ⟨fun _ => ⟨by omega, Or.inr ⟨by simpa using hwn, by simpa using hwd⟩⟩,
+      fun _ => ⟨_, rfl⟩⟩
+
+theorem negate_wf {r : ExactRational} (h : r.WF) : r.negate.WF := by
+  refine ⟨h.denominator_pos, ?_, ?_, h.denominator_within⟩
+  · simpa [negate, Int.neg_gcd] using h.coprime
+  · simpa [negate, withinMagnitude_neg] using h.numerator_within
+
+theorem negate_toRat (r : ExactRational) : r.negate.toRat = -r.toRat := by
+  simp [negate, toRat, neg_div]
+
+theorem add_ok {a b c : ExactRational} (ha : a.WF) (hb : b.WF) (h : a.add b = .ok c) :
+    c.WF ∧ c.toRat = a.toRat + b.toRat := by
+  unfold add at h
+  rcases of_ok h with ⟨hc_wf, hc_rat, _⟩
+  refine ⟨hc_wf, ?_⟩
+  rw [hc_rat]
+  simp only [toRat]
+  have ha_ne : (a.denominator : ℚ) ≠ 0 := by exact_mod_cast (show a.denominator ≠ 0 by have := ha.denominator_pos; omega)
+  have hb_ne : (b.denominator : ℚ) ≠ 0 := by exact_mod_cast (show b.denominator ≠ 0 by have := hb.denominator_pos; omega)
+  push_cast
+  field_simp
+
+theorem subtract_ok {a b c : ExactRational} (ha : a.WF) (hb : b.WF) (h : a.subtract b = .ok c) :
+    c.WF ∧ c.toRat = a.toRat - b.toRat := by
+  unfold subtract at h
+  rcases add_ok ha (negate_wf hb) h with ⟨hc_wf, hc_rat⟩
+  refine ⟨hc_wf, ?_⟩
+  rw [hc_rat, negate_toRat]
+  ring
+
+theorem multiply_ok {a b c : ExactRational} (ha : a.WF) (hb : b.WF) (h : a.multiply b = .ok c) :
+    c.WF ∧ c.toRat = a.toRat * b.toRat := by
+  unfold multiply at h
+  rcases of_ok h with ⟨hc_wf, hc_rat, _⟩
+  refine ⟨hc_wf, ?_⟩
+  rw [hc_rat]
+  simp only [toRat]
+  have ha_ne : (a.denominator : ℚ) ≠ 0 := by exact_mod_cast (show a.denominator ≠ 0 by have := ha.denominator_pos; omega)
+  have hb_ne : (b.denominator : ℚ) ≠ 0 := by exact_mod_cast (show b.denominator ≠ 0 by have := hb.denominator_pos; omega)
+  push_cast
+  field_simp
+
+theorem divide_ok {a b c : ExactRational} (ha : a.WF) (hb : b.WF) (h : a.divide b = .ok c) :
+    c.WF ∧ b.toRat ≠ 0 ∧ c.toRat = a.toRat / b.toRat := by
+  unfold divide at h
+  split_ifs at h with hb0 hneg
+  · contradiction
+  · rcases of_ok h with ⟨hc_wf, hc_rat, _⟩
+    have ha_ne : (a.denominator : ℚ) ≠ 0 := by exact_mod_cast (show a.denominator ≠ 0 by have := ha.denominator_pos; omega)
+    have hb_den_ne : (b.denominator : ℚ) ≠ 0 := by exact_mod_cast (show b.denominator ≠ 0 by have := hb.denominator_pos; omega)
+    have hb_num_ne : (b.numerator : ℚ) ≠ 0 := by exact_mod_cast hb0
+    have hb_rat_ne : b.toRat ≠ 0 := by
+      simp only [toRat]
+      exact div_ne_zero hb_num_ne hb_den_ne
+    refine ⟨hc_wf, hb_rat_ne, ?_⟩
+    rw [hc_rat]
+    simp only [toRat]
+    push_cast
+    field_simp
+  · rcases of_ok h with ⟨hc_wf, hc_rat, _⟩
+    have ha_ne : (a.denominator : ℚ) ≠ 0 := by exact_mod_cast (show a.denominator ≠ 0 by have := ha.denominator_pos; omega)
+    have hb_den_ne : (b.denominator : ℚ) ≠ 0 := by exact_mod_cast (show b.denominator ≠ 0 by have := hb.denominator_pos; omega)
+    have hb_num_ne : (b.numerator : ℚ) ≠ 0 := by exact_mod_cast hb0
+    have hb_rat_ne : b.toRat ≠ 0 := by
+      simp only [toRat]
+      exact div_ne_zero hb_num_ne hb_den_ne
+    refine ⟨hc_wf, hb_rat_ne, ?_⟩
+    rw [hc_rat]
+    simp only [toRat]
+    push_cast
+    field_simp
+
+theorem compare_lt_iff {a b : ExactRational} (ha : a.WF) (hb : b.WF) :
+    a.compare b = .lt ↔ a.toRat < b.toRat := by
+  have ha_pos : (0 : ℚ) < (a.denominator : ℚ) := by exact_mod_cast ha.denominator_pos
+  have hb_pos : (0 : ℚ) < (b.denominator : ℚ) := by exact_mod_cast hb.denominator_pos
+  have hdiff : ((a.numerator * b.denominator - b.numerator * a.denominator : Int) : ℚ) =
+      (a.toRat - b.toRat) * ((a.denominator : ℚ) * (b.denominator : ℚ)) := by
+    simp only [toRat]
+    push_cast
+    field_simp
+  unfold compare
+  split_ifs with h1 h2
+  · constructor
+    · intro _
+      have hq : ((a.numerator * b.denominator - b.numerator * a.denominator : Int) : ℚ) < 0 := by
+        exact_mod_cast h1
+      rw [hdiff] at hq
+      have hden : 0 < (a.denominator : ℚ) * (b.denominator : ℚ) := mul_pos ha_pos hb_pos
+      nlinarith
+    · intro _; rfl
+  · constructor
+    · intro h; contradiction
+    · intro hlt
+      have : (a.toRat - b.toRat) * ((a.denominator : ℚ) * (b.denominator : ℚ)) < 0 :=
+        mul_neg_of_neg_of_pos (sub_neg.mpr hlt) (mul_pos ha_pos hb_pos)
+      rw [← hdiff] at this
+      have : a.numerator * b.denominator - b.numerator * a.denominator < 0 := by exact_mod_cast this
+      omega
+  · constructor
+    · intro h; contradiction
+    · intro hlt
+      have : (a.toRat - b.toRat) * ((a.denominator : ℚ) * (b.denominator : ℚ)) < 0 :=
+        mul_neg_of_neg_of_pos (sub_neg.mpr hlt) (mul_pos ha_pos hb_pos)
+      rw [← hdiff] at this
+      have : a.numerator * b.denominator - b.numerator * a.denominator < 0 := by exact_mod_cast this
+      omega
+
+theorem compare_eq_iff {a b : ExactRational} (ha : a.WF) (hb : b.WF) :
+    a.compare b = .eq ↔ a.toRat = b.toRat := by
+  have ha_pos : (0 : ℚ) < (a.denominator : ℚ) := by exact_mod_cast ha.denominator_pos
+  have hb_pos : (0 : ℚ) < (b.denominator : ℚ) := by exact_mod_cast hb.denominator_pos
+  have hdiff : ((a.numerator * b.denominator - b.numerator * a.denominator : Int) : ℚ) =
+      (a.toRat - b.toRat) * ((a.denominator : ℚ) * (b.denominator : ℚ)) := by
+    simp only [toRat]
+    push_cast
+    field_simp
+  unfold compare
+  split_ifs with h1 h2
+  · constructor
+    · intro h; contradiction
+    · intro heq
+      rw [heq, sub_self, zero_mul] at hdiff
+      have : a.numerator * b.denominator - b.numerator * a.denominator = 0 := by exact_mod_cast hdiff
+      omega
+  · constructor
+    · intro h; contradiction
+    · intro heq
+      rw [heq, sub_self, zero_mul] at hdiff
+      have : a.numerator * b.denominator - b.numerator * a.denominator = 0 := by exact_mod_cast hdiff
+      omega
+  · constructor
+    · intro _
+      have hz : a.numerator * b.denominator - b.numerator * a.denominator = 0 := by omega
+      have hzq : ((a.numerator * b.denominator - b.numerator * a.denominator : Int) : ℚ) = 0 := by
+        exact_mod_cast hz
+      rw [hdiff] at hzq
+      have hden_ne : (a.denominator : ℚ) * (b.denominator : ℚ) ≠ 0 := by positivity
+      rcases mul_eq_zero.mp hzq with hsub | hden
+      · linarith
+      · exact absurd hden hden_ne
+    · intro _; rfl
+
+theorem compare_gt_iff {a b : ExactRational} (ha : a.WF) (hb : b.WF) :
+    a.compare b = .gt ↔ b.toRat < a.toRat := by
+  have ha_pos : (0 : ℚ) < (a.denominator : ℚ) := by exact_mod_cast ha.denominator_pos
+  have hb_pos : (0 : ℚ) < (b.denominator : ℚ) := by exact_mod_cast hb.denominator_pos
+  have hdiff : ((a.numerator * b.denominator - b.numerator * a.denominator : Int) : ℚ) =
+      (a.toRat - b.toRat) * ((a.denominator : ℚ) * (b.denominator : ℚ)) := by
+    simp only [toRat]
+    push_cast
+    field_simp
+  unfold compare
+  split_ifs with h1 h2
+  · constructor
+    · intro h; contradiction
+    · intro hgt
+      have : 0 < (a.toRat - b.toRat) * ((a.denominator : ℚ) * (b.denominator : ℚ)) :=
+        mul_pos (sub_pos.mpr hgt) (mul_pos ha_pos hb_pos)
+      rw [← hdiff] at this
+      have : 0 < a.numerator * b.denominator - b.numerator * a.denominator := by exact_mod_cast this
+      omega
+  · constructor
+    · intro _
+      have hq : 0 < ((a.numerator * b.denominator - b.numerator * a.denominator : Int) : ℚ) := by
+        exact_mod_cast h2
+      rw [hdiff] at hq
+      have hden : 0 < (a.denominator : ℚ) * (b.denominator : ℚ) := mul_pos ha_pos hb_pos
+      nlinarith
+    · intro _; rfl
+  · constructor
+    · intro h; contradiction
+    · intro hgt
+      have : 0 < (a.toRat - b.toRat) * ((a.denominator : ℚ) * (b.denominator : ℚ)) :=
+        mul_pos (sub_pos.mpr hgt) (mul_pos ha_pos hb_pos)
+      rw [← hdiff] at this
+      have : 0 < a.numerator * b.denominator - b.numerator * a.denominator := by exact_mod_cast this
+      omega
+
+/-- Two constructible values are the same value exactly when they mean the same number. -/
+theorem equals_iff {a b : ExactRational} (ha : a.WF) (hb : b.WF) :
+    a.equals b = true ↔ a.toRat = b.toRat := by
+  constructor
+  · intro h
+    simp only [equals, decide_eq_true_eq] at h
+    rcases h with ⟨hn, hd⟩
+    simp [toRat, hn, hd]
+  · intro h
+    have heq := coprime_pair_unique ha.denominator_pos hb.denominator_pos ha.coprime hb.coprime h
+    simp [equals, heq.1, heq.2]
+
+theorem eq_of_toRat_eq {a b : ExactRational} (ha : a.WF) (hb : b.WF) (h : a.toRat = b.toRat) :
+    a = b := by
+  have heq := coprime_pair_unique ha.denominator_pos hb.denominator_pos ha.coprime hb.coprime h
+  cases a; cases b
+  simp_all
+
+theorem isZero_iff {r : ExactRational} (h : r.WF) : r.isZero = true ↔ r.toRat = 0 := by
+  have hd_ne : (r.denominator : ℚ) ≠ 0 := by
+    exact_mod_cast (show r.denominator ≠ 0 by have := h.denominator_pos; omega)
+  simp [isZero, toRat, div_eq_zero_iff, hd_ne]
+
+theorem isNegative_iff {r : ExactRational} (h : r.WF) : r.isNegative = true ↔ r.toRat < 0 := by
+  have hd_pos : (0 : ℚ) < (r.denominator : ℚ) := by exact_mod_cast h.denominator_pos
+  simp [isNegative, toRat, div_neg_iff]
+  constructor
+  · intro hn
+    left
+    refine ⟨by exact_mod_cast hn, hd_pos⟩
+  · rintro (⟨hn, _⟩ | ⟨_, hd_neg⟩)
+    · exact_mod_cast hn
+    · linarith
+
+theorem abs_wf {r : ExactRational} (h : r.WF) : r.abs.WF := by
+  unfold abs
+  split_ifs
+  · exact negate_wf h
+  · exact h
+
+theorem abs_toRat {r : ExactRational} (h : r.WF) : r.abs.toRat = |r.toRat| := by
+  have hd_pos : (0 : ℚ) < (r.denominator : ℚ) := by exact_mod_cast h.denominator_pos
+  unfold abs
+  split_ifs with hn
+  · rw [negate_toRat]
+    have hr_neg : r.toRat < 0 := by
+      simp only [toRat]
+      exact div_neg_of_neg_of_pos (by exact_mod_cast hn) hd_pos
+    rw [abs_of_neg hr_neg]
+  · have hr_nonneg : 0 ≤ r.toRat := by
+      simp only [toRat]
+      exact div_nonneg (by exact_mod_cast (show 0 ≤ r.numerator by omega)) (le_of_lt hd_pos)
+    rw [abs_of_nonneg hr_nonneg]
+
+end ExactRational
+
+namespace ExactDecimal
+
+theorem of_ok {c s : Int} {d : ExactDecimal} (h : of c s = .ok d) :
+    d.WF ∧ d.coefficient = c ∧ d.scale = s := by
+  unfold of scaleError at h
+  split_ifs at h with hs1 hs2
+  · simp at h
+  · simp at h
+  · simp only at h
+    split_ifs at h with hc
+    · contradiction
+    · cases h
+      have hc' : withinMagnitude c = true := by simpa using hc
+      exact ⟨⟨by omega, by omega, hc'⟩, rfl, rfl⟩
+
+theorem negate_wf {d : ExactDecimal} (h : d.WF) : d.negate.WF := by
+  refine ⟨h.scale_nonneg, h.scale_le, ?_⟩
+  simpa [negate, withinMagnitude_neg] using h.coefficient_within
+
+theorem negate_toRat (d : ExactDecimal) : d.negate.toRat = -d.toRat := by
+  simp [negate, toRat, neg_div]
+
+theorem toRational_ok {d : ExactDecimal} {r : ExactRational} (hd : d.WF)
+    (h : d.toRational = .ok r) : r.WF ∧ r.toRat = d.toRat := by
+  unfold toRational at h
+  rcases ExactRational.of_ok h with ⟨hr_wf, hr_rat, _⟩
+  refine ⟨hr_wf, ?_⟩
+  rw [hr_rat]
+  simp [toRat]
+
+theorem isZero_iff (d : ExactDecimal) : d.isZero = true ↔ d.toRat = 0 := by
+  have h10 : (10 : ℚ) ^ d.scale.toNat ≠ 0 := by positivity
+  simp [isZero, toRat, div_eq_zero_iff, h10]
+
+end ExactDecimal
+
+/-! ## Additional completeness, gap, and total-order laws -/
+
+namespace ExactRational
+
+/-- Exact condition for `add` on constructible rationals to succeed:
+either the exact sum is zero, or both unreduced cross-multiplication parts fit within `withinMagnitude`. -/
+theorem add_isOk_iff {a b : ExactRational} (ha : a.WF) (hb : b.WF) :
+    (∃ c, a.add b = .ok c) ↔
+      a.toRat + b.toRat = 0 ∨
+        (withinMagnitude (a.numerator * b.denominator + b.numerator * a.denominator) = true ∧
+          withinMagnitude (a.denominator * b.denominator) = true) := by
+  have hd_pos : 0 < a.denominator * b.denominator := mul_pos ha.denominator_pos hb.denominator_pos
+  have ha_ne : (a.denominator : ℚ) ≠ 0 := by exact_mod_cast (show a.denominator ≠ 0 by have := ha.denominator_pos; omega)
+  have hb_ne : (b.denominator : ℚ) ≠ 0 := by exact_mod_cast (show b.denominator ≠ 0 by have := hb.denominator_pos; omega)
+  have hrat : a.toRat + b.toRat = 0 ↔ a.numerator * b.denominator + b.numerator * a.denominator = 0 := by
+    simp only [toRat]
+    have hsum : (a.numerator : ℚ) / (a.denominator : ℚ) + (b.numerator : ℚ) / (b.denominator : ℚ) =
+        ((a.numerator * b.denominator + b.numerator * a.denominator : Int) : ℚ) /
+          ((a.denominator : ℚ) * (b.denominator : ℚ)) := by
+      push_cast; field_simp
+    rw [hsum, div_eq_zero_iff]
+    have hden_ne : (a.denominator : ℚ) * (b.denominator : ℚ) ≠ 0 := mul_ne_zero ha_ne hb_ne
+    simp [hden_ne]
+    exact_mod_cast Iff.rfl
+  unfold add
+  rw [of_isOk_iff, hrat]
+  simp [hd_pos]
+
+/-- On constructible inputs, `add` can only fail with `representationLimitExceeded`. -/
+theorem add_error_eq {a b : ExactRational} {e : NumErr} (ha : a.WF) (hb : b.WF)
+    (h : a.add b = .error e) : e = .representationLimitExceeded := by
+  have hd_pos : 0 < a.denominator * b.denominator := mul_pos ha.denominator_pos hb.denominator_pos
+  unfold add of at h
+  split_ifs at h with hd
+  · omega
+  · contradiction
+  · cases h; rfl
+  · cases h; rfl
+  · contradiction
+
+/-- Exact condition for `subtract` on constructible rationals to succeed. -/
+theorem subtract_isOk_iff {a b : ExactRational} (ha : a.WF) (hb : b.WF) :
+    (∃ c, a.subtract b = .ok c) ↔
+      a.toRat - b.toRat = 0 ∨
+        (withinMagnitude (a.numerator * b.denominator - b.numerator * a.denominator) = true ∧
+          withinMagnitude (a.denominator * b.denominator) = true) := by
+  unfold subtract
+  rw [add_isOk_iff ha (negate_wf hb), negate_toRat]
+  simp [negate, sub_eq_add_neg]
+
+/-- On constructible inputs, `subtract` can only fail with `representationLimitExceeded`. -/
+theorem subtract_error_eq {a b : ExactRational} {e : NumErr} (ha : a.WF) (hb : b.WF)
+    (h : a.subtract b = .error e) : e = .representationLimitExceeded :=
+  add_error_eq ha (negate_wf hb) h
+
+/-- Exact condition for `multiply` on constructible rationals to succeed. -/
+theorem multiply_isOk_iff {a b : ExactRational} (ha : a.WF) (hb : b.WF) :
+    (∃ c, a.multiply b = .ok c) ↔
+      a.toRat * b.toRat = 0 ∨
+        (withinMagnitude (a.numerator * b.numerator) = true ∧
+          withinMagnitude (a.denominator * b.denominator) = true) := by
+  have hd_pos : 0 < a.denominator * b.denominator := mul_pos ha.denominator_pos hb.denominator_pos
+  have ha_ne : (a.denominator : ℚ) ≠ 0 := by exact_mod_cast (show a.denominator ≠ 0 by have := ha.denominator_pos; omega)
+  have hb_ne : (b.denominator : ℚ) ≠ 0 := by exact_mod_cast (show b.denominator ≠ 0 by have := hb.denominator_pos; omega)
+  have hrat : a.toRat * b.toRat = 0 ↔ a.numerator * b.numerator = 0 := by
+    simp only [toRat]
+    rw [div_mul_div_comm, div_eq_zero_iff]
+    have hden_ne : (a.denominator : ℚ) * (b.denominator : ℚ) ≠ 0 := mul_ne_zero ha_ne hb_ne
+    simp [hden_ne]
+    exact_mod_cast Iff.rfl
+  unfold multiply
+  rw [of_isOk_iff, hrat]
+  simp [hd_pos]
+
+/-- On constructible inputs, `multiply` can only fail with `representationLimitExceeded`. -/
+theorem multiply_error_eq {a b : ExactRational} {e : NumErr} (ha : a.WF) (hb : b.WF)
+    (h : a.multiply b = .error e) : e = .representationLimitExceeded := by
+  have hd_pos : 0 < a.denominator * b.denominator := mul_pos ha.denominator_pos hb.denominator_pos
+  unfold multiply of at h
+  split_ifs at h with hd
+  · omega
+  · contradiction
+  · cases h; rfl
+  · cases h; rfl
+  · contradiction
+
+/-- Exact condition for `divide` on constructible rationals to succeed. -/
+theorem divide_isOk_iff {a b : ExactRational} (ha : a.WF) (hb : b.WF) :
+    (∃ c, a.divide b = .ok c) ↔
+      b.toRat ≠ 0 ∧
+        (a.toRat = 0 ∨
+          (withinMagnitude (a.numerator * b.denominator) = true ∧
+            withinMagnitude (a.denominator * b.numerator) = true)) := by
+  have ha_ne : (a.denominator : ℚ) ≠ 0 := by exact_mod_cast (show a.denominator ≠ 0 by have := ha.denominator_pos; omega)
+  have hb_ne : (b.denominator : ℚ) ≠ 0 := by exact_mod_cast (show b.denominator ≠ 0 by have := hb.denominator_pos; omega)
+  have hbn_rat : b.toRat = 0 ↔ b.numerator = 0 := isZero_iff hb |>.symm.trans (by simp [isZero])
+  have han_rat : a.toRat = 0 ↔ a.numerator = 0 := isZero_iff ha |>.symm.trans (by simp [isZero])
+  have han_mul : a.numerator * b.denominator = 0 ↔ a.numerator = 0 := by
+    have : b.denominator ≠ 0 := by have := hb.denominator_pos; omega
+    exact mul_eq_zero_iff_right this
+  unfold divide
+  split_ifs with hb0 hneg
+  · constructor
+    · rintro ⟨c, hc⟩; contradiction
+    · rintro ⟨hb_rat_ne, _⟩; exact absurd (hbn_rat.mpr hb0) hb_rat_ne
+  · rw [of_isOk_iff]
+    have hden_pos : 0 < -(a.denominator * b.numerator) := by omega
+    have hb_rat_ne : b.toRat ≠ 0 := fun h => hb0 (hbn_rat.mp h)
+    simp only [hden_pos, true_and, withinMagnitude_neg, neg_eq_zero, han_mul, ← han_rat, hb_rat_ne,
+      ne_eq, not_false_eq_true]
+  · rw [of_isOk_iff]
+    have hden_pos : 0 < a.denominator * b.numerator := by
+      have hne : a.denominator * b.numerator ≠ 0 := mul_ne_zero (by have := ha.denominator_pos; omega) hb0
+      omega
+    have hb_rat_ne : b.toRat ≠ 0 := fun h => hb0 (hbn_rat.mp h)
+    simp only [hden_pos, true_and, han_mul, ← han_rat, hb_rat_ne, ne_eq, not_false_eq_true]
+
+/-- On constructible inputs, `divide` fails only with `invalidRational` on division by zero or
+`representationLimitExceeded` when an unreduced product exceeds the admitted integer size. -/
+theorem divide_error_iff {a b : ExactRational} {e : NumErr} (ha : a.WF) (hb : b.WF)
+    (h : a.divide b = .error e) :
+    (b.toRat = 0 ∧ e = .invalidRational) ∨ (b.toRat ≠ 0 ∧ e = .representationLimitExceeded) := by
+  have hbn_rat : b.toRat = 0 ↔ b.numerator = 0 := isZero_iff hb |>.symm.trans (by simp [isZero])
+  unfold divide at h
+  split_ifs at h with hb0 hneg
+  · cases h
+    exact Or.inl ⟨hbn_rat.mpr hb0, rfl⟩
+  · have hb_rat_ne : b.toRat ≠ 0 := fun h0 => hb0 (hbn_rat.mp h0)
+    have hden_pos : 0 < -(a.denominator * b.numerator) := by omega
+    unfold of at h
+    split_ifs at h with hd
+    · omega
+    · contradiction
+    · cases h; exact Or.inr ⟨hb_rat_ne, rfl⟩
+    · cases h; exact Or.inr ⟨hb_rat_ne, rfl⟩
+    · contradiction
+  · have hb_rat_ne : b.toRat ≠ 0 := fun h0 => hb0 (hbn_rat.mp h0)
+    have hden_pos : 0 < a.denominator * b.numerator := by
+      have hne : a.denominator * b.numerator ≠ 0 := mul_ne_zero (by have := ha.denominator_pos; omega) hb0
+      omega
+    unfold of at h
+    split_ifs at h with hd
+    · omega
+    · contradiction
+    · cases h; exact Or.inr ⟨hb_rat_ne, rfl⟩
+    · cases h; exact Or.inr ⟨hb_rat_ne, rfl⟩
+    · contradiction
+
+/-- When the denominators of two constructible rationals are coprime and the exact reduced sum fits
+within the admitted integer size, `add` succeeds and returns that sum. -/
+theorem add_ok_of_coprime_den {a b : ExactRational} (ha : a.WF) (hb : b.WF)
+    (hden : Int.gcd a.denominator b.denominator = 1)
+    (hn : withinMagnitude (a.toRat + b.toRat).num = true)
+    (hd : withinMagnitude ((a.toRat + b.toRat).den : Int) = true) :
+    ∃ c, a.add b = .ok c ∧ c.WF ∧ c.toRat = a.toRat + b.toRat := by
+  set n := a.numerator * b.denominator + b.numerator * a.denominator
+  set d := a.denominator * b.denominator
+  have hd_pos : 0 < d := mul_pos ha.denominator_pos hb.denominator_pos
+  have ha_ne : (a.denominator : ℚ) ≠ 0 := by exact_mod_cast (show a.denominator ≠ 0 by have := ha.denominator_pos; omega)
+  have hb_ne : (b.denominator : ℚ) ≠ 0 := by exact_mod_cast (show b.denominator ≠ 0 by have := hb.denominator_pos; omega)
+  have hsum : a.toRat + b.toRat = (n : ℚ) / (d : ℚ) := by
+    simp only [toRat, n, d]
+    push_cast
+    field_simp
+  have hcop_a : Nat.Coprime n.natAbs a.denominator.natAbs := by
+    change Int.gcd n a.denominator = 1
+    have : n = a.numerator * b.denominator + b.numerator * a.denominator := rfl
+    rw [this, int_gcd_add_mul_right]
+    change (a.numerator * b.denominator).natAbs.Coprime a.denominator.natAbs
+    rw [Int.natAbs_mul]
+    exact Nat.Coprime.mul_left ha.coprime (hden : a.denominator.natAbs.Coprime b.denominator.natAbs).symm
+  have hcop_b : Nat.Coprime n.natAbs b.denominator.natAbs := by
+    change Int.gcd n b.denominator = 1
+    have hn_comm : n = b.numerator * a.denominator + a.numerator * b.denominator := by
+      simp only [n]; ring
+    rw [hn_comm, int_gcd_add_mul_right]
+    change (b.numerator * a.denominator).natAbs.Coprime b.denominator.natAbs
+    rw [Int.natAbs_mul]
+    exact Nat.Coprime.mul_left hb.coprime (hden : a.denominator.natAbs.Coprime b.denominator.natAbs)
+  have hcop : Int.gcd n d = 1 := by
+    change n.natAbs.Coprime (a.denominator * b.denominator).natAbs
+    rw [Int.natAbs_mul]
+    exact Nat.Coprime.mul_right hcop_a hcop_b
+  rcases rat_eq_coprime_parts hsum hd_pos hcop with ⟨hnum_eq, hden_eq⟩
+  have hok : ∃ c, a.add b = .ok c := by
+    rw [add_isOk_iff ha hb]
+    right
+    exact ⟨by simpa [hnum_eq] using hn, by simpa [hden_eq] using hd⟩
+  rcases hok with ⟨c, hc⟩
+  rcases add_ok ha hb hc with ⟨hc_wf, hc_rat⟩
+  exact ⟨c, hc, hc_wf, hc_rat⟩
+
+/-- When the denominators of two constructible rationals are coprime and the exact reduced difference
+fits within the admitted integer size, `subtract` succeeds and returns that difference. -/
+theorem subtract_ok_of_coprime_den {a b : ExactRational} (ha : a.WF) (hb : b.WF)
+    (hden : Int.gcd a.denominator b.denominator = 1)
+    (hn : withinMagnitude (a.toRat - b.toRat).num = true)
+    (hd : withinMagnitude ((a.toRat - b.toRat).den : Int) = true) :
+    ∃ c, a.subtract b = .ok c ∧ c.WF ∧ c.toRat = a.toRat - b.toRat := by
+  have hsub : a.toRat - b.toRat = a.toRat + b.negate.toRat := by
+    rw [negate_toRat, sub_eq_add_neg]
+  rw [hsub] at hn hd ⊢
+  exact add_ok_of_coprime_den ha (negate_wf hb) hden hn hd
+
+/-- When cross-factors of two constructible rationals are coprime and the exact reduced product
+fits within the admitted integer size, `multiply` succeeds and returns that product. -/
+theorem multiply_ok_of_coprime {a b : ExactRational} (ha : a.WF) (hb : b.WF)
+    (h1 : Int.gcd a.numerator b.denominator = 1)
+    (h2 : Int.gcd b.numerator a.denominator = 1)
+    (hn : withinMagnitude (a.toRat * b.toRat).num = true)
+    (hd : withinMagnitude ((a.toRat * b.toRat).den : Int) = true) :
+    ∃ c, a.multiply b = .ok c ∧ c.WF ∧ c.toRat = a.toRat * b.toRat := by
+  set n := a.numerator * b.numerator
+  set d := a.denominator * b.denominator
+  have hd_pos : 0 < d := mul_pos ha.denominator_pos hb.denominator_pos
+  have ha_ne : (a.denominator : ℚ) ≠ 0 := by exact_mod_cast (show a.denominator ≠ 0 by have := ha.denominator_pos; omega)
+  have hb_ne : (b.denominator : ℚ) ≠ 0 := by exact_mod_cast (show b.denominator ≠ 0 by have := hb.denominator_pos; omega)
+  have hprod : a.toRat * b.toRat = (n : ℚ) / (d : ℚ) := by
+    simp only [toRat, n, d]
+    push_cast
+    field_simp
+  have hcop_a : Nat.Coprime n.natAbs a.denominator.natAbs := by
+    change (a.numerator * b.numerator).natAbs.Coprime a.denominator.natAbs
+    rw [Int.natAbs_mul]
+    exact Nat.Coprime.mul_left ha.coprime h2
+  have hcop_b : Nat.Coprime n.natAbs b.denominator.natAbs := by
+    change (a.numerator * b.numerator).natAbs.Coprime b.denominator.natAbs
+    rw [Int.natAbs_mul]
+    exact Nat.Coprime.mul_left h1 hb.coprime
+  have hcop : Int.gcd n d = 1 := by
+    change n.natAbs.Coprime (a.denominator * b.denominator).natAbs
+    rw [Int.natAbs_mul]
+    exact Nat.Coprime.mul_right hcop_a hcop_b
+  rcases rat_eq_coprime_parts hprod hd_pos hcop with ⟨hnum_eq, hden_eq⟩
+  have hok : ∃ c, a.multiply b = .ok c := by
+    rw [multiply_isOk_iff ha hb]
+    right
+    exact ⟨by simpa [hnum_eq] using hn, by simpa [hden_eq] using hd⟩
+  rcases hok with ⟨c, hc⟩
+  rcases multiply_ok ha hb hc with ⟨hc_wf, hc_rat⟩
+  exact ⟨c, hc, hc_wf, hc_rat⟩
+
+/-- When numerators and denominators of two constructible rationals are pairwise coprime and the
+exact reduced quotient fits within the admitted integer size, `divide` succeeds (for nonzero `b`). -/
+theorem divide_ok_of_coprime {a b : ExactRational} (ha : a.WF) (hb : b.WF)
+    (hb0 : b.toRat ≠ 0)
+    (h1 : Int.gcd a.numerator b.numerator = 1)
+    (h2 : Int.gcd a.denominator b.denominator = 1)
+    (hn : withinMagnitude (a.toRat / b.toRat).num = true)
+    (hd : withinMagnitude ((a.toRat / b.toRat).den : Int) = true) :
+    ∃ c, a.divide b = .ok c ∧ c.WF ∧ c.toRat = a.toRat / b.toRat := by
+  have ha_ne : (a.denominator : ℚ) ≠ 0 := by exact_mod_cast (show a.denominator ≠ 0 by have := ha.denominator_pos; omega)
+  have hb_den_ne : (b.denominator : ℚ) ≠ 0 := by exact_mod_cast (show b.denominator ≠ 0 by have := hb.denominator_pos; omega)
+  have hbn_ne : b.numerator ≠ 0 := by
+    intro h0
+    apply hb0
+    rw [← isZero_iff hb]
+    simp [isZero, h0]
+  have hbn_q_ne : (b.numerator : ℚ) ≠ 0 := by exact_mod_cast hbn_ne
+  set num := a.numerator * b.denominator
+  set den := a.denominator * b.numerator
+  have hquot : a.toRat / b.toRat = (num : ℚ) / (den : ℚ) := by
+    simp only [toRat, num, den]
+    push_cast
+    field_simp
+  have hcop_an : Nat.Coprime a.numerator.natAbs (a.denominator * b.numerator).natAbs := by
+    rw [Int.natAbs_mul]
+    exact Nat.Coprime.mul_right ha.coprime h1
+  have hcop_bd : Nat.Coprime b.denominator.natAbs (a.denominator * b.numerator).natAbs := by
+    rw [Int.natAbs_mul]
+    exact Nat.Coprime.mul_right (h2 : a.denominator.natAbs.Coprime b.denominator.natAbs).symm hb.coprime.symm
+  have hcop : Int.gcd num den = 1 := by
+    change (a.numerator * b.denominator).natAbs.Coprime (a.denominator * b.numerator).natAbs
+    rw [Int.natAbs_mul]
+    exact Nat.Coprime.mul_left hcop_an hcop_bd
+  have hden_ne : den ≠ 0 := mul_ne_zero (by have := ha.denominator_pos; omega) hbn_ne
+  rcases lt_or_gt_of_ne hden_ne with hneg | hpos
+  · have hquot' : a.toRat / b.toRat = (-num : ℚ) / (-den : ℚ) := by
+      rw [hquot]
+      push_cast
+      rw [neg_div_neg_eq]
+    have hcop' : Int.gcd (-num) (-den) = 1 := by
+      simpa [Int.neg_gcd, Int.gcd_neg] using hcop
+    rcases rat_eq_coprime_parts hquot' (by omega : 0 < -den) hcop' with ⟨hnum_eq, hden_eq⟩
+    have hok : ∃ c, a.divide b = .ok c := by
+      rw [divide_isOk_iff ha hb]
+      refine ⟨hb0, Or.inr ⟨?_, ?_⟩⟩
+      · have : withinMagnitude (-num) = true := by simpa [hnum_eq] using hn
+        simpa [withinMagnitude_neg] using this
+      · have : withinMagnitude (-den) = true := by simpa [hden_eq] using hd
+        simpa [withinMagnitude_neg] using this
+    rcases hok with ⟨c, hc⟩
+    rcases divide_ok ha hb hc with ⟨hc_wf, _, hc_rat⟩
+    exact ⟨c, hc, hc_wf, hc_rat⟩
+  · rcases rat_eq_coprime_parts hquot hpos hcop with ⟨hnum_eq, hden_eq⟩
+    have hok : ∃ c, a.divide b = .ok c := by
+      rw [divide_isOk_iff ha hb]
+      exact ⟨hb0, Or.inr ⟨by simpa [hnum_eq] using hn, by simpa [hden_eq] using hd⟩⟩
+    rcases hok with ⟨c, hc⟩
+    rcases divide_ok ha hb hc with ⟨hc_wf, _, hc_rat⟩
+    exact ⟨c, hc, hc_wf, hc_rat⟩
+
+/-- If both inputs have numerator and denominator below `2 ^ 8191`, `add` always succeeds. -/
+theorem add_ok_of_half_size {a b : ExactRational} (ha : a.WF) (hb : b.WF)
+    (han : a.numerator.natAbs < 2 ^ 8191) (had : a.denominator.natAbs < 2 ^ 8191)
+    (hbn : b.numerator.natAbs < 2 ^ 8191) (hbd : b.denominator.natAbs < 2 ^ 8191) :
+    ∃ c, a.add b = .ok c ∧ c.WF ∧ c.toRat = a.toRat + b.toRat := by
+  have h1 : (a.numerator * b.denominator).natAbs < 2 ^ 16382 := by
+    rw [Int.natAbs_mul]
+    calc a.numerator.natAbs * b.denominator.natAbs
+        < 2 ^ 8191 * 2 ^ 8191 := Nat.mul_lt_mul'' han hbd
+      _ = 2 ^ 16382 := by rw [← pow_add]
+  have h2 : (b.numerator * a.denominator).natAbs < 2 ^ 16382 := by
+    rw [Int.natAbs_mul]
+    calc b.numerator.natAbs * a.denominator.natAbs
+        < 2 ^ 8191 * 2 ^ 8191 := Nat.mul_lt_mul'' hbn had
+      _ = 2 ^ 16382 := by rw [← pow_add]
+  have hnum_w : withinMagnitude (a.numerator * b.denominator + b.numerator * a.denominator) = true := by
+    rw [withinMagnitude_iff]
+    have htri := Int.natAbs_add_le (a.numerator * b.denominator) (b.numerator * a.denominator)
+    have hsum : 2 ^ 16382 + 2 ^ 16382 < 2 ^ maxExactIntegerBits := by
+      change 2 ^ 16382 + 2 ^ 16382 < 2 ^ 16384
+      have : 2 ^ 16382 + 2 ^ 16382 = 2 ^ 16383 := by ring
+      rw [this]
+      exact Nat.pow_lt_pow_right (by decide) (by decide)
+    omega
+  have hden_w : withinMagnitude (a.denominator * b.denominator) = true := by
+    rw [withinMagnitude_iff, Int.natAbs_mul]
+    calc a.denominator.natAbs * b.denominator.natAbs
+        < 2 ^ 8191 * 2 ^ 8191 := Nat.mul_lt_mul'' had hbd
+      _ = 2 ^ 16382 := by rw [← pow_add]
+      _ < 2 ^ maxExactIntegerBits := Nat.pow_lt_pow_right (by decide) (by decide : 16382 < 16384)
+  have hok : ∃ c, a.add b = .ok c := (add_isOk_iff ha hb).mpr (Or.inr ⟨hnum_w, hden_w⟩)
+  rcases hok with ⟨c, hc⟩
+  rcases add_ok ha hb hc with ⟨hc_wf, hc_rat⟩
+  exact ⟨c, hc, hc_wf, hc_rat⟩
+
+/-- If both inputs have numerator and denominator below `2 ^ 8192`, `multiply` always succeeds. -/
+theorem multiply_ok_of_half_size {a b : ExactRational} (ha : a.WF) (hb : b.WF)
+    (han : a.numerator.natAbs < 2 ^ 8192) (had : a.denominator.natAbs < 2 ^ 8192)
+    (hbn : b.numerator.natAbs < 2 ^ 8192) (hbd : b.denominator.natAbs < 2 ^ 8192) :
+    ∃ c, a.multiply b = .ok c ∧ c.WF ∧ c.toRat = a.toRat * b.toRat := by
+  have hnum_w : withinMagnitude (a.numerator * b.numerator) = true := by
+    rw [withinMagnitude_iff, Int.natAbs_mul]
+    calc a.numerator.natAbs * b.numerator.natAbs
+        < 2 ^ 8192 * 2 ^ 8192 := Nat.mul_lt_mul'' han hbn
+      _ = 2 ^ maxExactIntegerBits := by change 2 ^ 8192 * 2 ^ 8192 = 2 ^ 16384; rw [← pow_add]
+  have hden_w : withinMagnitude (a.denominator * b.denominator) = true := by
+    rw [withinMagnitude_iff, Int.natAbs_mul]
+    calc a.denominator.natAbs * b.denominator.natAbs
+        < 2 ^ 8192 * 2 ^ 8192 := Nat.mul_lt_mul'' had hbd
+      _ = 2 ^ maxExactIntegerBits := by change 2 ^ 8192 * 2 ^ 8192 = 2 ^ 16384; rw [← pow_add]
+  have hok : ∃ c, a.multiply b = .ok c := (multiply_isOk_iff ha hb).mpr (Or.inr ⟨hnum_w, hden_w⟩)
+  rcases hok with ⟨c, hc⟩
+  rcases multiply_ok ha hb hc with ⟨hc_wf, hc_rat⟩
+  exact ⟨c, hc, hc_wf, hc_rat⟩
+
+/-- Gap witness for `ExactRational.of`: `of (2^16384) 2` fails with `representationLimitExceeded`
+because `withinMagnitude` is checked before `gcd` reduction, even though the reduced rational
+`2^16383 / 1` is constructible. -/
+theorem of_reduced_fits_gap :
+    ∃ n d : Int, 0 < d ∧ of n d = .error .representationLimitExceeded ∧
+      ∃ r : ExactRational, r.WF ∧ r.toRat = (n : ℚ) / (d : ℚ) := by
+  refine ⟨(2 : Int) ^ maxExactIntegerBits, 2, by omega, ?_,
+    ⟨(2 : Int) ^ (maxExactIntegerBits - 1), 1⟩, ?_, ?_⟩
+  · have hwn : withinMagnitude ((2 : Int) ^ maxExactIntegerBits) = false := by
+      rw [Bool.eq_false_iff, withinMagnitude_iff]
+      have h_eq : ((2 : Int) ^ maxExactIntegerBits).natAbs = 2 ^ maxExactIntegerBits := by
+        norm_cast
+      omega
+    unfold of
+    simp [hwn, show ¬ ((2 : Int) ≤ 0) by omega, show ((2 : Int) ^ maxExactIntegerBits) ≠ 0 by positivity]
+  · refine ⟨by omega, ?_, ?_, withinMagnitude_one⟩
+    · change ((2 : Int) ^ (maxExactIntegerBits - 1)).natAbs.gcd 1 = 1
+      simp
+    · rw [withinMagnitude_iff]
+      have h_eq : ((2 : Int) ^ (maxExactIntegerBits - 1)).natAbs = 2 ^ (maxExactIntegerBits - 1) := by
+        norm_cast
+      rw [h_eq]
+      exact Nat.pow_lt_pow_right (by decide) (by decide : maxExactIntegerBits - 1 < maxExactIntegerBits)
+  · simp only [toRat]
+    change (((2 : Int) ^ 16383 : Int) : ℚ) / (1 : ℚ) = (((2 : Int) ^ 16384 : Int) : ℚ) / (2 : ℚ)
+    push_cast
+    ring
+
+/-- Gap witness for `add`: two constructible rationals whose exact reduced sum is constructible,
+yet `add` fails with `representationLimitExceeded` because `of` rejects the unreduced denominator. -/
+theorem add_reduced_fits_gap :
+    ∃ a b : ExactRational, a.WF ∧ b.WF ∧ a.add b = .error .representationLimitExceeded ∧
+      ∃ c : ExactRational, c.WF ∧ c.toRat = a.toRat + b.toRat := by
+  let a : ExactRational := ⟨1, (2 : Int) ^ 10000⟩
+  let c : ExactRational := ⟨1, (2 : Int) ^ 9999⟩
+  have ha_wf : a.WF := by
+    refine ⟨by positivity, by simp [a, Int.gcd], withinMagnitude_one, ?_⟩
+    rw [withinMagnitude_iff]
+    have h_eq : ((2 : Int) ^ 10000).natAbs = 2 ^ 10000 := by norm_cast
+    rw [h_eq]
+    exact Nat.pow_lt_pow_right (by decide) (by decide : 10000 < 16384)
+  have hc_wf : c.WF := by
+    refine ⟨by positivity, by simp [c, Int.gcd], withinMagnitude_one, ?_⟩
+    rw [withinMagnitude_iff]
+    have h_eq : ((2 : Int) ^ 9999).natAbs = 2 ^ 9999 := by norm_cast
+    rw [h_eq]
+    exact Nat.pow_lt_pow_right (by decide) (by decide : 9999 < 16384)
+  refine ⟨a, a, ha_wf, ha_wf, ?_, c, hc_wf, ?_⟩
+  · have hden_fail : withinMagnitude (a.denominator * a.denominator) = false := by
+      rw [Bool.eq_false_iff, withinMagnitude_iff]
+      have h_eq : (a.denominator * a.denominator).natAbs = 2 ^ 20000 := by
+        simp [a]; norm_cast; rw [← pow_add]
+      rw [h_eq]
+      intro hlt
+      have hge : 2 ^ maxExactIntegerBits ≤ 2 ^ 20000 :=
+        Nat.pow_le_pow_right (by decide) (by decide : 16384 ≤ 20000)
+      omega
+    have hnot : ¬ (∃ r, a.add a = .ok r) := by
+      rw [add_isOk_iff ha_wf ha_wf]
+      rintro (hz | ⟨_, hdw⟩)
+      · have ha_pos : 0 < a.toRat := by
+          simp only [a, toRat]
+          positivity
+        linarith
+      · rw [hdw] at hden_fail; contradiction
+    cases hres : a.add a with
+    | ok r => exact absurd ⟨r, hres⟩ hnot
+    | error e => rw [add_error_eq ha_wf ha_wf hres]
+  · simp only [a, c, toRat]
+    push_cast
+    have h2 : (2 : ℚ) ^ 10000 = 2 * (2 : ℚ) ^ 9999 := by ring
+    rw [h2]
+    ring
+
+/-- Gap witness for `subtract`: two constructible rationals whose exact reduced difference is
+constructible, yet `subtract` fails with `representationLimitExceeded`. -/
+theorem subtract_reduced_fits_gap :
+    ∃ a b : ExactRational, a.WF ∧ b.WF ∧ a.subtract b = .error .representationLimitExceeded ∧
+      ∃ c : ExactRational, c.WF ∧ c.toRat = a.toRat - b.toRat := by
+  rcases add_reduced_fits_gap with ⟨a, b, ha, hb, herr, c, hc, hrat⟩
+  refine ⟨a, b.negate, ha, negate_wf hb, ?_, c, hc, ?_⟩
+  · unfold subtract
+    have hneg : b.negate.negate = b := by cases b; simp [negate]
+    rw [hneg]
+    exact herr
+  · rw [negate_toRat]
+    linarith
+
+/-- Gap witness for `multiply`: two constructible rationals whose exact product is `1`, yet
+`multiply` fails with `representationLimitExceeded` on the unreduced product. -/
+theorem multiply_reduced_fits_gap :
+    ∃ a b : ExactRational, a.WF ∧ b.WF ∧ a.multiply b = .error .representationLimitExceeded ∧
+      ∃ c : ExactRational, c.WF ∧ c.toRat = a.toRat * b.toRat := by
+  let a : ExactRational := ⟨(2 : Int) ^ 10000, (3 : Int) ^ 10000⟩
+  let b : ExactRational := ⟨(3 : Int) ^ 10000, (2 : Int) ^ 10000⟩
+  let c : ExactRational := ⟨1, 1⟩
+  have h3_lt : 3 ^ 10000 < 2 ^ 16000 := by
+    have h10 : 3 ^ 10 < 2 ^ 16 := by decide
+    calc 3 ^ 10000 = (3 ^ 10) ^ 1000 := by rw [← pow_mul]
+      _ < (2 ^ 16) ^ 1000 := Nat.pow_lt_pow_left h10 (by decide)
+      _ = 2 ^ 16000 := by rw [← pow_mul]
+  have h2w : withinMagnitude ((2 : Int) ^ 10000) = true := by
+    rw [withinMagnitude_iff]
+    have h_eq : ((2 : Int) ^ 10000).natAbs = 2 ^ 10000 := by norm_cast
+    rw [h_eq]
+    exact Nat.pow_lt_pow_right (by decide) (by decide : 10000 < 16384)
+  have h3w : withinMagnitude ((3 : Int) ^ 10000) = true := by
+    rw [withinMagnitude_iff]
+    have h_eq : ((3 : Int) ^ 10000).natAbs = 3 ^ 10000 := by norm_cast
+    rw [h_eq]
+    exact lt_trans h3_lt (Nat.pow_lt_pow_right (by decide) (by decide : 16000 < 16384))
+  have hcop23 : Nat.Coprime (2 ^ 10000) (3 ^ 10000) := Nat.Coprime.pow 10000 10000 (by decide)
+  have ha_wf : a.WF := by
+    refine ⟨by positivity, ?_, h2w, h3w⟩
+    change ((2 : Int) ^ 10000).natAbs.gcd ((3 : Int) ^ 10000).natAbs = 1
+    have h2e : ((2 : Int) ^ 10000).natAbs = 2 ^ 10000 := by norm_cast
+    have h3e : ((3 : Int) ^ 10000).natAbs = 3 ^ 10000 := by norm_cast
+    rw [h2e, h3e]
+    exact hcop23
+  have hb_wf : b.WF := by
+    refine ⟨by positivity, ?_, h3w, h2w⟩
+    change ((3 : Int) ^ 10000).natAbs.gcd ((2 : Int) ^ 10000).natAbs = 1
+    have h2e : ((2 : Int) ^ 10000).natAbs = 2 ^ 10000 := by norm_cast
+    have h3e : ((3 : Int) ^ 10000).natAbs = 3 ^ 10000 := by norm_cast
+    rw [h2e, h3e]
+    exact hcop23.symm
+  have hc_wf : c.WF := ⟨by omega, by decide, withinMagnitude_one, withinMagnitude_one⟩
+  have hfail : withinMagnitude (a.numerator * b.numerator) = false := by
+    rw [Bool.eq_false_iff, withinMagnitude_iff]
+    have hge : 2 ^ 16384 ≤ (a.numerator * b.numerator).natAbs := by
+      have h_eq : (a.numerator * b.numerator).natAbs = 2 ^ 10000 * 3 ^ 10000 := by
+        simp [a, b]; norm_cast
+      rw [h_eq]
+      calc 2 ^ 16384 ≤ 2 ^ 20000 := Nat.pow_le_pow_right (by decide) (by decide)
+        _ = 2 ^ 10000 * 2 ^ 10000 := by rw [← pow_add]
+        _ ≤ 2 ^ 10000 * 3 ^ 10000 := Nat.mul_le_mul_left _ (Nat.pow_le_pow_left (by decide) _)
+    change ¬ (a.numerator * b.numerator).natAbs < 2 ^ 16384
+    omega
+  refine ⟨a, b, ha_wf, hb_wf, ?_, c, hc_wf, ?_⟩
+  · have hnot : ¬ (∃ r, a.multiply b = .ok r) := by
+      rw [multiply_isOk_iff ha_wf hb_wf]
+      rintro (hz | ⟨hnw, _⟩)
+      · have hprod_pos : 0 < a.toRat * b.toRat := by simp [a, b, toRat]; positivity
+        linarith
+      · rw [hnw] at hfail; contradiction
+    cases hres : a.multiply b with
+    | ok r => exact absurd ⟨r, hres⟩ hnot
+    | error e => rw [multiply_error_eq ha_wf hb_wf hres]
+  · simp only [a, b, c, toRat]
+    push_cast
+    field_simp
+
+/-- Gap witness for `divide`: two constructible rationals whose exact quotient is `1`, yet
+`divide` fails with `representationLimitExceeded` on the unreduced cross-product. -/
+theorem divide_reduced_fits_gap :
+    ∃ a b : ExactRational, a.WF ∧ b.WF ∧ b.toRat ≠ 0 ∧
+      a.divide b = .error .representationLimitExceeded ∧
+      ∃ c : ExactRational, c.WF ∧ c.toRat = a.toRat / b.toRat := by
+  rcases multiply_reduced_fits_gap with ⟨a, b, ha, hb, herr, c, hc, hrat⟩
+  have hnot : ¬ (∃ r, a.multiply b = .ok r) := by
+    rintro ⟨r, hr⟩
+    rw [hr] at herr; contradiction
+  have hbn_ne : b.numerator ≠ 0 := by
+    intro h0
+    apply hnot
+    rw [multiply_isOk_iff ha hb]
+    left
+    simp [toRat, h0]
+  let binv : ExactRational :=
+    if b.numerator < 0 then ⟨-b.denominator, -b.numerator⟩ else ⟨b.denominator, b.numerator⟩
+  have hbinv_wf : binv.WF := by
+    by_cases hneg : b.numerator < 0
+    · simp only [binv, hneg, ↓reduceIte]
+      refine ⟨by omega, ?_, ?_, ?_⟩
+      · simpa [Int.neg_gcd, Int.gcd_neg, Int.gcd_comm] using hb.coprime
+      · simpa [withinMagnitude_neg] using hb.denominator_within
+      · simpa [withinMagnitude_neg] using hb.numerator_within
+    · simp only [binv, hneg, ↓reduceIte]
+      refine ⟨by omega, ?_, hb.denominator_within, hb.numerator_within⟩
+      simpa [Int.gcd_comm] using hb.coprime
+  have hbinv_ne : binv.toRat ≠ 0 := by
+    by_cases hneg : b.numerator < 0
+    · simp only [binv, hneg, ↓reduceIte, toRat]
+      have : b.denominator ≠ 0 := by have := hb.denominator_pos; omega
+      exact div_ne_zero (by exact_mod_cast (show -b.denominator ≠ 0 by omega))
+        (by exact_mod_cast (show -b.numerator ≠ 0 by omega))
+    · simp only [binv, hneg, ↓reduceIte, toRat]
+      have : b.denominator ≠ 0 := by have := hb.denominator_pos; omega
+      exact div_ne_zero (by exact_mod_cast this) (by exact_mod_cast hbn_ne)
+  have hbinv_rat : a.toRat / binv.toRat = a.toRat * b.toRat := by
+    by_cases hneg : b.numerator < 0
+    · simp only [binv, hneg, ↓reduceIte, toRat]
+      push_cast
+      have h1 : (b.denominator : ℚ) ≠ 0 := by exact_mod_cast (show b.denominator ≠ 0 by have := hb.denominator_pos; omega)
+      have h2 : (b.numerator : ℚ) ≠ 0 := by exact_mod_cast hbn_ne
+      field_simp
+    · simp only [binv, hneg, ↓reduceIte, toRat]
+      push_cast
+      have h1 : (b.denominator : ℚ) ≠ 0 := by exact_mod_cast (show b.denominator ≠ 0 by have := hb.denominator_pos; omega)
+      have h2 : (b.numerator : ℚ) ≠ 0 := by exact_mod_cast hbn_ne
+      field_simp
+  have hdiv_not : ¬ (∃ r, a.divide binv = .ok r) := by
+    rw [divide_isOk_iff ha hbinv_wf]
+    rintro ⟨_, hok⟩
+    apply hnot
+    rw [multiply_isOk_iff ha hb]
+    by_cases hneg : b.numerator < 0
+    · simp only [binv, hneg, ↓reduceIte] at hok
+      rw [hbinv_rat] at hok
+      rcases hok with hz | ⟨hnw, hdw⟩
+      · exact Or.inl hz
+      · refine Or.inr ⟨?_, ?_⟩
+        · simpa [withinMagnitude_neg] using hnw
+        · simpa [withinMagnitude_neg] using hdw
+    · simp only [binv, hneg, ↓reduceIte] at hok
+      rw [hbinv_rat] at hok
+      exact hok
+  refine ⟨a, binv, ha, hbinv_wf, hbinv_ne, ?_, c, hc, ?_⟩
+  · cases hres : a.divide binv with
+    | ok r => exact absurd ⟨r, hres⟩ hdiv_not
+    | error e =>
+      rcases divide_error_iff ha hbinv_wf hres with ⟨hz, _⟩ | ⟨_, he⟩
+      · exact absurd hz hbinv_ne
+      · exact he
+  · rw [hrat, hbinv_rat]
+
+/-- `compare` is reflexive (returns `.eq` on equal arguments). -/
+theorem compare_self (a : ExactRational) : a.compare a = .eq := by
+  unfold compare
+  have : a.numerator * a.denominator - a.numerator * a.denominator = 0 := by ring
+  simp [this]
+
+/-- Swapping arguments reverses `compare`. -/
+theorem compare_swap (a b : ExactRational) : a.compare b = (b.compare a).swap := by
+  unfold compare
+  have h : b.numerator * a.denominator - a.numerator * b.denominator =
+      -(a.numerator * b.denominator - b.numerator * a.denominator) := by ring
+  rw [h]
+  split_ifs <;> first | rfl | omega
+
+/-- On constructible rationals, `compare` returns `.eq` iff the two values are identical. -/
+theorem compare_eq_iff_eq {a b : ExactRational} (ha : a.WF) (hb : b.WF) :
+    a.compare b = .eq ↔ a = b := by
+  rw [compare_eq_iff ha hb]
+  exact ⟨eq_of_toRat_eq ha hb, congrArg toRat⟩
+
+/-- On constructible rationals, `a.compare b ≠ .gt` agrees with `≤` on meanings. -/
+theorem compare_le_iff {a b : ExactRational} (ha : a.WF) (hb : b.WF) :
+    a.compare b ≠ .gt ↔ a.toRat ≤ b.toRat := by
+  rw [compare_gt_iff ha hb, not_lt]
+
+/-- `compare` is irreflexive on `.lt`. -/
+theorem compare_lt_irrefl (a : ExactRational) : a.compare a ≠ .lt := by
+  rw [compare_self]; decide
+
+/-- `compare` is asymmetric on `.lt`. -/
+theorem compare_lt_asymm {a b : ExactRational} (h : a.compare b = .lt) : b.compare a ≠ .lt := by
+  rw [compare_swap]
+  intro h2
+  rw [h2] at h
+  cases h
+
+/-- On constructible rationals, `.lt` under `compare` is transitive. -/
+theorem compare_lt_trans {a b c : ExactRational} (ha : a.WF) (hb : b.WF) (hc : c.WF)
+    (hab : a.compare b = .lt) (hbc : b.compare c = .lt) : a.compare c = .lt := by
+  rw [compare_lt_iff ha hc]
+  rw [compare_lt_iff ha hb] at hab
+  rw [compare_lt_iff hb hc] at hbc
+  exact lt_trans hab hbc
+
+/-- Non-strict order (`≠ .gt`) under `compare` is reflexive. -/
+theorem compare_le_refl (a : ExactRational) : a.compare a ≠ .gt := by
+  rw [compare_self]; decide
+
+/-- On constructible rationals, non-strict order (`≠ .gt`) under `compare` is transitive. -/
+theorem compare_le_trans {a b c : ExactRational} (ha : a.WF) (hb : b.WF) (hc : c.WF)
+    (hab : a.compare b ≠ .gt) (hbc : b.compare c ≠ .gt) : a.compare c ≠ .gt := by
+  rw [compare_le_iff ha hc]
+  rw [compare_le_iff ha hb] at hab
+  rw [compare_le_iff hb hc] at hbc
+  exact le_trans hab hbc
+
+/-- On constructible rationals, non-strict order (`≠ .gt`) under `compare` is antisymmetric. -/
+theorem compare_le_antisymm {a b : ExactRational} (ha : a.WF) (hb : b.WF)
+    (hab : a.compare b ≠ .gt) (hba : b.compare a ≠ .gt) : a = b := by
+  rw [compare_le_iff ha hb] at hab
+  rw [compare_le_iff hb ha] at hba
+  exact eq_of_toRat_eq ha hb (le_antisymm hab hba)
+
+/-- Non-strict order (`≠ .gt`) under `compare` is total. -/
+theorem compare_le_total (a b : ExactRational) : a.compare b ≠ .gt ∨ b.compare a ≠ .gt := by
+  rw [compare_swap b a]
+  cases a.compare b <;> simp [Ordering.swap]
+
+/-- Trichotomy of `compare` on constructible rationals. -/
+theorem compare_trichotomy {a b : ExactRational} (ha : a.WF) (hb : b.WF) :
+    a.compare b = .lt ∨ a = b ∨ b.compare a = .lt := by
+  cases h : a.compare b
+  · exact Or.inl rfl
+  · exact Or.inr (Or.inl ((compare_eq_iff_eq ha hb).mp h))
+  · refine Or.inr (Or.inr ?_)
+    rw [compare_swap, h]
+    rfl
+
+end ExactRational
+
+namespace ExactDecimal
+
+/-- Every constructible decimal converts cleanly to an `ExactRational`, because `10 ^ 1000 < 2 ^ 16384`. -/
+theorem toRational_isOk {d : ExactDecimal} (hd : d.WF) :
+    ∃ r, d.toRational = .ok r ∧ r.WF ∧ r.toRat = d.toRat := by
+  have hs_le : d.scale.toNat ≤ 1000 := by
+    have := hd.scale_nonneg
+    have := hd.scale_le
+    change d.scale ≤ 1000 at this
+    omega
+  have h10_pos : (0 : Int) < 10 ^ d.scale.toNat := by positivity
+  have h10_w : withinMagnitude (10 ^ d.scale.toNat) = true := by
+    rw [withinMagnitude_iff]
+    have h_eq : ((10 : Int) ^ d.scale.toNat).natAbs = 10 ^ d.scale.toNat := by norm_cast
+    rw [h_eq]
+    calc 10 ^ d.scale.toNat
+        ≤ 10 ^ 1000 := Nat.pow_le_pow_right (by decide) hs_le
+      _ < (2 ^ 4) ^ 1000 := Nat.pow_lt_pow_left (by decide) (by decide)
+      _ = 2 ^ 4000 := by rw [← pow_mul]
+      _ < 2 ^ maxExactIntegerBits := Nat.pow_lt_pow_right (by decide) (by decide : 4000 < 16384)
+  have hok : ∃ r, d.toRational = .ok r := by
+    unfold toRational
+    rw [ExactRational.of_isOk_iff]
+    exact ⟨h10_pos, Or.inr ⟨hd.coefficient_within, h10_w⟩⟩
+  rcases hok with ⟨r, hr⟩
+  rcases toRational_ok hd hr with ⟨hr_wf, hr_rat⟩
+  exact ⟨r, hr, hr_wf, hr_rat⟩
+
+end ExactDecimal
+
+end Rastrata.Kernel

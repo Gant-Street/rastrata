@@ -1,0 +1,190 @@
+/* Styles for the entries lane: Spend money, Receive money, Transfer and the Business settings. Use the
+   tokens in base.css; no one-off colors. Structure comes from rules and space, not boxes. */
+
+/* ---- Spend money, Receive money, Transfer -------------------------------------------------------- */
+
+/* A tall form scrolls its fields and keeps what the entry will record, and the buttons, in view: the
+   dialog is as tall as the window allows, its body scrolls and its footer does not. */
+.rt-dialog.rt-quick {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: min(42rem, 100%);
+  max-height: calc(100dvh - 3rem);
+}
+
+/* A dialog that is closed but still in the page (a story keeps it mounted) stays hidden: the flex layout above
+   must not override the `hidden` the dialog is given when it closes. */
+.rt-dialog.rt-quick[hidden] {
+  display: none;
+}
+
+.rt-quick .rt-dialog-header,
+.rt-quick [data-part="description"] {
+  flex: 0 0 auto;
+}
+
+.rt-quick .rt-dialog-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  /* A focus ring and a field's edge are not clipped by the scroll area. */
+  padding: 0.25rem;
+  margin: 0 -0.25rem;
+  /* A field that takes focus is scrolled in with room around it, so on a phone the box being typed in is not
+     left flush against the line above the buttons. */
+  scroll-padding-block: 1rem;
+}
+
+.rt-quick .rt-dialog-actions {
+  flex: 0 0 auto;
+  display: grid;
+  gap: var(--rt-space-3);
+  justify-content: stretch;
+}
+
+.rt-quick-form {
+  min-width: 0;
+}
+
+/* Two to a row while there is room, in reading order; one to a row on a phone. */
+.rt-quick-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--rt-space-4);
+  align-items: start;
+}
+
+@media (max-width: 40rem) {
+  .rt-quick-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.rt-quick-fields > .rt-field,
+.rt-quick-description {
+  min-width: 0;
+  max-width: none;
+}
+
+.rt-quick-fields .rt-field {
+  max-width: none;
+}
+
+.rt-quick-description[data-wide] {
+  grid-column: 1 / -1;
+}
+
+/* The choices a person makes most often are a group of their own (a fieldset, so a screen reader names
+   it), and read as one line: what this is called, and the choice. */
+fieldset.rt-quick-presets {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.rt-quick-presets-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-2) var(--rt-space-3);
+  min-width: 0;
+}
+
+.rt-quick-presets-label {
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-quick-presets-hint {
+  flex: 1 0 100%;
+  margin: 0;
+}
+
+.rt-quick-presets .rt-button[aria-pressed="true"] {
+  background: var(--rt-selection);
+  box-shadow: inset 0 0 0 2px var(--rt-accent);
+}
+
+/* What the entry will do, in plain words, beside the buttons that do it. */
+.rt-quick-preview {
+  min-width: 0;
+}
+
+.rt-quick-preview h3 {
+  margin: 0 0 var(--rt-space-1);
+  font: 500 0.6875rem / 1.4 var(--rt-mono);
+  letter-spacing: var(--rt-label-tracking);
+  text-transform: uppercase;
+  color: var(--rt-muted);
+}
+
+.rt-quick-preview ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rt-quick-preview li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--rt-space-4);
+  padding: var(--rt-space-1) 0;
+  border-bottom: 1px solid var(--rt-divider);
+}
+
+.rt-quick-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.rt-quick-change {
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.rt-quick-preview p {
+  margin: 0;
+}
+
+/* Cancel on the left, the two ways to keep the entry on the right. */
+.rt-quick-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rt-space-3);
+}
+
+.rt-quick-save {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rt-space-3);
+  margin-inline-start: auto;
+}
+
+/* ---- Business settings -------------------------------------------------------------------------- */
+
+.rt-business-form {
+  max-width: 36rem;
+}
+
+.rt-business-hint {
+  margin: calc(var(--rt-space-2) * -1) 0 0;
+}
+
+.rt-business-form .rt-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rt-space-4);
+}
+
+.rt-business-status {
+  margin: 0;
+  font-weight: 700;
+}

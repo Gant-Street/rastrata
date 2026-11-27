@@ -1,0 +1,23 @@
+{
+  "data": {
+    "date": "2026-01-15",
+    "reference": "OPEN-1",
+    "narration": "Owner contribution",
+    "lines": [
+      {
+        "accountId": "1000",
+        "debit": "1000.00",
+        "credit": ""
+      },
+      {
+        "accountId": "3000",
+        "debit": "",
+        "credit": "1000.00"
+      }
+    ],
+    "source": {
+      "id": "capital-001",
+      "description": "Owner contributed USD 1000 on January 15, 2026"
+    }
+  }
+}

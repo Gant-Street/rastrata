@@ -1,0 +1,8 @@
+commodity UNIT  ; lots: FIFO
+account revenue:gains  ; type: G
+2025-01-02 Buy
+    assets:stock       2 UNIT {10 USD}
+    assets:cash      -20 USD
+2025-02-02 Sell
+    assets:stock      -1 UNIT {} @ 16 USD
+    assets:cash       16 USD

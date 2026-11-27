@@ -1,0 +1,10 @@
+2025-01-02 First
+    Assets:Stock       1 UNIT {$10} [2025-01-02]
+    Assets:Cash        -$10
+2025-02-02 Second
+    Assets:Stock       1 UNIT {$20} [2025-02-02]
+    Assets:Cash        -$20
+2025-03-02 Sell specifically
+    Assets:Stock      -1 UNIT {$20} [2025-02-02] @ $30
+    Assets:Cash        $30
+    Income:Gain

@@ -1,0 +1,20 @@
+// Public per-icon entrypoints avoid processing Lucide's entire catalog.
+export { default as Check } from "lucide-solid/icons/check";
+export { default as Plus } from "lucide-solid/icons/plus";
+export { default as Search } from "lucide-solid/icons/search";
+export { default as X } from "lucide-solid/icons/x";
+export { default as ArrowRight } from "lucide-solid/icons/arrow-right";
+export { default as ArrowDown } from "lucide-solid/icons/arrow-down";
+export { default as ArrowUp } from "lucide-solid/icons/arrow-up";
+export { default as CalendarDays } from "lucide-solid/icons/calendar-days";
+export { default as ChevronDown } from "lucide-solid/icons/chevron-down";
+export { default as ChevronLeft } from "lucide-solid/icons/chevron-left";
+export { default as ChevronRight } from "lucide-solid/icons/chevron-right";
+export { default as LockKeyhole } from "lucide-solid/icons/lock-keyhole";
+export { default as Menu } from "lucide-solid/icons/menu";
+export { default as Minus } from "lucide-solid/icons/minus";
+export { default as Ellipsis } from "lucide-solid/icons/ellipsis";
+export { default as ListFilter } from "lucide-solid/icons/list-filter";
+export { default as TriangleAlert } from "lucide-solid/icons/triangle-alert";
+export { default as Info } from "lucide-solid/icons/info";
+export { default as Trash } from "lucide-solid/icons/trash";

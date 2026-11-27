@@ -1,0 +1,10 @@
+{
+  // X1 spike, local runs only (the deployed copy is uploaded with the same worker.js).
+  "name": "rastrata-tail-spike",
+  "main": "worker.js",
+  "compatibility_date": "2026-07-30",
+  "workers_dev": true,
+  "preview_urls": false,
+  "durable_objects": { "bindings": [{ "name": "TAIL", "class_name": "BookTail" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["BookTail"] }]
+}

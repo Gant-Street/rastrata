@@ -1,0 +1,89 @@
+# X1 spike: the benchmark as a throwaway Job in a throwaway namespace (restricted pod security).
+# Render (set __WORKER_URL__ to the deployed Worker, without the scheme): sed -e 's/__NAME__/run1/' -e 's/__PHASES__/head,append/' -e 's/__RUN__/r1/' -e 's/__LABEL__/oke/' k8s.yaml
+# Needs a Secret tail-token (key token) and a ConfigMap bench (key bench.js) in the namespace.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: x1-spike
+  labels:
+    app.kubernetes.io/part-of: rastrata-x1-spike
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bench-__NAME__
+  namespace: x1-spike
+  labels:
+    app.kubernetes.io/part-of: rastrata-x1-spike
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 7200
+  activeDeadlineSeconds: 1500
+  template:
+    metadata:
+      labels:
+        app: x1-bench
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: bench
+          image: docker.io/oven/bun:1
+          command: ["bun", "/bench/bench.js"]
+          env:
+            - name: HOME
+              value: /tmp
+            - name: TAIL_URL
+              value: https://__WORKER_URL__
+            - name: TAIL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: tail-token
+                  key: token
+            - name: LABEL
+              value: "__LABEL__"
+            - name: PHASES
+              value: "__PHASES__"
+            - name: RUN_ID
+              value: "__RUN__"
+            - name: SEED_RUN
+              value: "__SEED__"
+            - name: BOOK
+              value: "__BOOK__"
+            - name: ROUNDS
+              value: "__ROUNDS__"
+            - name: ACKED_MAX
+              value: "__ACKED__"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+          volumeMounts:
+            - name: bench
+              mountPath: /bench
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: bench
+          configMap:
+            name: bench
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi

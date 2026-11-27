@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="robots" content="noindex" />
+    <script>
+      // Apply the saved theme before first paint so dark mode never flashes white.
+      let theme = "system";
+      try {
+        const saved = localStorage.getItem("rastrata-theme");
+        if (saved === "light" || saved === "dark") theme = saved;
+      } catch {
+        // Blocked storage keeps following the system.
+      }
+      document.documentElement.dataset.theme = theme;
+    </script>
+    <title>Sign in · Rastrata</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script type="module" src="./src/signin-main.tsx"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Enable JavaScript to sign in to Rastrata.</noscript>
+  </body>
+</html>

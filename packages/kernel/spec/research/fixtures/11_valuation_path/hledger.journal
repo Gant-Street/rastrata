@@ -1,0 +1,5 @@
+P 2025-01-01 AAA 2 BBB
+P 2025-01-01 BBB 3 USD
+2025-01-01 Opening
+    assets:token       1 AAA
+    equity:opening    -1 AAA

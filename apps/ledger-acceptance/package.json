@@ -1,0 +1,23 @@
+{
+  "name": "@rastrata/ledger-acceptance",
+  "private": true,
+  "version": "0.0.0",
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.test.json",
+    "test": "bun test --timeout 60000 test",
+    "deploy": "bun --env-file=../../.env scripts/deploy.ts",
+    "smoke:remote": "bun --env-file=../../.env.ledger-dev scripts/smoke.ts"
+  },
+  "dependencies": {
+    "@rastrata/kernel": "workspace:*",
+    "@rastrata/ledger": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.4",
+    "miniflare": "4.20260730.0",
+    "typescript": "7.0.2",
+    "wrangler": "4.157.0"
+  }
+}

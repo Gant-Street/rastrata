@@ -1,0 +1,217 @@
+{
+  "version": "rastrata-kernel-golden-company-v1",
+  "unit": "USD cent",
+  "sign_convention": "debit positive, credit negative",
+  "book": {
+    "id": "BOOK-GOLDEN-US",
+    "owner": "Golden Company LLC",
+    "functional_commodity": "USD",
+    "basis": "accrual",
+    "timezone": "America/Denver",
+    "opening_date": "2026-01-01"
+  },
+  "accounts": {
+    "1000": {"name": "Cash", "role": "asset", "normal_side": "debit"},
+    "1100": {"name": "Accounts receivable", "role": "asset", "normal_side": "debit"},
+    "1200": {"name": "Inventory", "role": "asset", "normal_side": "debit"},
+    "1500": {"name": "Equipment", "role": "asset", "normal_side": "debit"},
+    "1590": {"name": "Accumulated depreciation", "role": "asset", "normal_side": "credit"},
+    "2000": {"name": "Accounts payable", "role": "liability", "normal_side": "credit"},
+    "2100": {"name": "Sales tax payable", "role": "liability", "normal_side": "credit"},
+    "3000": {"name": "Contributed capital", "role": "equity", "normal_side": "credit"},
+    "3100": {"name": "Retained earnings", "role": "equity", "normal_side": "credit"},
+    "4000": {"name": "Revenue", "role": "income", "normal_side": "credit"},
+    "5000": {"name": "Cost of goods sold", "role": "expense", "normal_side": "debit"},
+    "6000": {"name": "Operating expense", "role": "expense", "normal_side": "debit"},
+    "6100": {"name": "Depreciation expense", "role": "expense", "normal_side": "debit"},
+    "7000": {"name": "Realized foreign-exchange gain", "role": "gain", "normal_side": "credit"}
+  },
+  "journals": [
+    {
+      "id": "J001", "kind": "opening", "revision": 1, "posting_sequence": 1,
+      "accounting_date": "2026-01-01", "command_id": "C001", "cash_flow_activity": "opening",
+      "postings": {"1000": 100000, "1200": 30000, "3000": -130000}
+    },
+    {
+      "id": "J002", "kind": "ordinary", "revision": 2, "posting_sequence": 2,
+      "accounting_date": "2026-01-10", "command_id": "C002",
+      "postings": {"1100": 12000, "4000": -10000, "2100": -2000}
+    },
+    {
+      "id": "J003", "kind": "ordinary", "revision": 3, "posting_sequence": 3,
+      "accounting_date": "2026-01-12", "command_id": "C003", "cash_flow_activity": "operating",
+      "postings": {"1000": 5000, "1100": -5000}
+    },
+    {
+      "id": "J004", "kind": "ordinary", "revision": 4, "posting_sequence": 4,
+      "accounting_date": "2026-01-20", "command_id": "C004", "cash_flow_activity": "operating",
+      "postings": {"1000": 7000, "1100": -7000}
+    },
+    {
+      "id": "J005", "kind": "ordinary", "revision": 5, "posting_sequence": 5,
+      "accounting_date": "2026-01-21", "command_id": "C005",
+      "postings": {"6000": 4000, "2000": -4000}
+    },
+    {
+      "id": "J006", "kind": "ordinary", "revision": 6, "posting_sequence": 6,
+      "accounting_date": "2026-01-22", "command_id": "C006", "cash_flow_activity": "operating",
+      "postings": {"2000": 4000, "1000": -4000}
+    },
+    {
+      "id": "J007", "kind": "ordinary", "revision": 7, "posting_sequence": 7,
+      "accounting_date": "2026-01-23", "command_id": "C007", "cash_flow_activity": "investing",
+      "postings": {"1500": 24000, "1000": -24000}
+    },
+    {
+      "id": "J008", "kind": "adjustment", "revision": 8, "posting_sequence": 8,
+      "accounting_date": "2026-01-31", "command_id": "C008",
+      "postings": {"6100": 4000, "1590": -4000}
+    },
+    {
+      "id": "J009", "kind": "ordinary", "revision": 9, "posting_sequence": 9,
+      "accounting_date": "2026-01-25", "command_id": "C009", "cash_flow_activity": "operating",
+      "postings": {"1000": 15000, "4000": -15000, "5000": 12000, "1200": -12000}
+    },
+    {
+      "id": "J010", "kind": "ordinary", "revision": 10, "posting_sequence": 10,
+      "accounting_date": "2026-01-26", "command_id": "C010",
+      "postings": {"1100": 10837, "4000": -10837}
+    },
+    {
+      "id": "J011", "kind": "ordinary", "revision": 11, "posting_sequence": 11,
+      "accounting_date": "2026-01-28", "command_id": "C011", "cash_flow_activity": "operating",
+      "postings": {"1000": 11000, "1100": -10837, "7000": -163}
+    },
+    {
+      "id": "J012", "kind": "ordinary", "revision": 12, "posting_sequence": 12,
+      "accounting_date": "2026-01-29", "command_id": "C012", "cash_flow_activity": "operating",
+      "postings": {"6000": 900, "1000": -900}
+    },
+    {
+      "id": "J013", "kind": "reversing", "revision": 13, "posting_sequence": 13,
+      "accounting_date": "2026-01-30", "command_id": "C013", "cash_flow_activity": "operating", "reverses": "J012",
+      "postings": {"6000": -900, "1000": 900}
+    },
+    {
+      "id": "J014", "kind": "ordinary", "revision": 14, "posting_sequence": 14,
+      "accounting_date": "2026-01-30", "command_id": "C014", "cash_flow_activity": "operating", "replaces": "J012",
+      "postings": {"6000": 600, "1000": -600}
+    },
+    {
+      "id": "J015", "kind": "closing", "revision": 17, "posting_sequence": 15,
+      "accounting_date": "2026-12-31", "command_id": "C017", "closes_period": "2026",
+      "postings": {"4000": 35837, "7000": 163, "5000": -12000, "6000": -4600, "6100": -4000, "3100": -15400}
+    }
+  ],
+  "non_journal_revisions": [
+    {"revision": 15, "kind": "close", "period": "2026-01", "through_posting_sequence": 14},
+    {"revision": 16, "kind": "reopen", "period": "2026-01", "prior_close_revision": 15}
+  ],
+  "command_replay_cases": [
+    {"command_id": "C011", "input_hash": "fx-settlement-v1", "expected": "replayed"},
+    {"command_id": "C011", "input_hash": "changed-content", "expected": "rejected"},
+    {"command_id": "C018", "expected_book_revision": 14, "current_book_revision": 17, "expected": "rejected_stale"}
+  ],
+  "lots": [
+    {"id": "LOT-A", "acquired_at": "2026-01-01T00:00:00Z", "label": "opening-stock", "original_quantity": "10", "original_basis": "10000", "consumed_quantity": "6", "consumed_basis": "6000", "remaining_quantity": "4", "remaining_basis": "4000"},
+    {"id": "LOT-B", "acquired_at": "2026-01-01T00:00:00Z", "label": "opening-stock", "original_quantity": "10", "original_basis": "20000", "consumed_quantity": "3", "consumed_basis": "6000", "remaining_quantity": "7", "remaining_basis": "14000"}
+  ],
+  "repeating_basis_case": {
+    "original_quantity": "7",
+    "original_basis": "5000",
+    "allocated_quantity": "3",
+    "allocated_basis": "15000/7",
+    "remaining_quantity": "4",
+    "remaining_basis": "20000/7"
+  },
+  "fx": {
+    "transaction_quantity_minor": 10000,
+    "initial_book_value": 10837,
+    "settlement_book_value": 11000,
+    "realized_gain": 163
+  },
+  "accounting_kernel_extension": {
+    "configuration_revision": 1,
+    "policy_families": [
+      "inventoryCost",
+      "accountingBasis",
+      "monetaryClassification",
+      "currencyRemeasurement",
+      "allocationSchedule",
+      "taxDetermination",
+      "consolidation"
+    ],
+    "command_kinds": [
+      "postInventoryTransaction",
+      "recostProvisionalInventory",
+      "recognizeOpenItem",
+      "applySettlement",
+      "postCurrencyRemeasurement",
+      "createAllocationSchedule",
+      "recognizeScheduledAllocation",
+      "postTaxedTransaction",
+      "compileConsolidation"
+    ],
+    "immutable_effect_families": [
+      "provisionalInventoryLayer",
+      "inventoryRecosting",
+      "openItem",
+      "settlement",
+      "settlementAllocation",
+      "remeasurementResult",
+      "remeasurementReversal",
+      "allocationSchedule",
+      "allocationRecognition",
+      "taxDetermination",
+      "consolidationCompilation"
+    ],
+    "executable_oracles": [
+      "D01-deterministic-inventory-costing",
+      "D03-provisional-inventory-recosting",
+      "D05-many-to-many-open-item-settlement",
+      "D07-tied-accounting-basis-projections",
+      "D09-currency-settlement-and-period-remeasurement",
+      "D11-exact-allocation-schedule",
+      "D13-versioned-tax-determination",
+      "D15-reproducible-consolidation",
+      "D17-workflow-independent-command"
+    ],
+    "durable_round_trip": true,
+    "replay_stable": true,
+    "derived_lifecycle_rebuilt_from_effects": true
+  },
+  "expected_pre_close_balances": {
+    "1000": 109400, "1100": 0, "1200": 18000, "1500": 24000, "1590": -4000,
+    "2000": 0, "2100": -2000, "3000": -130000, "3100": 0, "4000": -35837,
+    "5000": 12000, "6000": 4600, "6100": 4000, "7000": -163
+  },
+  "expected_reports": {
+    "net_income": 15400,
+    "assets": 147400,
+    "liabilities": 2000,
+    "contributed_capital": 130000,
+    "current_earnings": 15400,
+    "opening_cash": 100000,
+    "operating_cash_change": 33400,
+    "investing_cash_change": -24000,
+    "financing_cash_change": 0,
+    "ending_cash": 109400
+  },
+  "report_population": {
+    "basis": "accrual",
+    "reporting_policy_snapshot_hash": "sha256:golden-reporting-policy-v1",
+    "range_starts_on": "2026-01-01",
+    "through_on": "2026-12-31",
+    "through_book_revision": 16,
+    "through_posting_sequence": 14,
+    "report_kinds": [
+      "journalRegister", "generalLedger", "trialBalance",
+      "profitAndLoss", "balanceSheet", "cashFlow"
+    ]
+  },
+  "expected_post_close_balances": {
+    "1000": 109400, "1100": 0, "1200": 18000, "1500": 24000, "1590": -4000,
+    "2000": 0, "2100": -2000, "3000": -130000, "3100": -15400, "4000": 0,
+    "5000": 0, "6000": 0, "6100": 0, "7000": 0
+  }
+}

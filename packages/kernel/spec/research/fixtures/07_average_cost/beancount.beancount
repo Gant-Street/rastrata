@@ -1,0 +1,15 @@
+option "booking_method" "AVERAGE"
+2025-01-01 open Assets:Stock UNIT
+2025-01-01 open Assets:Cash USD
+2025-01-01 open Income:Gain USD
+
+2025-01-02 * "Buy first"
+  Assets:Stock       2 UNIT {10 USD}
+  Assets:Cash      -20 USD
+2025-02-02 * "Buy second"
+  Assets:Stock       1 UNIT {16 USD}
+  Assets:Cash      -16 USD
+2025-03-02 * "Sell"
+  Assets:Stock      -1 UNIT {} @ 20 USD
+  Assets:Cash       20 USD
+  Income:Gain
