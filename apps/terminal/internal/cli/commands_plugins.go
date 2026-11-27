@@ -20,29 +20,31 @@ import (
 // Plugin commands: Stripe-level developer and operator workflow for out-of-process ingestion
 // plugins built on @rastrata/plugin-sdk (MIT).
 //
-//	rastrata plugin init <slug> [--kind bank|ledger] [--dir PATH]
+//	rastrata plugin init <slug> [--kind bank|ledger|file] [--dir PATH]
 //	rastrata plugin test <dir>
+//	rastrata plugin search [query] [--registry URL-OR-FILE]
 //	rastrata plugin list
 //	rastrata plugin status <id>
-//	rastrata plugin install <dir-or-manifest.json> [--map R=A,...] [--account K=A[@D],...] [--config K=V,...] [--disabled]
+//	rastrata plugin install <slug-or-dir-or-manifest.json> [--registry URL-OR-FILE] [--map R=A,...] [--account K=A[@D],...] [--config K=V,...] [--disabled]
 //	rastrata plugin configure <id> [--map R=A,...|none] [--account K=A[@D],...|none] [--config K=V,...|none] [--enabled true|false]
 //	rastrata plugin remove <id>
 //	rastrata plugin token-create <id> --label TEXT [--expires-in-days N]
 //	rastrata plugin token-list [<id>]
 //	rastrata plugin token-revoke <token-id> [--reason TEXT]
-//	rastrata plugin sync <dir> [--dry-run] [--token-env VAR] [--book-currency USD] [--time-zone UTC] [--cursor C] [--config K=V,...]
+//	rastrata plugin sync <dir> [--dry-run] [--file PATH] [--token-env VAR] [--book-currency USD] [--time-zone UTC] [--cursor C] [--config K=V,...]
 func init() {
-	Register(Command{Name: "plugin init", Summary: "Plugins: scaffold a new MIT ingestion plugin with manifest, SDK template, and 5-invariant test suite <slug> [--kind bank|ledger] [--dir PATH]", Offline: true, Run: runPluginInit})
+	Register(Command{Name: "plugin init", Summary: "Plugins: scaffold a new MIT ingestion plugin with manifest, SDK template, and 5-invariant test suite <slug> [--kind bank|ledger|file] [--dir PATH]", Offline: true, Run: runPluginInit})
 	Register(Command{Name: "plugin test", Summary: "Plugins: run a plugin's test suite out-of-process with a stripped environment <dir>", Offline: true, Run: runPluginTest})
+	Register(Command{Name: "plugin search", Summary: "Plugins: search the Rastrata plugin registry for verified connectors [query] [--registry URL-OR-FILE]", Offline: true, Run: runPluginSearch})
 	Register(Command{Name: "plugin list", Summary: "Plugins: list installed ingestion plugins, readiness, missing roles, and last sync", Run: runPluginList})
 	Register(Command{Name: "plugin status", Summary: "Plugins: show resolved account roles, cursors, domains, and readiness <id>", Run: runPluginStatus})
-	Register(Command{Name: "plugin install", Summary: "Plugins: inspect manifest domains/roles and install or upgrade a plugin <dir-or-manifest.json> [--map R=A,...] [--account K=A[@D],...] [--config K=V,...] [--disabled]", Run: runPluginInstall})
+	Register(Command{Name: "plugin install", Summary: "Plugins: inspect manifest domains/roles and install or upgrade a plugin <slug-or-dir-or-manifest.json> [--registry URL-OR-FILE] [--map R=A,...] [--account K=A[@D],...] [--config K=V,...] [--disabled]", Run: runPluginInstall})
 	Register(Command{Name: "plugin configure", Summary: "Plugins: update role mappings, bank account cutovers, config fields, or enabled state <id> [--map R=A,...|none] [--account K=A[@D],...|none] [--config K=V,...|none] [--enabled true|false]", Run: runPluginConfigure})
 	Register(Command{Name: "plugin remove", Summary: "Plugins: remove an installed plugin and revoke its rsp_ tokens (ledger history stays intact) <id>", Run: runPluginRemove})
 	Register(Command{Name: "plugin token-create", Summary: "Plugins: create a least-privilege rsp_ token bound strictly to one plugin (shown once) <id> --label TEXT [--expires-in-days N]", Run: runPluginTokenCreate})
 	Register(Command{Name: "plugin token-list", Summary: "Plugins: list plugin rsp_ tokens and their status without revealing secrets [<id>]", Run: runPluginTokenList})
 	Register(Command{Name: "plugin token-revoke", Summary: "Plugins: revoke a plugin rsp_ token immediately <token-id> [--reason TEXT]", Run: runPluginTokenRevoke})
-	Register(Command{Name: "plugin sync", Summary: "Plugins: run a plugin out-of-process with stripped env, preview with --dry-run, or push to Rastrata <dir> [--dry-run] [--token-env VAR] [--book-currency USD] [--time-zone UTC] [--cursor C] [--config K=V,...]", Run: runPluginSync})
+	Register(Command{Name: "plugin sync", Summary: "Plugins: run a plugin out-of-process with stripped env, preview with --dry-run, or push to Rastrata <dir> [--dry-run] [--file PATH] [--token-env VAR] [--book-currency USD] [--time-zone UTC] [--cursor C] [--config K=V,...]", Run: runPluginSync})
 }
 
 var (
@@ -257,14 +259,14 @@ func runPluginStatus(r Runner, ctx context.Context, o Options, c *api.Client) in
 }
 
 func runPluginInstall(r Runner, ctx context.Context, o Options, c *api.Client) int {
-	const usage = "plugin install <dir-or-manifest.json> [--map R=A,...] [--account K=A[@D],...] [--config K=V,...] [--disabled]"
+	const usage = "plugin install <slug-or-dir-or-manifest.json> [--registry URL-OR-FILE] [--map R=A,...] [--account K=A[@D],...] [--config K=V,...] [--disabled]"
 	if len(o.Args) != 3 {
-		return pluginUsage(r, o, "plugin install requires a plugin directory or manifest.json path", usage)
+		return pluginUsage(r, o, "plugin install requires a plugin slug, directory, or manifest.json path", usage)
 	}
-	if problem := pluginFlagProblem(o, []string{"map", "account", "config", "disabled"}, []string{"map", "account", "config"}); problem != "" {
+	if problem := pluginFlagProblem(o, []string{"registry", "map", "account", "config", "disabled"}, []string{"registry", "map", "account", "config"}); problem != "" {
 		return pluginUsage(r, o, problem, usage)
 	}
-	manifest, manifestPath, err := loadPluginManifest(o.Args[2])
+	manifest, manifestPath, err := resolvePluginManifest(ctx, o.Args[2], o.Flags["registry"])
 	if err != nil {
 		return r.localError(o, "invalid_manifest", err.Error(), 2)
 	}
@@ -495,6 +497,8 @@ func runPluginTest(r Runner, ctx context.Context, o Options, _ *api.Client) int 
 // pluginSyncRunnerJS runs inside a stripped-environment Bun child process, imports the plugin
 // module and @rastrata/plugin-sdk/runner, and prints a single JSON result on stdout.
 const pluginSyncRunnerJS = `
+import { readFileSync } from "node:fs";
+import { basename, extname } from "node:path";
 import { pathToFileURL } from "node:url";
 import { isPluginError } from "@rastrata/plugin-sdk";
 import { runPluginSync } from "@rastrata/plugin-sdk/runner";
@@ -513,6 +517,19 @@ try {
   const config = process.env.RASTRATA_PLUGIN_CONFIG_JSON ? JSON.parse(process.env.RASTRATA_PLUGIN_CONFIG_JSON) : {};
   const cursor = process.env.RASTRATA_PLUGIN_CURSOR ? process.env.RASTRATA_PLUGIN_CURSOR : undefined;
 
+  let fixtures;
+  const filePath = process.env.RASTRATA_PLUGIN_FILE;
+  if (filePath) {
+    const ext = extname(filePath).toLowerCase();
+    const mediaType =
+      ext === ".csv" ? "text/csv" :
+      ext === ".tsv" ? "text/tab-separated-values" :
+      ext === ".json" ? "application/json" :
+      ext === ".ofx" || ext === ".qfx" ? "application/x-ofx" :
+      "application/octet-stream";
+    fixtures = [{ bytes: new Uint8Array(readFileSync(filePath)), mediaType, name: basename(filePath) }];
+  }
+
   const result = await runPluginSync(plugin, {
     dryRun,
     endpoint: process.env.RASTRATA_API_URL || "http://127.0.0.1:4010",
@@ -523,6 +540,7 @@ try {
     bookCurrency: process.env.RASTRATA_PLUGIN_CURRENCY || "USD",
     timeZone: process.env.RASTRATA_PLUGIN_TZ || "UTC",
     ...(cursor !== undefined ? { cursor } : {}),
+    ...(fixtures !== undefined ? { fixtures } : {}),
   });
 
   process.stdout.write(JSON.stringify({
@@ -545,14 +563,14 @@ try {
 `
 
 func runPluginSync(r Runner, ctx context.Context, o Options, c *api.Client) int {
-	const usage = "plugin sync <dir> [--dry-run] [--token-env VAR] [--book-currency USD] [--time-zone UTC] [--cursor CURSOR] [--config K=V,...]"
+	const usage = "plugin sync <dir> [--dry-run] [--file PATH] [--token-env VAR] [--book-currency USD] [--time-zone UTC] [--cursor CURSOR] [--config K=V,...]"
 	if len(o.Args) != 3 {
 		return pluginUsage(r, o, "plugin sync requires a plugin directory", usage)
 	}
 	if problem := pluginFlagProblem(
 		o,
-		[]string{"dry-run", "token-env", "book-currency", "time-zone", "cursor", "config"},
-		[]string{"token-env", "book-currency", "time-zone", "cursor", "config"},
+		[]string{"dry-run", "file", "token-env", "book-currency", "time-zone", "cursor", "config"},
+		[]string{"file", "token-env", "book-currency", "time-zone", "cursor", "config"},
 	); problem != "" {
 		return pluginUsage(r, o, problem, usage)
 	}
@@ -563,6 +581,27 @@ func runPluginSync(r Runner, ctx context.Context, o Options, c *api.Client) int 
 	manifest, _, err := loadPluginManifest(dir)
 	if err != nil {
 		return r.localError(o, "invalid_manifest", err.Error(), 2)
+	}
+
+	inputFile := ""
+	if rawFile, given := o.Flags["file"]; given {
+		absFile, err := filepath.Abs(rawFile)
+		if err != nil {
+			return r.localError(o, "invalid_input", err.Error(), 2)
+		}
+		info, err := os.Stat(absFile)
+		if err != nil || info.IsDir() {
+			return r.localError(o, "invalid_input", fmt.Sprintf("Cannot read input file %q.", rawFile), 2)
+		}
+		if info.Size() == 0 {
+			return r.localError(o, "invalid_input", fmt.Sprintf("Input file %q is empty.", rawFile), 2)
+		}
+		if info.Size() > 16*1024*1024 {
+			return r.localError(o, "payload_too_large", fmt.Sprintf("Input file %q exceeds the 16 MiB limit.", rawFile), 2)
+		}
+		inputFile = absFile
+	} else if manifest.AuthKind == "file" {
+		return pluginUsage(r, o, "--file PATH is required for file-based plugins", usage)
 	}
 
 	entry := filepath.Join(dir, "src", "index.ts")
@@ -665,6 +704,9 @@ func runPluginSync(r Runner, ctx context.Context, o Options, c *api.Client) int 
 	if cursor, given := o.Flags["cursor"]; given {
 		childEnv = append(childEnv, "RASTRATA_PLUGIN_CURSOR="+cursor)
 	}
+	if inputFile != "" {
+		childEnv = append(childEnv, "RASTRATA_PLUGIN_FILE="+inputFile)
+	}
 
 	cmd := exec.CommandContext(ctx, bunPath, "-e", pluginSyncRunnerJS)
 	cmd.Dir = dir
@@ -744,7 +786,7 @@ func titleFromSlug(slug string) string {
 }
 
 func runPluginInit(r Runner, _ context.Context, o Options, _ *api.Client) int {
-	const usage = "plugin init <slug> [--kind bank|ledger] [--dir PATH]"
+	const usage = "plugin init <slug> [--kind bank|ledger|file] [--dir PATH]"
 	if len(o.Args) != 3 {
 		return pluginUsage(r, o, "plugin init requires a lowercase slug (for example: acme-bank)", usage)
 	}
@@ -753,14 +795,14 @@ func runPluginInit(r Runner, _ context.Context, o Options, _ *api.Client) int {
 	}
 	slug := o.Args[2]
 	if !pluginSlugPattern.MatchString(slug) {
-		return pluginUsage(r, o, "slug must be 3-32 lowercase letters, digits, or hyphens (for example: mercury, acme-billing)", usage)
+		return pluginUsage(r, o, "slug must be 3-32 lowercase letters, digits, or hyphens (for example: chase-csv, acme-billing)", usage)
 	}
 	kind := o.Flags["kind"]
 	if kind == "" {
 		kind = "bank"
 	}
-	if kind != "bank" && kind != "ledger" {
-		return pluginUsage(r, o, "--kind must be bank (BankLine feed) or ledger (multi-leg LedgerEvent + clearing)", usage)
+	if kind != "bank" && kind != "ledger" && kind != "file" {
+		return pluginUsage(r, o, "--kind must be bank (BankLine feed), ledger (multi-leg LedgerEvent + clearing), or file (offline CSV/JSON normalizer)", usage)
 	}
 	targetDir := o.Flags["dir"]
 	if targetDir == "" {
@@ -789,7 +831,11 @@ func runPluginInit(r Runner, _ context.Context, o Options, _ *api.Client) int {
 	sort.Strings(created)
 
 	fmt.Fprintf(r.Diagnostics, "Scaffolded MIT Rastrata plugin %q (%s) in %s\n", slug, kind, targetDir)
-	fmt.Fprintf(r.Diagnostics, "Next steps:\n  1. cd %s && bun install && bun test\n  2. export %s=...\n  3. rastrata plugin sync %s --dry-run\n  4. rastrata plugin install %s\n", targetDir, envVar, targetDir, targetDir)
+	if kind == "file" {
+		fmt.Fprintf(r.Diagnostics, "Next steps:\n  1. cd %s && bun install && bun test\n  2. rastrata plugin sync %s --file sample.csv --dry-run --format text\n  3. rastrata plugin install %s\n", targetDir, targetDir, targetDir)
+	} else {
+		fmt.Fprintf(r.Diagnostics, "Next steps:\n  1. cd %s && bun install && bun test\n  2. export %s=...\n  3. rastrata plugin sync %s --dry-run --format text\n  4. rastrata plugin install %s\n", targetDir, envVar, targetDir, targetDir)
+	}
 
 	data, _ := json.Marshal(map[string]any{
 		"pluginId": slug,
@@ -868,6 +914,169 @@ SOFTWARE.
    rastrata plugin sync .
    `+"```"+`
 `, title, envVar, slug)
+
+	if kind == "file" {
+		fileReadme := fmt.Sprintf(`# %s Rastrata File Plugin (MIT)
+
+Offline CSV normalizer — zero network calls, zero API keys.
+
+## Quick start
+
+1. Run the 5-invariant test suite:
+
+   `+"```sh"+`
+   rastrata plugin test .
+   `+"```"+`
+
+2. Preview entries from a sample CSV without writing to your book:
+
+   `+"```sh"+`
+   rastrata plugin sync . --file sample.csv --dry-run --format text
+   `+"```"+`
+
+3. Install, issue a plugin token, and import a statement file:
+
+   `+"```sh"+`
+   rastrata plugin install .
+   rastrata plugin token-create %s --label "CSV import"
+   export RASTRATA_PLUGIN_TOKEN="rsp_..."
+   rastrata plugin sync . --file sample.csv
+   `+"```"+`
+`, title, slug)
+
+		manifestJSON := fmt.Sprintf(`{
+  "id": %q,
+  "version": "0.1.0",
+  "name": %q,
+  "description": "Imports %s CSV exports into For review with zero network access.",
+  "domains": [],
+  "authKind": "file",
+  "roles": []
+}
+`, slug, title, title)
+
+		indexTS := fmt.Sprintf(`import { definePlugin, money, PluginError, sanitizeText } from "@rastrata/plugin-sdk";
+
+function parseCsvLine(line: string): string[] {
+  const fields: string[] = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i += 1) {
+    const ch = line[i];
+    if (inQuotes) {
+      if (ch === "\"" && line[i + 1] === "\"") {
+        current += "\"";
+        i += 1;
+      } else if (ch === "\"") {
+        inQuotes = false;
+      } else {
+        current += ch;
+      }
+    } else if (ch === "\"") {
+      inQuotes = true;
+    } else if (ch === ",") {
+      fields.push(current.trim());
+      current = "";
+    } else {
+      current += ch;
+    }
+  }
+  fields.push(current.trim());
+  return fields;
+}
+
+function parseAmountToMoney(raw: string, rowNum: number): string {
+  const cleaned = raw.replace(/[$,\s]/g, "");
+  const match = /^([+-]?)(\d+)(?:\.(\d{1,2}))?$/.exec(cleaned);
+  if (!match) {
+    throw new PluginError({
+      code: "invalid_money",
+      message: `+"`Row ${rowNum} has invalid amount ${JSON.stringify(raw)}.`"+`,
+      hint: "Expected a two-decimal amount such as -42.50 or 1250.00.",
+    });
+  }
+  const sign = match[1] === "-" ? -1n : 1n;
+  const dollars = BigInt(match[2] ?? "0");
+  const cents = BigInt((match[3] ?? "").padEnd(2, "0"));
+  return money.fromCents(sign * (dollars * 100n + cents));
+}
+
+export default definePlugin({
+  manifest: {
+    id: %q,
+    version: "0.1.0",
+    name: %q,
+    description: "Imports %s CSV exports into For review with zero network access.",
+    capabilities: ["ingest"],
+    domains: [],
+    auth: { kind: "file", extensions: [".csv"] },
+  },
+
+  normalize(raw, ctx) {
+    const text = new TextDecoder("utf-8").decode(raw.bytes).replace(/^\uFEFF/, "");
+    const rows = text
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+    if (rows.length <= 1) return { lines: [] };
+
+    const lines = rows.slice(1).map((row, idx) => {
+      const [postedOn = "", description = "", amountRaw = ""] = parseCsvLine(row);
+      const amount = parseAmountToMoney(amountRaw, idx + 2);
+      const cleanDesc = sanitizeText(description, 400) || "%s transaction";
+      return ctx.emit.bankLine({
+        accountKey: "%s:default",
+        providerId: `+"`%s:${postedOn}:${amount}:${idx}`"+`,
+        rawIndex: idx,
+        postedOn,
+        amount,
+        currency: ctx.bookCurrency,
+        description: cleanDesc,
+      });
+    });
+
+    return { lines };
+  },
+});
+`, slug, title, title, title, slug, slug)
+
+		sampleCSV := "Date,Description,Amount\n2026-10-02,\"AWS Cloud Services\",-42.50\n2026-10-05,\"Client Retainer\",2500.00\n"
+
+		testTS := fmt.Sprintf(`import { expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { manifestToInstallPayload } from "@rastrata/plugin-sdk/runner";
+import { testPlugin } from "@rastrata/plugin-sdk/testing";
+import plugin from "../src/index.ts";
+
+test("manifest.json matches plugin manifest", () => {
+  const file = JSON.parse(readFileSync(join(import.meta.dir, "..", "manifest.json"), "utf8"));
+  expect(file).toEqual(manifestToInstallPayload(plugin.manifest));
+});
+
+test("%s normalizes CSV fixture and passes all five invariants", async () => {
+  const bytes = new Uint8Array(readFileSync(join(import.meta.dir, "..", "sample.csv")));
+  const report = await testPlugin(plugin, {
+    fixtures: [{ bytes, mediaType: "text/csv", name: "sample.csv" }],
+  });
+  expect(report.issues).toEqual([]);
+  expect(report.ok).toBe(true);
+  expect(report.summary.bankLineCount).toBe(2);
+  expect(report.preview).toContain("-42.50");
+  expect(report.preview).toContain("2500.00");
+});
+`, slug)
+
+		return map[string]string{
+			"LICENSE":             license,
+			"package.json":        pkgJSON,
+			"manifest.json":       manifestJSON,
+			"README.md":           fileReadme,
+			"sample.csv":          sampleCSV,
+			"src/index.ts":        indexTS,
+			"test/plugin.test.ts": testTS,
+		}
+	}
 
 	if kind == "ledger" {
 		manifestJSON := fmt.Sprintf(`{

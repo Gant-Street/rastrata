@@ -211,3 +211,121 @@ func TestPluginTestRunsOfficialReferencePluginsWithStrippedEnv(t *testing.T) {
 		}
 	}
 }
+
+func TestPluginInitFileAndSyncDryRunWithCSVFixture(t *testing.T) {
+	// Scaffold inside a temp dir inside the monorepo parent? Use t.TempDir() and symlink node_modules
+	// so bun resolves @rastrata/plugin-sdk cleanly without network access.
+	dir := filepath.Join(t.TempDir(), "plugin-demo-csv")
+	var out, diag bytes.Buffer
+	r := Runner{Output: &out, Diagnostics: &diag}
+	code := r.Run(context.Background(), []string{"plugin", "init", "demo-csv", "--kind", "file", "--dir", dir})
+	if code != 0 {
+		t.Fatalf("plugin init --kind file failed (exit %d): %s / %s", code, out.String(), diag.String())
+	}
+	repoRoot, err := filepath.Abs(filepath.Join("..", "..", "..", ".."))
+	if err != nil {
+		t.Fatal(err)
+	}
+	scopeDir := filepath.Join(dir, "node_modules", "@rastrata")
+	if err := os.MkdirAll(scopeDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(filepath.Join(repoRoot, "packages", "plugin-sdk"), filepath.Join(scopeDir, "plugin-sdk")); err != nil {
+		t.Fatal(err)
+	}
+
+	out.Reset()
+	diag.Reset()
+	code = r.Run(context.Background(), []string{"plugin", "test", dir})
+	if code != 0 {
+		t.Fatalf("plugin test on scaffolded file plugin failed (exit %d): %s / %s", code, out.String(), diag.String())
+	}
+
+	out.Reset()
+	diag.Reset()
+	code = r.Run(context.Background(), []string{
+		"plugin", "sync", dir,
+		"--file", filepath.Join(dir, "sample.csv"),
+		"--dry-run",
+		"--format", "text",
+	})
+	if code != 0 {
+		t.Fatalf("plugin sync --file --dry-run failed (exit %d): %s / %s", code, out.String(), diag.String())
+	}
+	if !strings.Contains(out.String(), "-42.50") || !strings.Contains(out.String(), "2500.00") {
+		t.Fatalf("expected CSV preview table with -42.50 and 2500.00, got:\n%s", out.String())
+	}
+}
+
+func TestPluginSearchAndInstallFromLocalRegistry(t *testing.T) {
+	regFile := filepath.Join(t.TempDir(), "registry.json")
+	doc := builtInOfficialRegistry()
+	raw, _ := json.Marshal(doc)
+	if err := os.WriteFile(regFile, raw, 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	var out, diag bytes.Buffer
+	r := Runner{Output: &out, Diagnostics: &diag}
+	code := r.Run(context.Background(), []string{"plugin", "search", "stripe", "--registry", regFile, "--format", "text"})
+	if code != 0 {
+		t.Fatalf("plugin search failed (exit %d): %s / %s", code, out.String(), diag.String())
+	}
+	if !strings.Contains(out.String(), "stripe") || !strings.Contains(out.String(), "api.stripe.com") {
+		t.Fatalf("expected stripe entry in search output, got:\n%s", out.String())
+	}
+
+	var gotOp string
+	var gotManifestID string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		gotOp = strings.TrimPrefix(req.URL.Path, "/v1/")
+		var env struct {
+			OperationID string `json:"operationId"`
+			Input       struct {
+				Manifest struct {
+					ID string `json:"id"`
+				} `json:"manifest"`
+			} `json:"input"`
+		}
+		_ = json.NewDecoder(req.Body).Decode(&env)
+		gotManifestID = env.Input.Manifest.ID
+		w.Header().Set("Content-Type", "application/json")
+		resp, _ := json.Marshal(map[string]any{
+			"version":     "rastrata-application-v1",
+			"bookId":      "local-book",
+			"ok":          true,
+			"operationId": env.OperationID,
+			"data": map[string]any{
+				"pluginId":    "stripe",
+				"version":     "1.0.0",
+				"name":        "Stripe",
+				"description": "Stripe payouts",
+				"enabled":     true,
+				"ready":       true,
+				"domains":     []string{"api.stripe.com"},
+				"authKind":    "api_key",
+				"authLabel":   "Stripe restricted read-only key",
+				"authEnvVar":  "RASTRATA_PLUGIN_STRIPE_KEY",
+				"config":      []any{},
+				"roles":       []any{},
+				"accountMap":  []any{},
+				"clearing":    map[string]any{"role": "payouts.in-transit", "windowDays": 7},
+				"cursors":     []any{},
+				"installedAt": "2026-11-27T00:00:00.000Z",
+				"updatedAt":   "2026-11-27T00:00:00.000Z",
+			},
+		})
+		_, _ = w.Write(resp)
+	}))
+	defer srv.Close()
+
+	out.Reset()
+	diag.Reset()
+	code = r.Run(context.Background(), []string{"--endpoint", srv.URL, "plugin", "install", "stripe", "--registry", regFile})
+	if code != 0 {
+		t.Fatalf("plugin install stripe from registry failed (exit %d): %s / %s", code, out.String(), diag.String())
+	}
+	if gotOp != "plugins.install" || gotManifestID != "stripe" {
+		t.Fatalf("expected plugins.install for stripe, got op=%q id=%q", gotOp, gotManifestID)
+	}
+}

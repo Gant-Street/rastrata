@@ -99,15 +99,15 @@ const BOOK = {
   ],
 };
 
-const MERCURY_MANIFEST = {
-  id: "mercury",
+const BANK_MANIFEST = {
+  id: "demo-bank",
   version: "1.0.0",
-  name: "Mercury",
-  description: "Imports Mercury business checking transactions and balances.",
-  domains: ["api.mercury.com"],
+  name: "Demo Bank",
+  description: "Imports business checking transactions and balances.",
+  domains: ["api.demobank.test"],
   authKind: "api_key",
-  authLabel: "Mercury read-only API token",
-  authEnvVar: "RASTRATA_PLUGIN_MERCURY_KEY",
+  authLabel: "Demo Bank read-only API token",
+  authEnvVar: "RASTRATA_PLUGIN_DEMO_BANK_KEY",
   roles: [],
 };
 
@@ -167,26 +167,30 @@ test("Settings -> Plugins: empty state, install dialog, role mapping, tokens, an
   await scan(page, "plugins empty state");
   await captureMatrix(page, "plugins-empty");
 
-  // 2. Open Install dialog, paste Mercury manifest, inspect preview, and install
+  // 2. Open Install dialog: showcases 1-click verified catalog (Stripe) + collapsible manifest JSON fold
   await page.getByRole("button", { name: "Install a plugin" }).click();
   const dialog = page.getByRole("dialog", { name: "Install a plugin" });
   await expect(dialog).toBeVisible();
-  await dialog.getByLabel("Manifest JSON").fill(JSON.stringify(MERCURY_MANIFEST, null, 2));
-  await expect(dialog.getByText("api.mercury.com")).toBeVisible();
-  await scan(page, "plugins install dialog");
+  await expect(dialog.getByText("api.stripe.com")).toBeVisible();
+  await scan(page, "plugins install dialog catalog");
   await captureMatrix(page, "plugins-install-dialog");
-  await dialog.getByRole("button", { name: "Install", exact: true }).click();
-  await expect(dialog).toBeHidden();
-  await expect(page.getByRole("heading", { name: "Mercury" })).toBeVisible();
 
-  // Seed Mercury account binding + synced cursor AND Shopify with 1 unmapped required role
+  // Expand custom manifest JSON fold and install a custom BankLine connector
+  await dialog.getByRole("button", { name: "Install from manifest JSON" }).click();
+  await dialog.getByLabel("Manifest JSON").fill(JSON.stringify(BANK_MANIFEST, null, 2));
+  await expect(dialog.getByText("api.demobank.test")).toBeVisible();
+  await dialog.getByRole("button", { name: "Install", exact: true }).last().click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole("heading", { name: "Demo Bank" })).toBeVisible();
+
+  // Seed Demo Bank account binding + synced cursor AND Shopify with 1 unmapped required role
   // so the screenshot showcases BOTH a clean ready plugin (ink rule) and one needing setup (orange rule).
   await api(
     request,
     "plugins.configure",
     {
-      pluginId: "mercury",
-      accountMap: [{ accountKey: "mercury:acct_chk_01", ledgerAccountId: byCode.get("1000") }],
+      pluginId: "demo-bank",
+      accountMap: [{ accountKey: "demo-bank:checking_01", ledgerAccountId: byCode.get("1000") }],
     },
     crypto.randomUUID(),
   );
@@ -202,8 +206,8 @@ test("Settings -> Plugins: empty state, install dialog, role mapping, tokens, an
     request,
     "plugins.push",
     {
-      pluginId: "mercury",
-      sourceKey: "mercury:acct_chk_01",
+      pluginId: "demo-bank",
+      sourceKey: "demo-bank:checking_01",
       rawSha256: uploadJson.data.sha256,
       cursor: "2026-10-15",
       fetchedAt: "2026-10-15T16:30:00.000Z",
@@ -214,7 +218,7 @@ test("Settings -> Plugins: empty state, install dialog, role mapping, tokens, an
   await api(request, "plugins.install", { manifest: SHOPIFY_MANIFEST }, crypto.randomUUID());
 
   await page.reload();
-  await expect(page.getByRole("heading", { name: "Mercury" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Demo Bank" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Shopify" })).toBeVisible();
   await expect(page.getByText("Choose an account for Shopify Fees.")).toBeVisible();
   await scan(page, "plugins installed and needs setup");
@@ -231,10 +235,10 @@ test("Settings -> Plugins: empty state, install dialog, role mapping, tokens, an
   await expect(shopifySection.getByText("Saved")).toBeVisible();
   await expect(page.getByText("Choose an account for Shopify Fees.")).toBeHidden();
 
-  // 4. Open Access tokens dialog for Mercury, issue a one-time rsp_ token, verify reveal, and revoke
-  await page.getByRole("button", { name: "Actions for Mercury" }).click();
+  // 4. Open Access tokens dialog for Demo Bank, issue a one-time rsp_ token, verify reveal, and revoke
+  await page.getByRole("button", { name: "Actions for Demo Bank" }).click();
   await page.getByRole("menuitem", { name: "Access tokens" }).click();
-  const tokensDialog = page.getByRole("dialog", { name: "Mercury access tokens" });
+  const tokensDialog = page.getByRole("dialog", { name: "Demo Bank access tokens" });
   await expect(tokensDialog).toBeVisible();
   await tokensDialog.getByLabel("Label").fill("Laptop cron");
   await tokensDialog.getByRole("button", { name: "Create token" }).click();

@@ -98,3 +98,12 @@ export interface PluginManifestPreview {
   }[];
   readonly clearing?: PluginClearingView | undefined;
 }
+
+export interface PluginCatalogEntry {
+  readonly id: string;
+  readonly version: string;
+  readonly name: string;
+  readonly description: string;
+  readonly tier: "official" | "community";
+  readonly manifest: PluginManifestPreview;
+}

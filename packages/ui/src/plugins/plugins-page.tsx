@@ -10,6 +10,7 @@ import { PluginCard } from "./plugin-card";
 import { PluginTokensDialog } from "./tokens-dialog";
 import type {
   PluginAccountOption,
+  PluginCatalogEntry,
   PluginConfigureValues,
   PluginDetailItem,
   PluginManifestPreview,
@@ -22,6 +23,7 @@ export function PluginsView(props: {
   titleId?: string | undefined;
   titleRef?: ((element: HTMLHeadingElement) => void) | undefined;
   plugins: readonly PluginDetailItem[];
+  catalog?: readonly PluginCatalogEntry[] | undefined;
   accounts: readonly PluginAccountOption[];
   loading: boolean;
   error?: string | null | undefined;
@@ -140,6 +142,8 @@ export function PluginsView(props: {
 
       <InstallPluginDialog
         open={props.installOpen}
+        catalog={props.catalog}
+        installedIds={pluginIds()}
         pending={props.installing}
         error={props.installError}
         onClose={props.onCloseInstall}

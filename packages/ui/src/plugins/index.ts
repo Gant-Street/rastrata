@@ -6,6 +6,7 @@ export type {
   PluginAccountBindingView,
   PluginAccountKind,
   PluginAccountOption,
+  PluginCatalogEntry,
   PluginClearingView,
   PluginConfigEntryView,
   PluginConfigureValues,

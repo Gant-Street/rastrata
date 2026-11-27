@@ -14,7 +14,7 @@ export const words = {
 
   // Empty state quickstart command
   cliInstallLabel: "Or install from the command line",
-  cliInstallCommand: "rastrata plugin install ./plugin-stripe",
+  cliInstallCommand: "rastrata plugin install stripe",
   cliSyncCommand: (pluginId: string) => `rastrata plugin sync ./plugin-${pluginId}`,
   copyCommand: "Copy",
   commandCopied: "Copied",
@@ -69,8 +69,12 @@ export const words = {
 
   // Install dialog
   installTitle: "Install a plugin",
-  installDescription:
-    "Paste a plugin manifest to inspect its outbound hosts and accounts before installing.",
+  installDescription: "Choose a verified connector or paste a manifest from a custom plugin.",
+  catalogSearchLabel: "Search plugins",
+  catalogSearchPlaceholder: "Stripe, bank, CSV",
+  catalogEmpty: "No matching plugins.",
+  catalogInstalled: "Installed",
+  catalogCustomTitle: "Install from manifest JSON",
   manifestLabel: "Manifest JSON",
   manifestHint: "Only the manifest is stored. Provider API keys stay on your computer.",
   manifestFileLabel: "Load manifest file",

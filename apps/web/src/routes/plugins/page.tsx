@@ -11,6 +11,7 @@ import { BrowserApplicationClient } from "../../application-client";
 import { clear as forgetHeld } from "../../held";
 import { createLoader } from "../../loader";
 import { currentRole, may } from "../../role";
+import { OFFICIAL_PLUGIN_CATALOG } from "./catalog";
 import { pluginAccountOptions, toPluginDetailItem, toPluginTokenItem } from "./controller";
 
 /** Settings -> Plugins: native schema-driven management screen for installed ingestion plugins,
@@ -273,6 +274,7 @@ export function PluginsPage() {
         heading = el;
       }}
       plugins={plugins()}
+      catalog={OFFICIAL_PLUGIN_CATALOG}
       accounts={accounts()}
       loading={pluginsLoader.loading() && pluginsLoader.value() === undefined}
       error={pluginsLoader.error() ? "Plugins could not be read right now." : null}
