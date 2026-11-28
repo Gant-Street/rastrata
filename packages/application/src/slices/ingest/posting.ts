@@ -32,6 +32,9 @@ import type {
   InboxRestoreInput,
 } from "../../client-contracts.gen.ts";
 import type { SavedDraft } from "../../contracts.ts";
+import { lockedPeriodForDate } from "../../calendar/periods.ts";
+import { formatMoney, parseMoney } from "../../money.ts";
+import { chartOf } from "./ledger-view.ts";
 import { deriveUuid } from "../../ingest/hash.ts";
 import { sanitizeText } from "../../ingest/text.ts";
 import type { ApplicationService } from "../../service.ts";
@@ -457,12 +460,183 @@ async function forgetFailuresThatMayHavePassed(
   });
 }
 
+/** Validate selected drafted items against the current ledger without committing anything, and
+ * return exact per-account debit/credit/net deltas so an agent or person can inspect financial
+ * impact before calling `inbox.post` for real. */
+async function postDryRun(
+  service: ApplicationService,
+  input: InboxPostInput,
+): Promise<InboxActionReport> {
+  const runtime = ingestRuntime(service);
+  const store = runtime.store;
+  const resolved = resolveSelection(
+    store,
+    input,
+    {
+      statuses: ["drafted"],
+      sql: "i.draft_id IS NOT NULL",
+      later: "i.post_error IS NOT NULL",
+      settled: "i.post_error IS NOT NULL AND i.post_error_code IS NOT NULL",
+    },
+    POST_LIMIT,
+  );
+  const { aggregate } = await service.readAggregate();
+  const state = aggregate.state;
+  const chart = chartOf(state);
+  const postedSources = new Set<string>();
+  for (const booked of state.journals)
+    for (const derivation of booked.derivations)
+      for (const evidence of derivation.evidence)
+        if (evidence.sourceSystem === "rastrata-source-v1")
+          postedSources.add(evidence.sourceRecordId);
+  const regular = state.periods.filter((period) => period.kind === "regular");
+  const calendarStart = regular.map((p) => p.startsOn as string).sort()[0] ?? "";
+  const calendarEnd =
+    regular
+      .map((p) => p.endsOn as string)
+      .sort()
+      .at(-1) ?? "";
+
+  const seenDrafts = new Set<string>();
+  const results = [...resolved.results];
+  const totals = new Map<string, { debit: bigint; credit: bigint }>();
+
+  for (const stale of resolved.rows) {
+    const row = rowById(store, stale.id);
+    if (row?.status !== "drafted" || row.draft_id === null) {
+      results.push(skipped(row ?? stale, "wrong_status", "This item is not waiting to be posted."));
+      continue;
+    }
+    if (seenDrafts.has(row.draft_id)) {
+      results.push(
+        skipped(row, "wrong_status", "This line would be posted together with its transfer pair."),
+      );
+      continue;
+    }
+    seenDrafts.add(row.draft_id);
+    const draft = service.draft(row.draft_id);
+    if (!draft) {
+      results.push(
+        failed(
+          row,
+          "draft_missing",
+          "The draft for this line was discarded. Restore the item and categorize it again.",
+        ),
+      );
+      continue;
+    }
+    if (draft.status === "posted" && draft.journalId) {
+      results.push(skipped(row, "already_posted", "This line's draft is already posted."));
+      continue;
+    }
+    const day = draft.data.date;
+    const locked = lockedPeriodForDate(state, day);
+    if (locked) {
+      results.push(
+        failed(
+          row,
+          "fiscal_period_admission",
+          `Period ${locked.label} is closed. Reopen it before posting an entry dated ${day}.`,
+        ),
+      );
+      continue;
+    }
+    if (calendarStart !== "" && day < calendarStart) {
+      results.push(
+        failed(
+          row,
+          "calendar_not_configured",
+          `Date ${day} is before the book's fiscal calendar (${calendarStart} to ${calendarEnd}).`,
+        ),
+      );
+      continue;
+    }
+    if (draft.data.source?.id && postedSources.has(draft.data.source.id)) {
+      results.push(
+        failed(
+          row,
+          "source_already_posted",
+          "An entry with this source identity is already posted in the ledger.",
+        ),
+      );
+      continue;
+    }
+    let debits = 0n;
+    let credits = 0n;
+    let lineError: string | null = null;
+    const parsedLines: { accountId: string; debit: bigint; credit: bigint }[] = [];
+    for (const line of draft.data.lines) {
+      const account = chart.get(line.accountId);
+      if (!account) {
+        lineError = `Account ${line.accountId} does not exist in the chart.`;
+        break;
+      }
+      if (!account.postingAllowed) {
+        lineError = `Account ${account.code} ${account.name} does not accept postings.`;
+        break;
+      }
+      if (day < account.openedOn) {
+        lineError = `Account ${account.code} ${account.name} opened on ${account.openedOn}.`;
+        break;
+      }
+      if (account.closedOn !== null && day >= account.closedOn) {
+        lineError = `Account ${account.code} ${account.name} closed on ${account.closedOn}.`;
+        break;
+      }
+      const d = line.debit ? parseMoney(line.debit) : 0n;
+      const c = line.credit ? parseMoney(line.credit) : 0n;
+      debits += d;
+      credits += c;
+      parsedLines.push({ accountId: line.accountId, debit: d, credit: c });
+    }
+    if (lineError) {
+      results.push(failed(row, "posting_invalid", lineError));
+      continue;
+    }
+    if (parsedLines.length < 2 || debits <= 0n || debits !== credits) {
+      results.push(failed(row, "posting_invalid", "The draft does not balance."));
+      continue;
+    }
+    for (const entry of parsedLines) {
+      const current = totals.get(entry.accountId) ?? { debit: 0n, credit: 0n };
+      current.debit += entry.debit;
+      current.credit += entry.credit;
+      totals.set(entry.accountId, current);
+    }
+    results.push({ itemId: row.id, outcome: "applied", status: "drafted", draftId: draft.id });
+  }
+
+  if (resolved.remaining === 0)
+    results.push(...refusedEarlier(resolved.settled, Math.max(0, MAX_LIMIT - results.length)));
+
+  const accountDeltas = [...totals.entries()]
+    .map(([accountId, sum]) => {
+      const account = chart.get(accountId);
+      return {
+        accountId,
+        code: account?.code ?? accountId,
+        name: account?.name ?? accountId,
+        debit: formatMoney(sum.debit),
+        credit: formatMoney(sum.credit),
+        net: formatMoney(sum.debit - sum.credit),
+      };
+    })
+    .sort((left, right) => left.code.localeCompare(right.code, "en", { numeric: true }));
+
+  return {
+    ...report(results, resolved.remaining),
+    dryRun: true,
+    accountDeltas,
+  };
+}
+
 export async function postItems(
   service: ApplicationService,
   input: InboxPostInput,
   operationId: string,
   principal: string,
 ): Promise<InboxActionReport> {
+  if (input.dryRun === true) return postDryRun(service, input);
   return service.retainAsyncRequest(operationId, "inbox.post", input, async () => {
     const runtime = ingestRuntime(service);
     const store = runtime.store;

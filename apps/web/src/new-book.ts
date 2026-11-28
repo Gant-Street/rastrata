@@ -40,8 +40,18 @@ export function setupPending(
   }
 }
 
-/** The workspace the page acts in (account.ts keeps it under this key), or none. */
+const TAB_WORKSPACE_KEY = "rastrata:tab-workspace";
+
+/** The workspace the page acts in (account.ts pins it per tab in sessionStorage, falling back to localStorage), or none. */
 export function openWorkspace(notes: Notes | null = browserNotes()): string | null {
+  try {
+    if (notes === browserNotes()) {
+      const pinned = window.sessionStorage.getItem(TAB_WORKSPACE_KEY);
+      if (pinned) return pinned;
+    }
+  } catch {
+    // Blocked sessionStorage falls back to localStorage.
+  }
   try {
     return notes?.getItem("rastrata:workspace") || null;
   } catch {

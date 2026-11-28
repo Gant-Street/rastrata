@@ -10,6 +10,8 @@ export function AppHeader(props: {
   wordmark: JSX.Element;
   /** The name of the book. Long names are cut with an ellipsis and keep their full text in a tooltip. */
   name?: string | undefined;
+  /** An interactive workspace control beside the wordmark (takes the place of the plain name on hosted accounts). */
+  book?: JSX.Element;
   /** The navigation (`AppNav`). */
   children?: JSX.Element;
 }): JSX.Element {
@@ -17,12 +19,19 @@ export function AppHeader(props: {
     <header class="app-header">
       <div class="app-brand">
         {props.wordmark}
-        <Show when={props.name}>
-          {(name) => (
-            <span class="app-book-name" title={name()}>
-              {name()}
-            </span>
-          )}
+        <Show
+          when={props.book}
+          fallback={
+            <Show when={props.name}>
+              {(name) => (
+                <span class="app-book-name" title={name()}>
+                  {name()}
+                </span>
+              )}
+            </Show>
+          }
+        >
+          {props.book}
         </Show>
       </div>
       {props.children}

@@ -5,7 +5,7 @@
 Rastrata is double-entry small-business accounting built from a formally verified, immutable ledger outward — designed so the AI agent you already use (Claude Code, Codex, opencode, or your own CLI/MCP agent) does the daily bookkeeping while you review, reconcile, and close the month.
 
 - **Free forever on your machine:** run the single-file `rastrata-service` binary locally with a SQLite book you own, the web app, the Go CLI/TUI, and the MCP server.
-- **Rastrata Cloud:** managed hosting at [rastrata.com](https://rastrata.com) ($19/month, 30-day free trial) with daily US bank feeds, team and accountant seats, and full export to run locally anytime.
+- **Rastrata Cloud:** managed hosting at [rastrata.com](https://rastrata.com) ($19/month flat for all businesses you own, 30-day free trial) with daily US bank feeds, team and accountant seats, and full export to run locally anytime.
 - **No hosted agent, no AI credits:** connect the agent you already pay for over scoped, revocable tokens.
 - **Formally proved kernel:** core double-entry, immutability, reversal, and period-close invariants are proved in Lean 4 (`proofs/`).
 

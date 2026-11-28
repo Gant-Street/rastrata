@@ -7,6 +7,7 @@ import {
   type BillingPageView,
 } from "../../billing-controller";
 import { currentAccount } from "../../boot";
+import { BILLING_UPDATED_EVENT } from "../../standing";
 import { billingWords as words } from "./words";
 
 /** Settings, Billing: how the workspace stands as to its trial and subscription, and, for an owner, subscribing on Stripe's page and managing the subscription in Stripe's portal. It exists only
@@ -29,6 +30,7 @@ export function BillingPage() {
           const controller = new BillingController({
             control: present(),
             go: (address) => window.location.assign(address),
+            onChanged: () => window.dispatchEvent(new CustomEvent(BILLING_UPDATED_EVENT)),
           });
           return <BillingBody controller={controller} />;
         }}
@@ -109,6 +111,9 @@ function Ready(props: {
       <section class="rt-settings-block billing-standing" aria-labelledby="billing-standing">
         <h2 id="billing-standing">{view().headline}</h2>
         <Show when={view().detail}>{(detail) => <p>{detail()}</p>}</Show>
+        <Show when={view().coverage}>
+          {(coverage) => <p class="billing-coverage">{coverage()}</p>}
+        </Show>
       </section>
 
       <Show when={view().canSubscribe && view().prices}>
@@ -153,7 +158,7 @@ function Ready(props: {
       <Show
         when={
           view().available &&
-          view().role !== "owner" &&
+          !view().isBillingOwner &&
           (view().state === "trialing" ||
             view().state === "read_only" ||
             view().state === "past_due")

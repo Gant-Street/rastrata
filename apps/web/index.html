@@ -25,7 +25,23 @@
           cache: "no-store",
         });
         early.service.catch(() => {});
-        const workspace = localStorage.getItem("rastrata:workspace");
+        let workspace = null;
+        try {
+          const requested =
+            typeof location === "object" && location && typeof location.search === "string"
+              ? new URLSearchParams(location.search).get("workspace")
+              : null;
+          if (requested && /^wsp_[A-Za-z0-9_-]+$/.test(requested)) workspace = requested;
+        } catch {
+          // Missing or unreadable location falls back to storage.
+        }
+        try {
+          if (!workspace && typeof sessionStorage !== "undefined")
+            workspace = sessionStorage.getItem("rastrata:tab-workspace");
+        } catch {
+          // Blocked or missing sessionStorage falls back to localStorage.
+        }
+        if (!workspace) workspace = localStorage.getItem("rastrata:workspace");
         if (workspace) {
           const response = fetch("/auth/workspace-token", {
             method: "POST",

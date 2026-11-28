@@ -11,6 +11,7 @@ import { BrowserApplicationClient } from "../../application-client";
 import { clear as forgetHeld } from "../../held";
 import { createLoader } from "../../loader";
 import { currentRole, may } from "../../role";
+import { workspaceReadOnly } from "../../standing";
 import { OFFICIAL_PLUGIN_CATALOG } from "./catalog";
 import { pluginAccountOptions, toPluginDetailItem, toPluginTokenItem } from "./controller";
 
@@ -21,8 +22,8 @@ export function PluginsPage() {
   let heading: HTMLHeadingElement | undefined;
 
   const [role, setRole] = createSignal<Role | null>(null);
-  const canConfigure = () => may(role(), "configure");
-  const canManageTokens = () => may(role(), "provision");
+  const canConfigure = () => may(role(), "configure") && !workspaceReadOnly();
+  const canManageTokens = () => may(role(), "provision") && !workspaceReadOnly();
 
   const chart = createLoader(() => client.read("accounts.list", {}));
   const pluginsLoader = createLoader(async () => {

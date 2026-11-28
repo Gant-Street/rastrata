@@ -1333,6 +1333,7 @@ Each tool is one operation of the application. From the command line, `rastrata 
 | `rastrata_get_tax_checks` | `taxChecks.get` | read | no |
 | `rastrata_get_tax_summary` | `taxSummary.get` | read | no |
 | `rastrata_build_year_end_pack` | `taxPack.build` | read | no |
+| `rastrata_build_cpa_packet` | `taxCpaPacket.build` | read | no |
 | `rastrata_list_1099_vendors` | `taxVendors.list` | read | no |
 | `rastrata_export_1099_vendors` | `taxVendors.export` | read | no |
 | `rastrata_get_1099_vendor` | `taxVendors.get` | read | no |

@@ -43,6 +43,17 @@ export const DATE_FORMATS = ["medium", "numeric", "iso"] as const;
 /** What accepting a suggestion does: post the entry at once (with Undo), or save it as a draft that
  * waits in Ready to post. */
 export const ACCEPT_MODES = ["post", "draft"] as const;
+/** Legal entity classifications for the business profile (Act 2 compliance seam). */
+export const ENTITY_TYPES = [
+  "sole_proprietorship",
+  "single_member_llc",
+  "multi_member_llc",
+  "s_corp",
+  "c_corp",
+  "partnership",
+  "nonprofit",
+  "other",
+] as const;
 
 const definitions: Record<string, Schema> = {
   JournalPostInput: object(
@@ -187,18 +198,57 @@ const definitions: Record<string, Schema> = {
     /** With a filter: pass as `after` to carry on; null when nothing remains. */
     next: nullable(id),
   }),
-  BookSettings: object({
-    dateFormat: { type: "string", enum: DATE_FORMATS },
-    /** Whether lists show an account's number beside its name. Pickers and the chart always can. */
-    showAccountNumbers: { type: "boolean" },
-    acceptMode: { type: "string", enum: ACCEPT_MODES },
-  }),
+  EntityAddress: object(
+    {
+      line1: text(200),
+      line2: text(200),
+      city: text(120),
+      state: text(40),
+      postalCode: text(20),
+      country: { type: "string", minLength: 2, maxLength: 2, pattern: "^[A-Za-z]{2}$" },
+    },
+    [],
+  ),
+  /** Optional legal entity metadata for a workspace's books (used in exports, CPA packets and future filings). */
+  BookEntityProfile: object(
+    {
+      legalName: nullable(text(200)),
+      ein: nullable({ type: "string", maxLength: 10, pattern: "^\\d{2}-?\\d{7}$" }),
+      entityType: nullable({ type: "string", enum: ENTITY_TYPES }),
+      formationState: nullable({
+        type: "string",
+        minLength: 2,
+        maxLength: 2,
+        pattern: "^[A-Za-z]{2}$",
+      }),
+      address: nullable(ref("EntityAddress")),
+      contactEmail: nullable({
+        type: "string",
+        minLength: 3,
+        maxLength: 254,
+        pattern: "^[^\\s@]+@[^\\s@]+$",
+      }),
+    },
+    [],
+  ),
+  BookSettings: object(
+    {
+      dateFormat: { type: "string", enum: DATE_FORMATS },
+      /** Whether lists show an account's number beside its name. Pickers and the chart always can. */
+      showAccountNumbers: { type: "boolean" },
+      acceptMode: { type: "string", enum: ACCEPT_MODES },
+      /** Optional legal entity metadata when recorded for this book. */
+      entity: ref("BookEntityProfile"),
+    },
+    ["dateFormat", "showAccountNumbers", "acceptMode"],
+  ),
   BookUpdateInput: object(
     {
       name: { ...text(120), minLength: 2, pattern: "\\S[\\s\\S]*\\S" },
       dateFormat: { type: "string", enum: DATE_FORMATS },
       showAccountNumbers: { type: "boolean" },
       acceptMode: { type: "string", enum: ACCEPT_MODES },
+      entity: ref("BookEntityProfile"),
     },
     [],
   ),

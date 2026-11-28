@@ -18,6 +18,10 @@ import (
 
 type Options struct {
 	Endpoint, BookID, Directory, Input, OperationID, Format, AsOf, Revision string
+	// Workspace selects a connected workspace by alias, slug, ID or name (--workspace or RASTRATA_WORKSPACE).
+	Workspace string
+	// WorkspaceID is populated when a named/folder connection resolves to a hosted workspace.
+	WorkspaceID string
 	// FormatGiven is true when --format was written, since json is also the default.
 	FormatGiven bool
 	// EndpointGiven is true when the person named the service, with RASTRATA_API_URL or --endpoint: a folder's connection (rastrata connect) is then used only if it is to that address.
@@ -35,7 +39,7 @@ type Runner struct {
 }
 
 var builtinOptions = map[string]bool{
-	"--endpoint": true, "--book": true, "--request-dir": true, "--input": true,
+	"--endpoint": true, "--book": true, "--workspace": true, "--request-dir": true, "--input": true,
 	"--operation-id": true, "--format": true, "--as-of": true, "--revision": true,
 }
 
@@ -53,7 +57,14 @@ func defaults() Options {
 	if requests == "" {
 		requests = filepath.Join(directory, "rastrata", "requests")
 	}
-	return Options{Endpoint: endpoint, EndpointGiven: os.Getenv("RASTRATA_API_URL") != "", BookID: book, Directory: requests, Format: "json"}
+	return Options{
+		Endpoint:      endpoint,
+		EndpointGiven: os.Getenv("RASTRATA_API_URL") != "",
+		BookID:        book,
+		Workspace:     strings.TrimSpace(os.Getenv("RASTRATA_WORKSPACE")),
+		Directory:     requests,
+		Format:        "json",
+	}
 }
 func parse(args []string) (Options, error) {
 	options := defaults()
@@ -97,6 +108,8 @@ func parse(args []string) (Options, error) {
 			options.EndpointGiven = true
 		case "--book":
 			options.BookID = value
+		case "--workspace":
+			options.Workspace = strings.TrimSpace(value)
 		case "--request-dir":
 			options.Directory = value
 		case "--input":
@@ -173,6 +186,14 @@ func (r Runner) Run(ctx context.Context, args []string) int {
 		return r.localError(options, "usage_error", err.Error(), 2)
 	}
 	client.Credential = credential
+	client.WorkspaceID = options.WorkspaceID
+	if options.Directory != "" {
+		if filepath.Base(options.Directory) == "requests" {
+			client.TokenCacheDir = filepath.Join(filepath.Dir(options.Directory), "tokens")
+		} else {
+			client.TokenCacheDir = filepath.Join(options.Directory, ".tokens")
+		}
+	}
 	if options.Args[0] == "tui" {
 		if len(options.Args) != 1 || options.Input != "" {
 			return r.localError(options, "usage_error", "tui takes only connection options", 2)
@@ -200,7 +221,7 @@ func (r Runner) Run(ctx context.Context, args []string) int {
 			if len(options.Args) != 2 {
 				return r.localError(options, "usage_error", "Use operations requests", 2)
 			}
-			records, err := client.Journal.List(client.Endpoint, client.BookID)
+			records, err := client.Journal.ListForWorkspace(client.Endpoint, client.BookID, client.WorkspaceID)
 			if err != nil {
 				return r.localError(options, "request_journal_unavailable", err.Error(), 4)
 			}
@@ -461,6 +482,7 @@ Opening balances use an ordinary balanced journal against an equity offset.
 
 Options (before or after commands):
   --endpoint URL              `+endpointHelp()+`
+  --workspace SLUG|ID         Select a connected workspace (or set RASTRATA_WORKSPACE)
   --book ID                   Explicit book scope (default local-book)
   --input FILE|-              One JSON input object; never opens a prompt
   --operation-id UUID         Reuse only for identical input

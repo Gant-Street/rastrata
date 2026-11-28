@@ -66,7 +66,9 @@ For why an import is drafts only, and what the tool does and does not know, see
    a correction replaced is listed too, with a link both ways, because an accountant wants the history; the trial
    balance and ledger are the net.
 4. The year-end pack ([Get your books ready for tax time](get-your-books-ready-for-tax-time.md)) carries the
-   statements, the worksheet and the 1099 and sales tax lists. Many people send both.
+   statements, the worksheet and the 1099 and sales tax lists. To hand your accountant everything in one
+   archive, choose **Download CPA packet (zip)** — it combines the accountant pack, the year-end statements,
+   the tax worksheet, 1099 schedules, and a single SHA-256 `manifest.json` from one book revision.
 
 If the page reads the books again and they have moved on, it marks the pack as no longer current and offers to
 build it again; a pack already saved is never changed.
@@ -122,6 +124,7 @@ answers with what it already did and nothing is imported twice. Never start a se
 ## Do it from the command line
 
 ```sh
+rastrata tax cpa-packet --year 2026 --out ./cpa-packet-2026.zip               # unified year-end + accountant zip
 rastrata tax accountant --year 2026 --out ./for-the-accountant-2026.zip      # or a folder name
 rastrata tax verify-pack ./for-the-accountant-2026.zip                         # offline: files against the manifest
 rastrata tax adjustments preview from-the-accountant.csv                      # writes nothing

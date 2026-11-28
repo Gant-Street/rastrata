@@ -201,7 +201,7 @@ test("what a member may do is what their role allows, and members never change w
   expect((await create(1)).status).toBe(200);
   expect((await create(4)).body.error.code).toBe("permission_denied");
 
-  // `provision` (who is in the book): the owner, and nobody below.
+  // `provision` (who is in the book): managed by the control plane (or local owner), never directly by a hosted workspace member.
   for (const n of [2, 3, 4]) {
     const refused = await world.send(
       "members.add",
@@ -211,12 +211,19 @@ test("what a member may do is what their role allows, and members never change w
     expect(refused.status, `member ${n}`).toBe(403);
     expect(refused.body.error.code).toBe("permission_denied");
   }
+  const memberOwner = await world.send(
+    "members.add",
+    { userId: user(20), email: "x@example.com", role: "member" },
+    as(1),
+  );
+  expect(memberOwner.status).toBe(403);
+  expect(memberOwner.body.error.code).toBe("service_only");
   expect(
     (
       await world.send(
         "members.add",
         { userId: user(20), email: "x@example.com", role: "member" },
-        as(1),
+        world.control,
       )
     ).status,
   ).toBe(200);
@@ -458,10 +465,12 @@ test("only who holds provision can retire a book or take it back: the owner and 
   });
   expect(refusedByToken.status).toBe(403);
   expect(world.http.retired()).toBe(false);
-  // The owner, as a member, may (the control plane acts for them), and so may the owner's key.
-  expect((await world.send("book.retire", {}, world.memberAccess(1) ?? undefined)).status).toBe(
-    200,
-  );
+  // Hosted workspace members go through the control plane; the control plane's key and the local owner key may retire and unretire the book directly.
+  const memberOwner = await world.send("book.retire", {}, world.memberAccess(1) ?? undefined);
+  expect(memberOwner.status).toBe(403);
+  expect(memberOwner.body.error.code).toBe("service_only");
+  expect(world.http.retired()).toBe(false);
+  expect((await world.send("book.retire", {}, world.control)).status).toBe(200);
   expect(world.http.retired()).toBe(true);
   expect((await world.send("book.unretire", {}, undefined, { credential: key })).status).toBe(200);
   expect(world.http.retired()).toBe(false);

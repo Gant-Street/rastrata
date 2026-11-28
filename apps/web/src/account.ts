@@ -15,8 +15,11 @@ export type Role = "owner" | "admin" | "accountant" | "member";
 export interface WorkspaceSummary {
   readonly id: string;
   readonly name: string;
+  readonly slug?: string;
   readonly role: Role;
   readonly state: "provisioning" | "ready" | "deleting" | "deleted";
+  /** True when the signed-in person is the workspace's billing owner. */
+  readonly billingOwner?: boolean;
   /** When the books will be erased, while the workspace is being deleted: an owner can bring it back until then. */
   readonly deleteAfter?: string;
   /** How the workspace stands as to its trial and subscription, where the service charges for workspaces. */
@@ -45,8 +48,11 @@ export type BillingAnswer =
   | (BillingSummary & {
       readonly available: true;
       readonly prices: { readonly month: BillingPrice; readonly year: BillingPrice };
-      /** Only an owner subscribes and manages the subscription. */
+      /** Only the workspace's billing owner subscribes and manages the subscription. */
       readonly canManage: boolean;
+      /** How many active businesses the billing owner owns, and the self-serve plan limit. */
+      readonly ownedWorkspaces?: number;
+      readonly workspaceLimit?: number;
     });
 export interface Member {
   readonly userId: string;
@@ -176,8 +182,10 @@ const ok = <T>(value: T): Result<T> => ({ ok: true, value });
 type Ask = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 type Notes = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 
-/** Where the page remembers which workspace is open. Not a secret; read at the start of the page. */
+/** Where the browser remembers the most recently opened workspace for future tabs. Not a secret. */
 export const WORKSPACE_KEY = "rastrata:workspace";
+/** Per-tab active workspace pin (sessionStorage) so switching LLCs in Tab A never hijacks Tab B. */
+export const TAB_WORKSPACE_KEY = "rastrata:tab-workspace";
 /** A new token is asked for, behind the request that finds the old one this close to its end, when this much of its life is left, or less: the request goes with the old one. */
 export const REFRESH_BEFORE_MS = 180_000;
 /** A request waits for a new token only when the old one has less than this left (a person who came back after a long pause): one with more is as good as a fresh one. */
@@ -213,6 +221,8 @@ export const FORGET_WAIT_MS = 1_500;
 export interface AccountOptions {
   readonly ask?: Ask;
   readonly storage?: Notes | null;
+  /** Per-tab storage (window.sessionStorage in browsers) so multiple open workspaces stay isolated. */
+  readonly tabStorage?: Notes | null;
   /** Milliseconds, for tests. */
   readonly now?: () => number;
   /** Waits, for tests. */
@@ -240,9 +250,18 @@ function storageOf(): Notes | null {
   }
 }
 
+function tabStorageOf(): Notes | null {
+  try {
+    return window.sessionStorage;
+  } catch {
+    return null;
+  }
+}
+
 export class Account implements Authorizer {
   readonly #ask: Ask;
   readonly #storage: Notes | null;
+  readonly #tabStorage: Notes | null;
   readonly #now: () => number;
   readonly #sleep: (ms: number) => Promise<void>;
   readonly #onEnded: (why: "session_ended" | "workspace_gone") => void;
@@ -254,6 +273,12 @@ export class Account implements Authorizer {
   constructor(options: AccountOptions = {}) {
     this.#ask = options.ask ?? ((input, init) => fetch(input, init));
     this.#storage = options.storage === undefined ? storageOf() : options.storage;
+    this.#tabStorage =
+      options.tabStorage !== undefined
+        ? options.tabStorage
+        : options.storage === undefined
+          ? tabStorageOf()
+          : null;
     this.#now = options.now ?? Date.now;
     this.#sleep = options.sleep ?? ((ms) => new Promise((done) => setTimeout(done, ms)));
     this.#onEnded = options.onEnded ?? (() => {});
@@ -528,6 +553,26 @@ export class Account implements Authorizer {
     return answer.ok ? ok(answer.value.workspace) : answer;
   }
 
+  /** Sync a renamed business's display name back to the control plane so the switcher and workspace list match. */
+  async renameWorkspace(workspace: string, name: string): Promise<Result<WorkspaceSummary>> {
+    const answer = await this.#call<{ workspace: WorkspaceSummary }>(
+      "POST",
+      "/auth/workspaces/rename",
+      { body: { workspace, name: name.trim() } },
+    );
+    return answer.ok ? ok(answer.value.workspace) : answer;
+  }
+
+  /** Transfer a workspace's billing owner to another owner of that workspace. */
+  async transferBillingOwner(workspace: string, userId: string): Promise<Result<WorkspaceSummary>> {
+    const answer = await this.#call<{ workspace: WorkspaceSummary }>(
+      "POST",
+      "/auth/workspaces/transfer-billing",
+      { body: { workspace, userId } },
+    );
+    return answer.ok ? ok(answer.value.workspace) : answer;
+  }
+
   /** Delete the account (the person's address, typed): every session ends and the person is taken out of every workspace. A person who is the only owner of a workspace in use is
    * refused (`sole_owner`, the workspaces in `detail`) and nothing is done. */
   async deleteAccount(confirm: string): Promise<Result<unknown>> {
@@ -680,17 +725,37 @@ export class Account implements Authorizer {
 
   // ---- the workspace that is open, and its token -----------------------------------------------------------
 
-  /** The workspace the page has open, as the browser remembers it. */
+  /** The workspace this tab has open: pinned in sessionStorage so switching workspaces in another tab never hijacks this one. */
   scope(): string | null {
     try {
-      return this.#storage?.getItem(WORKSPACE_KEY) || null;
+      const pinned = this.#tabStorage?.getItem(TAB_WORKSPACE_KEY);
+      if (pinned) return pinned;
+    } catch {
+      // Blocked tab storage falls back to shared storage.
+    }
+    try {
+      const fallback = this.#storage?.getItem(WORKSPACE_KEY) || null;
+      if (fallback !== null) {
+        try {
+          this.#tabStorage?.setItem(TAB_WORKSPACE_KEY, fallback);
+        } catch {
+          // Blocked tab storage still returns the fallback.
+        }
+      }
+      return fallback;
     } catch {
       return null;
     }
   }
 
-  /** Open another workspace. Its token is asked for with the next request; the one held belongs to the workspace before. */
+  /** Open another workspace in this tab (and remember it as the default for new tabs). Its token is asked for with the next request; the one held belongs to the workspace before. */
   select(id: string | null): void {
+    try {
+      if (id === null) this.#tabStorage?.removeItem(TAB_WORKSPACE_KEY);
+      else this.#tabStorage?.setItem(TAB_WORKSPACE_KEY, id);
+    } catch {
+      // Blocked tab storage falls back to shared storage.
+    }
     try {
       if (id === null) this.#storage?.removeItem(WORKSPACE_KEY);
       else this.#storage?.setItem(WORKSPACE_KEY, id);

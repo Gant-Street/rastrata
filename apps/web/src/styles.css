@@ -829,6 +829,34 @@ input[type="checkbox"] {
   color: var(--rt-muted);
   font-size: 0.8125rem;
 }
+.billing-coverage {
+  margin: 0.5rem 0 0;
+  color: var(--rt-muted);
+  font-size: 0.875rem;
+}
+/* Multi-file statement import batch queue status bar. */
+.rt-imp-queue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.625rem 0.875rem;
+  margin-bottom: 1rem;
+  border-top: var(--rt-rule);
+  border-bottom: 1px solid var(--rt-divider);
+  background: var(--rt-surface-subtle);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.rt-imp-queue-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.ws-create-form .rt-field {
+  max-width: none;
+}
 /* Settings, Bank accounts: one row for each account a bank connection has brought. */
 .banks-change {
   display: grid;

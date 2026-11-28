@@ -53,10 +53,14 @@ func (e *Error) Error() string {
 func (e *Error) OperationID() string { return e.Response.OperationID }
 
 type Client struct {
-	Endpoint string
-	BookID   string
-	HTTP     *http.Client
-	Journal  *Journal
+	Endpoint    string
+	BookID      string
+	WorkspaceID string
+	HTTP        *http.Client
+	Journal     *Journal
+	// TokenCacheDir, when non-empty, caches short-lived exchanged JWTs (0600 files keyed by endpoint
+	// and agent key ID) across short CLI invocations so each command does not pay a token-exchange RTT.
+	TokenCacheDir string
 	// Credential, when set, is sent as "Authorization: Bearer ..." on every request: an agent
 	// token, or the owner key. It goes only to the endpoint it was set for (redirects are
 	// refused), and it is never written to the request journal or put in an error. The key of a
@@ -160,7 +164,7 @@ func (c *Client) Call(ctx context.Context, name string, input any, operationID s
 		if c.Journal == nil {
 			return Response{}, c.Failure("request_journal_unavailable", "A private request journal is required for writes", operationID, false)
 		}
-		if err := c.Journal.Retain(Record{Endpoint: c.Endpoint, BookID: c.BookID, Name: name, OperationID: operationID, Body: body}); err != nil {
+		if err := c.Journal.Retain(Record{Endpoint: c.Endpoint, BookID: c.BookID, WorkspaceID: c.WorkspaceID, Name: name, OperationID: operationID, Body: body}); err != nil {
 			var pathError *fs.PathError
 			if errors.As(err, &pathError) {
 				return Response{}, c.Failure("request_journal_unwritable", journalHelp(c.Journal.Directory, pathError), operationID, false)
@@ -239,8 +243,47 @@ func (c *Client) Resume(ctx context.Context, id string) (Response, error) {
 	if record.Endpoint != c.Endpoint || record.BookID != c.BookID {
 		return Response{}, c.Failure("book_scope_mismatch", "Retained request belongs to another endpoint or book", id, false)
 	}
+	if record.WorkspaceID != "" && record.WorkspaceID != c.WorkspaceID {
+		return Response{}, c.Failure("workspace_scope_mismatch", "Retained request belongs to another workspace ("+record.WorkspaceID+"); pass --workspace "+record.WorkspaceID+" to resume it", id, false)
+	}
 	// Always send the retained bytes, never rebuild a command from current state.
 	return c.send(ctx, record.Name, record.Body, record.OperationID, true)
+}
+
+var exportIDPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9._-]{0,100}$`)
+
+// DownloadExport fetches the ZIP archive of a completed open export (`GET /v1/exports/:id`).
+func (c *Client) DownloadExport(ctx context.Context, exportID string) ([]byte, error) {
+	if !exportIDPattern.MatchString(exportID) {
+		return nil, c.Failure("invalid_input", "Export ID is not valid", "", false)
+	}
+	endpoint := c.Endpoint + "/v1/exports/" + url.PathEscape(exportID)
+	response, err := c.do(ctx, func() (*http.Request, error) {
+		request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
+		if err != nil {
+			return nil, err
+		}
+		request.Header.Set("User-Agent", "rastrata-terminal/0.1")
+		return request, nil
+	})
+	if err != nil {
+		return nil, c.asFailure(err, "connection_failed", ServiceUnavailable, "", true)
+	}
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusOK {
+		raw, _ := io.ReadAll(io.LimitReader(response.Body, 65536))
+		var envelope Response
+		if json.Unmarshal(raw, &envelope) == nil && envelope.Error != nil {
+			return nil, &Error{Response: envelope, Status: response.StatusCode}
+		}
+		return nil, c.Failure("export_download_failed", fmt.Sprintf("Could not download export %s (HTTP %d)", exportID, response.StatusCode), "", response.StatusCode >= 500)
+	}
+	const maxExportBytes = 256 * 1024 * 1024
+	data, err := io.ReadAll(io.LimitReader(response.Body, maxExportBytes+1))
+	if err != nil || len(data) > maxExportBytes {
+		return nil, c.Failure("response_invalid", "Export archive is incomplete or exceeds 256 MiB", "", false)
+	}
+	return data, nil
 }
 func typedCall[T any](ctx context.Context, c *Client, name string, input any, id string) (T, error) {
 	var value T

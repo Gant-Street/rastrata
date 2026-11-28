@@ -63,6 +63,19 @@ const PAID_FROM_WORD: Readonly<Record<Payment["paidFrom"], string>> = {
   reclass: "income or expense account",
 };
 
+const TIN_STATUS_WORD = {
+  not_collected: "not collected",
+  on_file: "on file",
+  verified: "verified",
+} as const;
+
+function formatVendorAddress(address: VendorTotal["vendor"]["address"]): string {
+  if (!address) return "";
+  const cityState = [address.city, address.state].filter(Boolean).join(", ");
+  const locality = [cityState, address.postalCode].filter(Boolean).join(" ");
+  return [address.line1, address.line2, locality].filter(Boolean).join(", ");
+}
+
 const HEAD = [
   "Row",
   "Vendor or payee",
@@ -83,9 +96,18 @@ const HEAD = [
   "Notes",
 ];
 
+const EXTRA_HEAD = ["Legal name", "Address", "Email", "TIN status"];
+
 export function vendorsCsv(h: TaxFileHeader, totals: VendorTotals, thresholdCents: bigint): string {
   const threshold = formatMoney(thresholdCents);
-  const rows: string[][] = [HEAD.map(text)];
+  const includeDetails = totals.vendors.some(
+    ({ vendor }) =>
+      Boolean(vendor.legalName) ||
+      Boolean(vendor.address) ||
+      Boolean(vendor.email) ||
+      (vendor.tinStatus !== undefined && vendor.tinStatus !== "not_collected"),
+  );
+  const rows: string[][] = [(includeDetails ? [...HEAD, ...EXTRA_HEAD] : HEAD).map(text)];
   for (const entry of totals.vendors as readonly VendorTotal[]) {
     const { vendor } = entry;
     rows.push([
@@ -106,6 +128,14 @@ export function vendorsCsv(h: TaxFileHeader, totals: VendorTotals, thresholdCent
       text(entry.attention.map((code) => ATTENTION_WORD[code]).join("; ")),
       text(vendor.payeeKeys.join("; ")),
       text(vendor.notes),
+      ...(includeDetails
+        ? [
+            text(vendor.legalName ?? ""),
+            text(formatVendorAddress(vendor.address)),
+            text(vendor.email ?? ""),
+            text(vendor.tinStatus ? TIN_STATUS_WORD[vendor.tinStatus] : ""),
+          ]
+        : []),
     ]);
   }
   for (const entry of totals.payees as readonly PayeeTotal[])
@@ -129,6 +159,7 @@ export function vendorsCsv(h: TaxFileHeader, totals: VendorTotals, thresholdCent
       text(""),
       text(""),
       text(""),
+      ...(includeDetails ? ["", "", "", ""] : []),
     ]);
   return render([...headerRows(h), ...rows]);
 }

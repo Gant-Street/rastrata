@@ -5,6 +5,7 @@ import {
   setupRecords,
   type AccountTagMap,
 } from "../../account-tags.ts";
+import { lockedPeriods } from "../../calendar/periods.ts";
 import { isCalendarDate, isTagKey, TAG_KEYS, tagProblem, type TagKey } from "../../chart/tags.ts";
 import { describePrincipal } from "../../agent/principal.ts";
 import { ApplicationError } from "../../errors.ts";
@@ -41,13 +42,9 @@ interface BookAccount {
 async function bookAccounts(service: ApplicationService) {
   const { aggregate } = await service.readAggregate();
   const state = aggregate.state;
-  const superseded = new Set(state.periodTransitions.flatMap((item) => item.supersededCloseIds));
+  const locked = lockedPeriods(state);
   const closedPeriods = state.periods
-    .filter((period) =>
-      state.closePackages.some(
-        (close) => close.periodId === period.id && !superseded.has(close.id),
-      ),
-    )
+    .filter((period) => locked.has(period.id))
     .map((period) => ({ label: period.label, startsOn: period.startsOn, endsOn: period.endsOn }));
   return {
     accounts: state.admissionSnapshot.accounts as readonly BookAccount[],

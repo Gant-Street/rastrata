@@ -44,7 +44,9 @@ const taxVendorSaveUsage = "tax vendor save [--id VENDOR_ID --expected-version N
 	"[--reporting yes|no|undecided] [--reason corporation|employee|personal|merchandise|exempt_organization|card_or_network|other|none] " +
 	"[--w9 not_requested|requested|received] [--w9-on YYYY-MM-DD|none] " +
 	"[--classification individual|c_corporation|s_corporation|partnership|trust_estate|llc_c|llc_s|llc_p|other|none] " +
-	"[--paid-by unknown|bank|card_or_network] [--notes TEXT] [--operation-id UUID]"
+	"[--paid-by unknown|bank|card_or_network] [--legal-name TEXT|none] [--address-line1 TEXT] [--address-line2 TEXT] " +
+	"[--address-city TEXT] [--address-state TEXT] [--address-postal-code TEXT] [--email TEXT|none] " +
+	"[--tin-status not_collected|on_file|verified] [--notes TEXT] [--operation-id UUID]"
 const taxAccountsUsage = "tax accounts mark|unmark ACCOUNT_ID... [--operation-id UUID]"
 
 func vendorsInput(o Options, year int) map[string]any {
@@ -136,10 +138,10 @@ func runTaxVendorSave(r Runner, ctx context.Context, o Options, c *api.Client) i
 	if len(o.Args) != 3 {
 		return r.localError(o, "usage_error", "tax vendor save takes only options. Use "+taxVendorSaveUsage, 2)
 	}
-	if name, bad := flagsOutside(o, "id", "expected-version", "name", "payees", "reporting", "reason", "w9", "w9-on", "classification", "paid-by", "notes"); bad {
+	if name, bad := flagsOutside(o, "id", "expected-version", "name", "payees", "reporting", "reason", "w9", "w9-on", "classification", "paid-by", "legal-name", "address-line1", "address-line2", "address-city", "address-state", "address-postal-code", "email", "tin-status", "notes"); bad {
 		return r.localError(o, "usage_error", "unknown option --"+name+". Use "+taxVendorSaveUsage, 2)
 	}
-	if !rejectBareFlags(r, o, taxVendorSaveUsage, "id", "expected-version", "payees", "reporting", "reason", "w9", "w9-on", "classification", "paid-by") {
+	if !rejectBareFlags(r, o, taxVendorSaveUsage, "id", "expected-version", "payees", "reporting", "reason", "w9", "w9-on", "classification", "paid-by", "legal-name", "address-line1", "address-line2", "address-city", "address-state", "address-postal-code", "email", "tin-status") {
 		return 2
 	}
 	input := map[string]any{}
@@ -170,14 +172,37 @@ func runTaxVendorSave(r Runner, ctx context.Context, o Options, c *api.Client) i
 		}
 		input["payeeKeys"] = keys
 	}
-	for flag, field := range map[string]string{"reporting": "reporting", "w9": "w9", "paid-by": "paidBy"} {
+	for flag, field := range map[string]string{"reporting": "reporting", "w9": "w9", "paid-by": "paidBy", "tin-status": "tinStatus"} {
 		if value, given := o.Flags[flag]; given {
 			input[field] = value
 		}
 	}
-	for flag, field := range map[string]string{"reason": "reason", "w9-on": "w9On", "classification": "classification"} {
+	for flag, field := range map[string]string{"reason": "reason", "w9-on": "w9On", "classification": "classification", "legal-name": "legalName", "email": "email"} {
 		if value, given := vendorField(o, flag); given {
 			input[field] = value
+		}
+	}
+	address := map[string]string{}
+	addressGiven := false
+	for flag, field := range map[string]string{
+		"address-line1":       "line1",
+		"address-line2":       "line2",
+		"address-city":        "city",
+		"address-state":       "state",
+		"address-postal-code": "postalCode",
+	} {
+		if value, given := o.Flags[flag]; given {
+			addressGiven = true
+			if value != "none" {
+				address[field] = value
+			}
+		}
+	}
+	if addressGiven {
+		if len(address) == 0 {
+			input["address"] = nil
+		} else {
+			input["address"] = address
 		}
 	}
 	if notes, given := o.Flags["notes"]; given {

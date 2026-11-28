@@ -40,7 +40,12 @@ export interface SourceLine {
 export interface OpenExportInput {
   readonly id: string;
   readonly createdAt: string;
-  readonly book: { readonly id: string; readonly name: string; readonly currency: string };
+  readonly book: {
+    readonly id: string;
+    readonly name: string;
+    readonly currency: string;
+    readonly entity?: unknown;
+  };
   /** The book's setup as the application stores it. */
   readonly setup: unknown;
   readonly ledger: { readonly head: LedgerHead; readonly genesis: string };
@@ -577,7 +582,12 @@ export async function writeOpenExport(
         `${JSON.stringify(
           {
             format: EXPORT_FORMAT,
-            book: { id: input.book.id, name: input.book.name, currency: input.book.currency },
+            book: {
+              id: input.book.id,
+              name: input.book.name,
+              currency: input.book.currency,
+              ...(input.book.entity ? { entity: input.book.entity } : {}),
+            },
             setup: input.setup,
             periods: state.periods.map((period) => ({
               id: period.id,

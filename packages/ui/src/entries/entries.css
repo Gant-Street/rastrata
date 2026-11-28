@@ -188,3 +188,27 @@ fieldset.rt-quick-presets {
   margin: 0;
   font-weight: 700;
 }
+
+.rt-business-entity {
+  padding-top: var(--rt-space-2);
+}
+
+.rt-business-entity-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--rt-space-4);
+  align-items: start;
+}
+
+.rt-business-entity-addr {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: var(--rt-space-3);
+  align-items: end;
+}
+
+@media (max-width: 40rem) {
+  .rt-business-entity-addr {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

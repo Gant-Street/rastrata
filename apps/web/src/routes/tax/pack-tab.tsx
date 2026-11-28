@@ -1,5 +1,5 @@
 import type { ApplicationInputs, ApplicationOutputs } from "@rastrata/application/client-contracts";
-import { TaxPackPanel, taxWords, zipFiles, type TaxFormId } from "@rastrata/ui";
+import { Button, TaxPackPanel, taxWords, zipFiles, type TaxFormId } from "@rastrata/ui";
 import { type Accessor, createSignal } from "solid-js";
 import type { BrowserApplicationClient } from "../../application-client";
 import type { MealsPercent } from "./controller";
@@ -24,6 +24,7 @@ export function PackTab(props: {
   const [phase, setPhase] = createSignal<"idle" | "building" | "failed">("idle");
   const [failure, setFailure] = createSignal<string | undefined>();
   const [downloading, setDownloading] = createSignal(false);
+  const [downloadingCpa, setDownloadingCpa] = createSignal(false);
   const [message, setMessage] = createSignal("");
   const state = () => {
     if (phase() === "building") return "building" as const;
@@ -75,6 +76,32 @@ export function PackTab(props: {
     }
   }
 
+  async function downloadCpaPacket() {
+    const taxYear = props.year();
+    if (taxYear === undefined || downloadingCpa()) return;
+    const form = props.form();
+    const input: ApplicationInputs["taxCpaPacket.build"] = {
+      taxYear,
+      ...(form ? { form } : {}),
+      ...(form === null || form === "scheduleC" ? { mealsPercent: props.meals() } : {}),
+    };
+    setDownloadingCpa(true);
+    setFailure(undefined);
+    setMessage("");
+    try {
+      const built = await props.client.read("taxCpaPacket.build", input);
+      const bytes = zipFiles(
+        built.folder,
+        built.files.map((file) => ({ path: file.path, content: file.content })),
+      );
+      setMessage(taxWords.packSaved(saveBytes(`${built.folder}.zip`, "application/zip", bytes)));
+    } catch (cause) {
+      setFailure(failureText(cause, taxWords.cpaPacketFailed));
+    } finally {
+      setDownloadingCpa(false);
+    }
+  }
+
   return (
     <TaxPackPanel
       heading={taxWords.packTitle}
@@ -89,6 +116,15 @@ export function PackTab(props: {
       downloading={downloading()}
       message={message()}
       failure={failure()}
+      extra={
+        <Button
+          variant="secondary"
+          label={taxWords.cpaPacketDownload}
+          pending={downloadingCpa()}
+          pendingLabel={taxWords.cpaPacketBuilding}
+          onClick={() => void downloadCpaPacket()}
+        />
+      }
     />
   );
 }

@@ -27,7 +27,9 @@ import (
 // writes the bookkeeping instructions for the agents into the folder. Every later `rastrata` command run in the folder, or under it, works with no variable set.
 // RASTRATA_TOKEN still wins when it is set.
 func init() {
-	Register(Command{Name: "connect", Offline: true, Summary: "Connect an agent to your books from this folder, in one step: CODE (from your workspace's agent settings; works once, for ten minutes) [--name TEXT] [--agent claude|codex|opencode|all|none] [--dir PATH]. On a computer that runs the service itself, with no code: [--preset read-only|draft|bookkeeper]", Run: runConnect})
+	Register(Command{Name: "connect", Offline: true, Summary: "Connect an agent to your books from this folder, in one step: CODE (from your workspace's agent settings; works once, for ten minutes) [--name TEXT] [--alias SLUG] [--agent claude|codex|opencode|all|none] [--dir PATH]. On a computer that runs the service itself, with no code: [--preset read-only|draft|bookkeeper]", Run: runConnect})
+	Register(Command{Name: "workspaces", Offline: true, Summary: "List connected workspaces and show which one is selected in this folder", Run: runWorkspaces})
+	Register(Command{Name: "disconnect", Offline: true, Summary: "Remove a connected workspace from this computer: disconnect [--workspace SLUG|ID] [--all]", Run: runDisconnect})
 }
 
 // connectTimeout bounds each talk with the service.
@@ -57,38 +59,42 @@ func realFolder(path string) (string, error) {
 	return absolute, nil
 }
 
-// connectionHere is the connection `rastrata connect` kept for the folder this command runs in, if there is one that may be used.
+// connectionHere is the connection `rastrata connect` kept for the folder (or --workspace selector) this command runs in, if there is one that may be used.
 func connectionHere(o Options) (*api.Connection, error) {
 	connections, err := api.LoadConnections(os.Getenv)
 	if err != nil || len(connections) == 0 {
+		if err == nil && o.Workspace != "" {
+			return nil, fmt.Errorf("no connected workspaces found for %q; run rastrata connect first", o.Workspace)
+		}
 		return nil, err
 	}
 	folder, err := os.Getwd()
 	if err != nil {
-		return nil, nil
-	}
-	if folder, err = realFolder(folder); err != nil {
-		return nil, nil
+		folder = ""
+	} else if resolved, err := realFolder(folder); err == nil {
+		folder = resolved
 	}
 	endpoint := ""
 	if o.EndpointGiven {
 		endpoint = normalizedEndpoint(o.Endpoint)
 	}
 	// The command line on its own has no service on this computer to fall back to, so a person with one workspace need not be in the folder they connected from.
-	return api.FindConnection(connections, folder, endpoint, buildinfo.CommandLineOnly()), nil
+	// When multiple workspaces are connected, ResolveConnection fails closed and asks for --workspace or RASTRATA_WORKSPACE.
+	return api.ResolveConnection(connections, folder, endpoint, o.Workspace, buildinfo.CommandLineOnly())
 }
 
 // credentialFor says what this process presents to the service, where it took it from ("token", "owner key", "connection" or "none"), and, when it is a folder's
 // connection, sets where the service is. The order: RASTRATA_TOKEN, RASTRATA_OWNER_KEY_FILE, the folder's connection, the installed service's own owner key, nothing.
 func credentialFor(o *Options) (string, string, error) {
 	named := strings.TrimSpace(os.Getenv(api.TokenVariable)) != "" || os.Getenv(api.OwnerKeyFileVariable) != ""
-	if !named {
+	if !named || o.Workspace != "" {
 		connection, err := connectionHere(*o)
 		if err != nil {
 			return "", "connection", err
 		}
 		if connection != nil {
 			o.Endpoint = connection.Endpoint
+			o.WorkspaceID = connection.WorkspaceID
 			return connection.Key, "connection", nil
 		}
 	}
@@ -145,9 +151,11 @@ type connectResult struct {
 	Connected bool   `json:"connected"`
 	Endpoint  string `json:"endpoint"`
 	Directory string `json:"directory"`
+	Alias     string `json:"alias,omitempty"`
 	Workspace *struct {
 		ID   string `json:"id"`
 		Name string `json:"name"`
+		Slug string `json:"slug,omitempty"`
 	} `json:"workspace,omitempty"`
 	Name        string          `json:"name"`
 	KeyID       string          `json:"keyId,omitempty"`
@@ -159,11 +167,11 @@ type connectResult struct {
 }
 
 func runConnect(r Runner, ctx context.Context, o Options, _ *api.Client) int {
-	const usage = "connect CODE [--name TEXT] [--agent claude|codex|opencode|all|none] [--dir PATH]"
+	const usage = "connect CODE [--name TEXT] [--alias SLUG] [--agent claude|codex|opencode|all|none] [--dir PATH]"
 	if len(o.Args) > 2 {
 		return agentUsage(r, o, "connect takes one code", usage)
 	}
-	if problem := agentFlagProblem(o, []string{"name", "agent", "dir", "preset"}, []string{"name", "agent", "dir", "preset"}); problem != "" {
+	if problem := agentFlagProblem(o, []string{"name", "alias", "agent", "dir", "preset"}, []string{"name", "alias", "agent", "dir", "preset"}); problem != "" {
 		return agentUsage(r, o, problem, usage)
 	}
 	for name, value := range o.Flags {
@@ -224,7 +232,15 @@ func runConnect(r Runner, ctx context.Context, o Options, _ *api.Client) int {
 	}
 
 	result := connectResult{Directory: folder, Files: []agentkit.File{}, Notes: []string{}, Permissions: []string{}}
-	connection := api.Connection{Directory: folder, ConnectedAt: time.Now().UTC().Format(time.RFC3339)}
+	alias := strings.TrimSpace(o.Flags["alias"])
+	if alias != "" {
+		cleaned := api.SlugifyWorkspace(alias)
+		if cleaned == "" {
+			return agentUsage(r, o, "--alias must contain letters or digits", usage)
+		}
+		alias = cleaned
+	}
+	connection := api.Connection{Directory: folder, Alias: alias, ConnectedAt: time.Now().UTC().Format(time.RFC3339)}
 	if code != "" {
 		// A code is from a hosted workspace: that is where it goes unless the person named another address.
 		endpoint := hostedEndpoint
@@ -241,14 +257,20 @@ func runConnect(r Runner, ctx context.Context, o Options, _ *api.Client) int {
 		if err != nil {
 			return r.result(o, api.Response{}, err, "")
 		}
+		slug := made.WorkspaceSlug
+		if slug == "" {
+			slug = api.SlugifyWorkspace(made.WorkspaceName)
+		}
 		connection.Endpoint, connection.Key, connection.KeyID = client.Endpoint, made.Key, made.KeyID
 		connection.Name, connection.ExpiresAt = made.Name, made.ExpiresAt
-		connection.WorkspaceID, connection.WorkspaceName = made.WorkspaceID, made.WorkspaceName
+		connection.WorkspaceID, connection.WorkspaceName, connection.WorkspaceSlug = made.WorkspaceID, made.WorkspaceName, slug
+		result.Alias = alias
 		result.Permissions = made.Scopes
 		result.Workspace = &struct {
 			ID   string `json:"id"`
 			Name string `json:"name"`
-		}{made.WorkspaceID, made.WorkspaceName}
+			Slug string `json:"slug,omitempty"`
+		}{made.WorkspaceID, made.WorkspaceName, slug}
 	} else {
 		// The service on this computer: its owner makes a token for the agent. A folder's own connection is not what asks (a token cannot make a token).
 		client, err := api.New(o.Endpoint, o.BookID, o.Directory)
@@ -342,4 +364,112 @@ func runConnect(r Runner, ctx context.Context, o Options, _ *api.Client) int {
 		fmt.Fprintln(r.Diagnostics, note)
 	}
 	return agentJSON(r, o, result)
+}
+
+type workspaceEntry struct {
+	Selector    string `json:"selector"`
+	ID          string `json:"id,omitempty"`
+	Slug        string `json:"slug,omitempty"`
+	Alias       string `json:"alias,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Endpoint    string `json:"endpoint"`
+	Directory   string `json:"directory"`
+	KeyID       string `json:"keyId,omitempty"`
+	AgentName   string `json:"agentName,omitempty"`
+	ConnectedAt string `json:"connectedAt"`
+	ExpiresAt   string `json:"expiresAt,omitempty"`
+	Active      bool   `json:"active"`
+}
+
+func runWorkspaces(r Runner, _ context.Context, o Options, _ *api.Client) int {
+	if len(o.Args) != 1 || len(o.Flags) > 0 {
+		return r.localError(o, "usage_error", "Use rastrata workspaces", 2)
+	}
+	connections, err := api.LoadConnections(os.Getenv)
+	if err != nil {
+		return r.localError(o, "connections_unavailable", err.Error(), 4)
+	}
+	active, resolveErr := connectionHere(o)
+	entries := make([]workspaceEntry, 0, len(connections))
+	for _, c := range connections {
+		slug := c.WorkspaceSlug
+		if slug == "" && c.WorkspaceName != "" {
+			slug = api.SlugifyWorkspace(c.WorkspaceName)
+		}
+		isActive := active != nil &&
+			c.Endpoint == active.Endpoint &&
+			c.WorkspaceID == active.WorkspaceID &&
+			c.Directory == active.Directory &&
+			c.KeyID == active.KeyID
+		entries = append(entries, workspaceEntry{
+			Selector:    c.SelectorOf(),
+			ID:          c.WorkspaceID,
+			Slug:        slug,
+			Alias:       c.Alias,
+			Name:        c.WorkspaceName,
+			Endpoint:    c.Endpoint,
+			Directory:   c.Directory,
+			KeyID:       c.KeyID,
+			AgentName:   c.Name,
+			ConnectedAt: c.ConnectedAt,
+			ExpiresAt:   c.ExpiresAt,
+			Active:      isActive,
+		})
+	}
+	sort.Slice(entries, func(i, j int) bool {
+		if entries[i].Selector != entries[j].Selector {
+			return entries[i].Selector < entries[j].Selector
+		}
+		return entries[i].ID < entries[j].ID
+	})
+	payload := map[string]any{
+		"workspaces": entries,
+		"count":      len(entries),
+	}
+	if active != nil {
+		payload["active"] = active.SelectorOf()
+	} else if resolveErr != nil {
+		payload["ambiguity"] = resolveErr.Error()
+		fmt.Fprintln(r.Diagnostics, resolveErr.Error())
+	}
+	return agentJSON(r, o, payload)
+}
+
+func runDisconnect(r Runner, _ context.Context, o Options, _ *api.Client) int {
+	const usage = "disconnect [--workspace SLUG|ID] [--all]"
+	if len(o.Args) != 1 {
+		return agentUsage(r, o, "disconnect takes options only", usage)
+	}
+	if problem := agentFlagProblem(o, []string{"all"}, nil); problem != "" {
+		return agentUsage(r, o, problem, usage)
+	}
+	connections, err := api.LoadConnections(os.Getenv)
+	if err != nil {
+		return r.localError(o, "connections_unavailable", err.Error(), 4)
+	}
+	if o.Flags["all"] == "true" {
+		if err := api.SaveConnections(os.Getenv, []api.Connection{}); err != nil {
+			return r.localError(o, "connections_unavailable", err.Error(), 4)
+		}
+		fmt.Fprintf(r.Diagnostics, "Disconnected %d workspace connection(s) from this computer.\n", len(connections))
+		return agentJSON(r, o, map[string]any{"removed": len(connections), "remaining": 0})
+	}
+	target, err := connectionHere(o)
+	if err != nil {
+		return r.localError(o, "usage_error", err.Error(), 2)
+	}
+	if target == nil {
+		return r.localError(o, "not_connected", "No connected workspace matches this folder. Run rastrata workspaces to list connected workspaces.", 3)
+	}
+	remaining := api.RemoveConnection(connections, *target)
+	if err := api.SaveConnections(os.Getenv, remaining); err != nil {
+		return r.localError(o, "connections_unavailable", err.Error(), 4)
+	}
+	fmt.Fprintf(r.Diagnostics, "Disconnected %s from this computer.\n", target.SelectorOf())
+	return agentJSON(r, o, map[string]any{
+		"removed":   1,
+		"selector":  target.SelectorOf(),
+		"workspace": target.WorkspaceID,
+		"remaining": len(remaining),
+	})
 }

@@ -33,6 +33,9 @@ export {
   changesIn,
   type BusinessAcceptMode,
   type BusinessDateFormat,
+  type BusinessEntityAddress,
+  type BusinessEntityType,
+  type BusinessEntityValues,
   type BusinessValues,
 } from "./business-form";
 export { listAccountLabel, setShowsAccountNumbers, showsAccountNumbers } from "./display";

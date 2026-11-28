@@ -36,6 +36,14 @@ export const shellWords = {
     footerClose: "to close",
   },
   settingsNav: { label: "Settings" },
+  workspace: {
+    heading: "Workspaces",
+    switchLabel: (name: string) => `Switch workspace, current workspace ${name}`,
+    loading: "Loading workspaces…",
+    readOnly: "Read-only",
+    create: "New workspace",
+    manage: "All workspaces",
+  },
 } as const;
 
 export type ShellWords = typeof shellWords;

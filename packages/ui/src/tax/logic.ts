@@ -169,6 +169,14 @@ export const emptyVendorValues = (payee = ""): TaxVendorFormValues => ({
   classification: "",
   paidBy: "unknown",
   notes: "",
+  legalName: "",
+  email: "",
+  tinStatus: "not_collected",
+  addressLine1: "",
+  addressLine2: "",
+  addressCity: "",
+  addressState: "",
+  addressPostalCode: "",
 });
 
 export const vendorValues = (vendor: TaxVendorView): TaxVendorFormValues => ({
@@ -181,7 +189,17 @@ export const vendorValues = (vendor: TaxVendorView): TaxVendorFormValues => ({
   classification: vendor.classification ?? "",
   paidBy: vendor.paidBy,
   notes: vendor.notes,
+  legalName: vendor.legalName ?? "",
+  email: vendor.email ?? "",
+  tinStatus: vendor.tinStatus ?? "not_collected",
+  addressLine1: vendor.address?.line1 ?? "",
+  addressLine2: vendor.address?.line2 ?? "",
+  addressCity: vendor.address?.city ?? "",
+  addressState: vendor.address?.state ?? "",
+  addressPostalCode: vendor.address?.postalCode ?? "",
 });
+
+const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+$/;
 
 /** What is wrong with a vendor form, field by field. An empty object means it can be sent. */
 export function vendorErrors(values: TaxVendorFormValues): TaxVendorFormErrors {
@@ -191,6 +209,8 @@ export function vendorErrors(values: TaxVendorFormValues): TaxVendorFormErrors {
     errors.payees = words.formPayeeShort;
   if (values.reporting === "no" && values.reason === "") errors.reason = words.formReasonRequired;
   if (values.w9On.trim() !== "" && !isDate(values.w9On.trim())) errors.w9On = words.formW9OnBad;
+  const email = (values.email ?? "").trim();
+  if (email !== "" && !EMAIL_SHAPE.test(email)) errors.email = words.formEmailBad;
   return errors;
 }
 
@@ -198,8 +218,27 @@ export const hasVendorErrors = (errors: TaxVendorFormErrors): boolean =>
   Object.values(errors).some((message) => message !== undefined);
 
 /** The fields of `taxVendors.save` for a form. A field that can be cleared is null when empty. The reason
- * only goes with "does not need a 1099". */
-export function vendorFields(values: TaxVendorFormValues) {
+ * only goes with "does not need a 1099". Optional filing details are included when populated or when
+ * clearing a value already recorded on `existing`. */
+export function vendorFields(values: TaxVendorFormValues, existing?: TaxVendorView | null) {
+  const legalName = (values.legalName ?? "").trim();
+  const email = (values.email ?? "").trim();
+  const tinStatus = values.tinStatus ?? "not_collected";
+  const line1 = (values.addressLine1 ?? "").trim();
+  const line2 = (values.addressLine2 ?? "").trim();
+  const city = (values.addressCity ?? "").trim();
+  const state = (values.addressState ?? "").trim().toUpperCase();
+  const postalCode = (values.addressPostalCode ?? "").trim();
+  const hasAddress = Boolean(line1 || line2 || city || state || postalCode);
+  const address = hasAddress
+    ? {
+        ...(line1 ? { line1 } : {}),
+        ...(line2 ? { line2 } : {}),
+        ...(city ? { city } : {}),
+        ...(state ? { state } : {}),
+        ...(postalCode ? { postalCode } : {}),
+      }
+    : null;
   return {
     name: values.name.trim(),
     payeeKeys: parsePayees(values.payees),
@@ -210,6 +249,13 @@ export function vendorFields(values: TaxVendorFormValues) {
     classification: values.classification === "" ? null : values.classification,
     paidBy: values.paidBy,
     notes: values.notes.trim(),
+    ...(legalName !== "" || existing?.legalName ? { legalName: legalName || null } : {}),
+    ...(email !== "" || existing?.email ? { email: email || null } : {}),
+    ...(tinStatus !== "not_collected" ||
+    (existing?.tinStatus !== undefined && existing.tinStatus !== "not_collected")
+      ? { tinStatus }
+      : {}),
+    ...(hasAddress || existing?.address ? { address } : {}),
   } as const;
 }
 

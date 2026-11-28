@@ -61,6 +61,7 @@ const SERVICE_OPERATIONS: readonly string[] = [
   "stripe.link",
   "stripe.receive",
   "book.access",
+  "book.usage",
 ];
 
 /** What a read-only book lets a person keep: `read`, and `configure` only because making and fetching an export needs it (the list below cuts every other `configure` operation). */
@@ -261,6 +262,18 @@ export class ApplicationHttp {
       permissions: person.permissions.filter(
         (permission) => permission !== "provision" && agent.scopes.includes(permission),
       ),
+      // Intersect `readOnly.held` with the agent key's own scopes so a read-only key still gets
+      // `permission_denied` (not `workspace_read_only`) when it attempts a write it never held.
+      ...(person.readOnly
+        ? {
+            readOnly: {
+              since: person.readOnly.since,
+              held: person.readOnly.held.filter(
+                (permission) => permission !== "provision" && agent.scopes.includes(permission),
+              ),
+            },
+          }
+        : {}),
       principal: {
         kind: "token",
         tokenId: agent.keyId,
@@ -785,7 +798,11 @@ export class ApplicationHttp {
           pageSize: 25,
           permissions: access.permissions,
           // Only what this caller may call, so an agent is never offered what it cannot do.
-          operations: operationCatalog.filter((item) => permitsOperation(access.permissions, item)),
+          operations: operationCatalog.filter(
+            (item) =>
+              permitsOperation(access.permissions, item) &&
+              (access.operations === undefined || access.operations.includes(item.name)),
+          ),
           ...(setup
             ? { basis: setup.basis, fiscalYearStartMonth: setup.fiscalYearStartMonth }
             : {}),

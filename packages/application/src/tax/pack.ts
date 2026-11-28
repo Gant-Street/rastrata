@@ -12,7 +12,12 @@
  * Pure and portable. */
 import type { BookState } from "@rastrata/kernel";
 
-import type { TaxCheck, TaxPackFile, TaxWorksheet } from "../client-contracts.gen.ts";
+import type {
+  BookEntityProfile,
+  TaxCheck,
+  TaxPackFile,
+  TaxWorksheet,
+} from "../client-contracts.gen.ts";
 import { sha256Hex } from "../ingest/hash.ts";
 import { sanitizeText } from "../ingest/text.ts";
 import { exportStatement } from "../reports/export.ts";
@@ -22,6 +27,7 @@ import { TAX_DISCLAIMER_LONG } from "./sources.ts";
 import type { analyzeWorksheet, WorksheetRequest } from "./worksheet.ts";
 
 export const PACK_FORMAT = "rastrata-year-end-pack-v1";
+export const CPA_PACKET_FORMAT = "rastrata-cpa-packet-v1";
 
 const STATEMENTS = [
   [
@@ -85,11 +91,25 @@ export interface PackInput {
   readonly state: BookState;
   readonly request: WorksheetRequest;
   readonly bookName: string;
+  /** Optional legal entity profile recorded on the book. */
+  readonly entity?: BookEntityProfile | undefined;
+  /** Optional format override (defaults to `PACK_FORMAT`; CPA packet uses `CPA_PACKET_FORMAT`). */
+  readonly format?: string;
+  /** Optional top-level folder name override. */
+  readonly folder?: string;
+  /** Optional title prefix for README.md ("Year-end pack" by default, "CPA packet" for unified bundle). */
+  readonly title?: string;
   /** The worksheet and its postings, when the caller has already compiled them (the checks need the
    * worksheet too): the pack then does not read the book a second time for it. */
   readonly analysis: ReturnType<typeof analyzeWorksheet>;
-  /** Files the other parts of the lane add (the 1099 vendor totals, the sales-tax summary). */
+  /** Files the other parts of the lane add (the 1099 vendor totals, the sales-tax summary, accounting files). */
   readonly extra: readonly TaxFile[];
+  /** Additional population hashes contributed by `extra` files (for manifest.json). */
+  readonly extraPopulations?: Readonly<Record<string, string>>;
+  /** Optional extra README paragraphs (e.g. from accountant contributors). */
+  readonly extraReadmes?: readonly string[];
+  /** Optional notes about files that could not be made. */
+  readonly extraNotes?: readonly string[];
   readonly checks: readonly TaxCheck[];
   /** Whether the books for the range are closed, and the last current close to tie the pack to. */
   readonly close: YearClose;
@@ -109,12 +129,35 @@ const STATUS_WORD: Readonly<Record<TaxCheck["status"], string>> = {
   unknown: "could not be checked",
 };
 
+function entityReadmeLines(entity: BookEntityProfile | undefined): string[] {
+  if (!entity) return [];
+  const rows: string[] = [];
+  if (entity.legalName) rows.push(`Legal name: ${sanitizeText(entity.legalName, 200)}`);
+  if (entity.ein) rows.push(`EIN: ${entity.ein}`);
+  if (entity.entityType) rows.push(`Entity type: ${entity.entityType}`);
+  if (entity.formationState) rows.push(`Formation state: ${entity.formationState}`);
+  if (entity.address) {
+    const cityState = [entity.address.city, entity.address.state].filter(Boolean).join(", ");
+    const locality = [cityState, entity.address.postalCode].filter(Boolean).join(" ");
+    const addr = [entity.address.line1, entity.address.line2, locality, entity.address.country]
+      .filter(Boolean)
+      .join(", ");
+    if (addr) rows.push(`Address: ${sanitizeText(addr, 300)}`);
+  }
+  if (entity.contactEmail) rows.push(`Contact email: ${entity.contactEmail}`);
+  return rows.length > 0 ? ["", ...rows] : [];
+}
+
 function readme(input: {
+  readonly title: string;
   readonly bookName: string;
+  readonly entity?: BookEntityProfile | undefined;
   readonly worksheet: TaxWorksheet;
   readonly files: readonly TaxPackFile[];
   readonly checks: readonly TaxCheck[];
   readonly close: YearClose;
+  readonly extraReadmes?: readonly string[];
+  readonly extraNotes?: readonly string[];
 }): string {
   const { worksheet } = input;
   const sources = new Map<string, string>();
@@ -126,10 +169,11 @@ function readme(input: {
       if (!sources.has(source.url))
         sources.set(source.url, `${source.title}, read on ${form.verifiedOn}`);
   const lines: string[] = [
-    `# Year-end pack: ${sanitizeText(input.bookName, 120)}, tax year ${worksheet.taxYear}`,
+    `# ${input.title}: ${sanitizeText(input.bookName, 120)}, tax year ${worksheet.taxYear}`,
     "",
     `Covers ${worksheet.from} to ${worksheet.to}. Basis: ${worksheet.basis}. Currency: ${worksheet.currency}.`,
     `Built from book revision ${worksheet.bookRevision}.`,
+    ...entityReadmeLines(input.entity),
     "",
     `**${TAX_DISCLAIMER_LONG}**`,
     "",
@@ -146,6 +190,21 @@ function readme(input: {
     ...input.files.map((file) => `| \`${file.path}\` | ${file.description} |`),
     "| `manifest.json` | Every file above with its size, its SHA-256 and the population it was built from. |",
     "",
+    ...((input.extraReadmes ?? []).length > 0
+      ? [
+          "## What else is in this folder",
+          "",
+          ...(input.extraReadmes ?? []).flatMap((text) => [text, ""]),
+        ]
+      : []),
+    ...((input.extraNotes ?? []).length > 0
+      ? [
+          "## Files that could not be made",
+          "",
+          ...(input.extraNotes ?? []).map((note) => `- ${note}`),
+          "",
+        ]
+      : []),
     "## What is not in it",
     "",
     "- A tax return, or any form to file. Rastrata files nothing.",
@@ -232,6 +291,8 @@ export function buildPack(input: PackInput): BuiltPack {
   );
   populations.worksheet = worksheet.populationHash;
   populations.tagMap = worksheet.tagMapHash;
+  if (input.extraPopulations)
+    for (const [key, value] of Object.entries(input.extraPopulations)) populations[key] = value;
   made.push(sheets.worksheet, sheets.accounts, sheets.postings, ...input.extra);
   const body = made.map(packFile);
   const readmeFile = packFile({
@@ -239,17 +300,21 @@ export function buildPack(input: PackInput): BuiltPack {
     mediaType: "text/markdown; charset=utf-8",
     description: "What this pack is, what is and is not in it, and the checks to look at first.",
     content: readme({
+      title: input.title ?? "Year-end pack",
       bookName,
+      ...(input.entity ? { entity: input.entity } : {}),
       worksheet,
       files: body,
       checks: input.checks,
       close: input.close,
+      ...(input.extraReadmes ? { extraReadmes: input.extraReadmes } : {}),
+      ...(input.extraNotes ? { extraNotes: input.extraNotes } : {}),
     }),
     population: null,
   });
   const files = [readmeFile, ...body];
   const manifest = {
-    format: PACK_FORMAT,
+    format: input.format ?? PACK_FORMAT,
     taxYear: worksheet.taxYear,
     form: {
       id: worksheet.form.id,
@@ -261,6 +326,7 @@ export function buildPack(input: PackInput): BuiltPack {
       name: sanitizeText(bookName, 120),
       currency: worksheet.currency,
       basis: worksheet.basis,
+      ...(input.entity ? { entity: input.entity } : {}),
     },
     bookRevision: worksheet.bookRevision,
     postingSequence: worksheet.postingSequence,
@@ -285,7 +351,7 @@ export function buildPack(input: PackInput): BuiltPack {
     population: null,
   });
   return {
-    folder: `rastrata-year-end-${worksheet.taxYear}`,
+    folder: input.folder ?? `rastrata-year-end-${worksheet.taxYear}`,
     worksheet,
     files: [...files, manifestFile],
     manifestSha256: manifestFile.sha256,

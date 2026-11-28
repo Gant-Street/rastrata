@@ -184,7 +184,16 @@ export type TaxVendorClassification =
   | "llc_p"
   | "other";
 export type TaxVendorPaidBy = "unknown" | "bank" | "card_or_network";
+export type TaxVendorTinStatus = "not_collected" | "on_file" | "verified";
 export type TaxVendorAttention = "undecided" | "w9_missing" | "method_unconfirmed";
+
+export interface TaxVendorAddressView {
+  readonly line1?: string | undefined;
+  readonly line2?: string | undefined;
+  readonly city?: string | undefined;
+  readonly state?: string | undefined;
+  readonly postalCode?: string | undefined;
+}
 
 export interface TaxVendorView {
   readonly id: string;
@@ -198,6 +207,10 @@ export interface TaxVendorView {
   readonly classification: TaxVendorClassification | null;
   readonly paidBy: TaxVendorPaidBy;
   readonly notes: string;
+  readonly legalName?: string | null | undefined;
+  readonly address?: TaxVendorAddressView | null | undefined;
+  readonly email?: string | null | undefined;
+  readonly tinStatus?: TaxVendorTinStatus | undefined;
   readonly recordedAt: string;
   readonly principal: string;
 }
@@ -290,6 +303,14 @@ export interface TaxVendorFormValues {
   readonly classification: TaxVendorClassification | "";
   readonly paidBy: TaxVendorPaidBy;
   readonly notes: string;
+  readonly legalName?: string | undefined;
+  readonly email?: string | undefined;
+  readonly tinStatus?: TaxVendorTinStatus | undefined;
+  readonly addressLine1?: string | undefined;
+  readonly addressLine2?: string | undefined;
+  readonly addressCity?: string | undefined;
+  readonly addressState?: string | undefined;
+  readonly addressPostalCode?: string | undefined;
 }
 
 export interface TaxVendorFormErrors {
@@ -298,6 +319,7 @@ export interface TaxVendorFormErrors {
   readonly payees?: string | undefined;
   readonly reason?: string | undefined;
   readonly w9On?: string | undefined;
+  readonly email?: string | undefined;
   readonly notes?: string | undefined;
 }
 

@@ -22,7 +22,10 @@ export function ImportFileDrop(props: {
   dragging?: boolean | undefined;
   /** The words and the kinds of file when the drop is for something other than a statement. */
   copy?: { title: string; hint: string; accept: string } | undefined;
+  /** Accept multiple files dropped or chosen at once. */
+  multiple?: boolean | undefined;
   onFile: (file: File) => void;
+  onFiles?: ((files: File[]) => void) | undefined;
 }) {
   const uid = createUniqueId();
   const hintId = `${uid}-hint`;
@@ -37,12 +40,13 @@ export function ImportFileDrop(props: {
       label={props.copy?.title ?? words.dropTitle}
       hideLabel
       drop
+      multiple={props.multiple}
       dragging={props.dragging}
       button={props.fileName ? words.chooseAnother : words.choose}
       variant={props.fileName ? "secondary" : "primary"}
       accept={
         props.copy?.accept ??
-        ".csv,.ofx,.qfx,.qbo,.txt,.tsv,text/csv,text/plain,application/x-ofx,application/vnd.intu.qfx,application/vnd.intu.qbo"
+        ".csv,.xlsx,.ofx,.qfx,.qbo,.txt,.tsv,text/csv,text/plain,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/x-ofx,application/vnd.intu.qfx,application/vnd.intu.qbo"
       }
       disabled={inactive()}
       invalid={Boolean(problem())}
@@ -53,6 +57,11 @@ export function ImportFileDrop(props: {
       onFile={(file) => {
         setDropProblem("");
         props.onFile(file);
+      }}
+      onFiles={(files) => {
+        setDropProblem("");
+        if (props.onFiles) props.onFiles(files);
+        else if (files[0]) props.onFile(files[0]);
       }}
       onTooMany={() => setDropProblem(words.dropOne)}
       actionsClass="rt-imp-drop-actions"

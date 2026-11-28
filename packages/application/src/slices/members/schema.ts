@@ -68,6 +68,12 @@ export const membersSchema: SliceSchema = {
     BookAccessInput: object({ readOnly: { type: "boolean" } }),
     /** `readOnlySince` is when the book became read-only (null when it is not). */
     BookAccess: object({ readOnly: { type: "boolean" }, readOnlySince: nullable(instant) }),
+    /** Account-level trial observability counts for one book (no amounts, names, or text). */
+    BookUsage: object({
+      statementsImported: { type: "integer", minimum: 0 },
+      transactionsImported: { type: "integer", minimum: 0 },
+      exportsCreated: { type: "integer", minimum: 0 },
+    }),
   },
   operations: [
     operation(
@@ -126,8 +132,16 @@ export const membersSchema: SliceSchema = {
       true,
       "BookAccess",
     ),
+    operation(
+      "book.usage",
+      "Count imported statements, imported transactions and created exports for this book, for account-level trial observability. Only the control plane's key may call it.",
+      "read",
+      "Empty",
+      false,
+      "BookUsage",
+    ),
   ],
-  readsBeforeSetup: ["members.list"],
+  readsBeforeSetup: ["members.list", "book.usage"],
   writesBeforeSetup: [
     "members.add",
     "members.setRole",

@@ -157,6 +157,61 @@ describe("the vendor form", () => {
     expect(fields.name).toBe(vendor.name);
     expect(fields.paidBy).toBe(vendor.paidBy);
   });
+
+  test("optional Act 2 filing details validate, round-trip, and clear cleanly without collecting TIN values", () => {
+    const bad = vendorErrors({ ...emptyVendorValues(), name: "Contractor", email: "not-an-email" });
+    expect(bad.email).toBe(taxWords.formEmailBad);
+
+    const rich = vendorFields({
+      ...emptyVendorValues(),
+      name: "Jane Design",
+      legalName: "Jane Doe LLC",
+      email: "jane@example.com",
+      tinStatus: "on_file",
+      addressLine1: "100 Main St",
+      addressCity: "Austin",
+      addressState: "tx",
+      addressPostalCode: "78701",
+    });
+    expect(rich).toMatchObject({
+      legalName: "Jane Doe LLC",
+      email: "jane@example.com",
+      tinStatus: "on_file",
+      address: { line1: "100 Main St", city: "Austin", state: "TX", postalCode: "78701" },
+    });
+
+    const cleared = vendorFields(
+      {
+        ...vendorValues({
+          ...vendor,
+          legalName: "Jane Doe LLC",
+          email: "jane@example.com",
+          tinStatus: "verified",
+          address: { line1: "100 Main St", city: "Austin", state: "TX", postalCode: "78701" },
+        }),
+        legalName: "",
+        email: "",
+        tinStatus: "not_collected",
+        addressLine1: "",
+        addressCity: "",
+        addressState: "",
+        addressPostalCode: "",
+      },
+      {
+        ...vendor,
+        legalName: "Jane Doe LLC",
+        email: "jane@example.com",
+        tinStatus: "verified",
+        address: { line1: "100 Main St", city: "Austin", state: "TX", postalCode: "78701" },
+      },
+    );
+    expect(cleared).toMatchObject({
+      legalName: null,
+      email: null,
+      tinStatus: "not_collected",
+      address: null,
+    });
+  });
 });
 
 describe("the checks are sorted by what they ask of the person", () => {

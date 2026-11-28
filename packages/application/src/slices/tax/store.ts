@@ -15,12 +15,15 @@ import {
   CLASSIFICATIONS,
   EXEMPT_REASONS,
   PAID_BY,
+  TIN_STATUSES,
   VENDOR_REPORTING,
   W9_STATES,
   type Classification,
   type ExemptReason,
   type PaidBy,
+  type TinStatus,
   type Vendor,
+  type VendorAddress,
   type VendorReporting,
   type W9State,
 } from "../../tax/vendors.ts";
@@ -66,6 +69,10 @@ export interface VendorBody {
   readonly classification: Classification | null;
   readonly paidBy: PaidBy;
   readonly notes: string;
+  readonly legalName?: string | null;
+  readonly address?: VendorAddress | null;
+  readonly email?: string | null;
+  readonly tinStatus?: TinStatus;
 }
 
 interface Row {
@@ -82,6 +89,15 @@ const oneOf = <T extends string>(list: readonly T[], value: unknown, fallback: T
     ? (value as T)
     : fallback;
 
+function parseVendorAddress(value: unknown): VendorAddress | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const raw = value as Record<string, unknown>;
+  const out: Record<string, string> = {};
+  for (const key of ["line1", "line2", "city", "state", "postalCode"] as const)
+    if (typeof raw[key] === "string" && raw[key] !== "") out[key] = raw[key];
+  return Object.keys(out).length > 0 ? (out as VendorAddress) : null;
+}
+
 /** The body of a stored row, read defensively: a row this release wrote is always well formed, and a
  * row it cannot read becomes the most cautious reading rather than an exception that hides every
  * vendor. */
@@ -95,6 +111,15 @@ function bodyOf(raw: string): VendorBody {
   const keys = Array.isArray(value.payeeKeys)
     ? value.payeeKeys.filter((key): key is string => typeof key === "string")
     : [];
+  const legalName =
+    typeof value.legalName === "string" && value.legalName !== "" ? value.legalName : null;
+  const address = parseVendorAddress(value.address);
+  const email = typeof value.email === "string" && value.email !== "" ? value.email : null;
+  const tinStatus =
+    typeof value.tinStatus === "string" &&
+    (TIN_STATUSES as readonly string[]).includes(value.tinStatus)
+      ? (value.tinStatus as TinStatus)
+      : undefined;
   return {
     name: typeof value.name === "string" ? value.name : "(unreadable)",
     payeeKeys: keys,
@@ -108,6 +133,10 @@ function bodyOf(raw: string): VendorBody {
         : oneOf(CLASSIFICATIONS, value.classification, "other"),
     paidBy: oneOf(PAID_BY, value.paidBy, "unknown"),
     notes: typeof value.notes === "string" ? value.notes : "",
+    ...(legalName !== null ? { legalName } : {}),
+    ...(address !== null ? { address } : {}),
+    ...(email !== null ? { email } : {}),
+    ...(tinStatus !== undefined ? { tinStatus } : {}),
   };
 }
 
@@ -183,6 +212,10 @@ export function readTaxState(
       classification: newest.classification,
       paidBy: newest.paidBy,
       notes: newest.notes,
+      ...(newest.legalName ? { legalName: newest.legalName } : {}),
+      ...(newest.address ? { address: newest.address } : {}),
+      ...(newest.email ? { email: newest.email } : {}),
+      ...(newest.tinStatus ? { tinStatus: newest.tinStatus } : {}),
       recordedAt: newest.recordedAt,
       principal: newest.principal,
     });
@@ -209,6 +242,12 @@ export function readTaxState(
         classification: vendor.classification,
         paidBy: vendor.paidBy,
         notes: vendor.notes,
+        ...(vendor.legalName ? { legalName: vendor.legalName } : {}),
+        ...(vendor.address ? { address: { ...vendor.address } } : {}),
+        ...(vendor.email ? { email: vendor.email } : {}),
+        ...(vendor.tinStatus && vendor.tinStatus !== "not_collected"
+          ? { tinStatus: vendor.tinStatus }
+          : {}),
       })),
       accounts: [...reportable].sort(compareText),
     }).digest,

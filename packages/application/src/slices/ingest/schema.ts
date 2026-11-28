@@ -338,7 +338,16 @@ const definitions: Record<string, Schema> = {
   ),
   InboxExcludeInput: object({ ...selection, reason: reasonText }, ["reason"]),
   InboxRestoreInput: object({ ...selection, reason: reasonText }, ["reason"]),
-  InboxPostInput: object({ ...selection }, []),
+  InboxPostInput: object({ ...selection, dryRun: { type: "boolean" } }, []),
+  /** Net impact on one chart account when `inbox.post` is previewed with `dryRun: true`. */
+  InboxAccountDelta: object({
+    accountId: id,
+    code: id,
+    name: text(120),
+    debit: money,
+    credit: money,
+    net: signedMoney,
+  }),
   InboxActionResult: object(
     {
       itemId: id,
@@ -354,17 +363,24 @@ const definitions: Record<string, Schema> = {
     },
     ["itemId", "outcome"],
   ),
-  InboxActionReport: object({
-    results: array(ref("InboxActionResult"), 1000),
-    applied: count,
-    skipped: count,
-    failed: count,
-    /** Items the selection still covers that this call did not reach (its `limit`). Call again. Lines
-     * that `inbox.post` leaves alone because they were refused before are not counted: they come
-     * back as skipped results, code `refused_earlier`, and a call cannot post them until the books
-     * change (the calendar, a month, the chart). */
-    remaining: count,
-  }),
+  InboxActionReport: object(
+    {
+      results: array(ref("InboxActionResult"), 1000),
+      applied: count,
+      skipped: count,
+      failed: count,
+      /** Items the selection still covers that this call did not reach (its `limit`). Call again. Lines
+       * that `inbox.post` leaves alone because they were refused before are not counted: they come
+       * back as skipped results, code `refused_earlier`, and a call cannot post them until the books
+       * change (the calendar, a month, the chart). */
+      remaining: count,
+      /** True when `inbox.post` ran in preview mode without committing anything to the ledger. */
+      dryRun: { type: "boolean" },
+      /** Per-account debit, credit and net balance deltas for valid entries in a `dryRun` preview. */
+      accountDeltas: array(ref("InboxAccountDelta"), 500),
+    },
+    ["results", "applied", "skipped", "failed", "remaining"],
+  ),
   InboxSource: object(
     {
       provider: text(32),

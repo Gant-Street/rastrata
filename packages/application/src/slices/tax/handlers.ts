@@ -1,12 +1,17 @@
 import type { BookState } from "@rastrata/kernel";
 
 import { ApplicationError } from "../../errors.ts";
-import { ACCOUNTANT_FORMAT, buildAccountantPack } from "../../tax/accountant.ts";
+import {
+  ACCOUNTANT_FORMAT,
+  buildAccountantPack,
+  buildAccountantSupplement,
+} from "../../tax/accountant.ts";
 import { type TaxFile, worksheetFiles, type WorksheetFileKind } from "../../tax/files.ts";
 import { TAX_YEARS } from "../../chart/tax-lines.ts";
 import { isWorksheetForm } from "../../tax/forms.ts";
 import { closeStatement, yearClose } from "../../tax/close.ts";
-import { buildPack, PACK_FORMAT } from "../../tax/pack.ts";
+import { buildPack, CPA_PACKET_FORMAT, PACK_FORMAT } from "../../tax/pack.ts";
+import { readBookSettings } from "../entries/settings.ts";
 import { analyzeSalesTax } from "../../tax/sales.ts";
 import { TAX_DISCLAIMER_LONG } from "../../tax/sources.ts";
 import {
@@ -389,10 +394,12 @@ export const taxHandlers: SliceHandlers = {
       sales: sales.summary,
     });
     const bookName = context.service.setupState()?.name ?? "";
+    const entity = readBookSettings(context.service).entity;
     const built = buildPack({
       state,
       request,
       bookName,
+      ...(entity ? { entity } : {}),
       analysis,
       extra: [
         ...vendorPackFiles(vendors, {
@@ -409,6 +416,102 @@ export const taxHandlers: SliceHandlers = {
     const { worksheet } = built;
     return {
       format: PACK_FORMAT,
+      folder: built.folder,
+      taxYear: worksheet.taxYear,
+      form: worksheet.form,
+      from: worksheet.from,
+      to: worksheet.to,
+      bookRevision: worksheet.bookRevision,
+      ledgerPopulationHash: worksheet.ledgerPopulationHash,
+      worksheetPopulationHash: worksheet.populationHash,
+      tagMapHash: worksheet.tagMapHash,
+      close: closeWire(close, worksheet.bookRevision),
+      files: built.files,
+      manifestSha256: built.manifestSha256,
+      checks,
+      warnings: worksheet.warnings,
+      disclaimer: TAX_DISCLAIMER_LONG,
+    };
+  },
+
+  "taxCpaPacket.build": async (input, context) => {
+    const { state, request } = await worksheetRequest(input, context);
+    const analysis = analyzeWorksheet(state, request);
+    const vendors = analyzeVendors(
+      await vendorsRequest(input, context, { state, tags: request.tags }),
+    );
+    const sales = await salesAnalysis({ ...input, period: "month" }, context, state, request.tags);
+    const close = yearClose(state, request.from, request.to, request.today);
+    const checks = await taxChecks(context, {
+      state,
+      worksheet: analysis.worksheet,
+      today: request.today,
+      booksStartOn: request.booksStartOn ?? null,
+      vendors: vendors.wire,
+      sales: sales.summary,
+    });
+    const { map: provenance, read: provenanceRead } = await journalProvenance(
+      context,
+      request.from,
+      request.to,
+    );
+    const added = await packContributions(context, {
+      taxYear: request.taxYear,
+      from: request.from,
+      to: request.to,
+      revision: state.bookRevision,
+    });
+    const bookName = context.service.setupState()?.name ?? "";
+    const entity = readBookSettings(context.service).entity;
+    const accounting = buildAccountantSupplement(
+      state,
+      {
+        taxYear: request.taxYear,
+        from: request.from,
+        to: request.to,
+        tags: request.tags,
+        today: request.today,
+        provenance,
+        provenanceRead,
+        extras: added.extras,
+        extraNotes: added.notes,
+      },
+      bookName,
+    );
+    const built = buildPack({
+      state,
+      request,
+      bookName,
+      ...(entity ? { entity } : {}),
+      format: CPA_PACKET_FORMAT,
+      folder: `rastrata-cpa-packet-${request.taxYear}`,
+      title: "CPA packet",
+      analysis,
+      extra: [
+        ...accounting.files,
+        ...vendorPackFiles(vendors, {
+          book: bookName,
+          bookRevision: analysis.worksheet.bookRevision,
+          tags: request.tags,
+        }),
+        ...(sales.summary.accounts.length > 0 ? salesPackFiles(sales, bookName) : []),
+      ],
+      extraPopulations: accounting.populations,
+      extraReadmes: accounting.extraReadmes,
+      extraNotes: accounting.extraNotes,
+      checks,
+      close,
+    });
+    for (const file of built.files)
+      if (file.content.length > MAX_FILE_CHARACTERS)
+        throw new ApplicationError(
+          "export_too_large",
+          "A file in this packet is too large to return in one piece. Choose a shorter date range.",
+          413,
+        );
+    const { worksheet } = built;
+    return {
+      format: CPA_PACKET_FORMAT,
       folder: built.folder,
       taxYear: worksheet.taxYear,
       form: worksheet.form,

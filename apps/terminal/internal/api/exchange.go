@@ -3,11 +3,15 @@ package api
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
 	"net/url"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -65,6 +69,96 @@ func (c *Client) remote() bool {
 
 func (c *Client) usesKey() bool { return IsAgentKey(c.Credential) }
 
+type cachedToken struct {
+	Endpoint  string `json:"endpoint"`
+	KeyID     string `json:"keyId"`
+	Token     string `json:"token"`
+	ExpiresAt string `json:"expiresAt"`
+}
+
+func agentKeyID(credential string) string {
+	// rsa_<16 hex>_<secret>
+	parts := strings.SplitN(credential, "_", 3)
+	if len(parts) < 2 {
+		return ""
+	}
+	return parts[1]
+}
+
+func (c *Client) tokenCachePath() string {
+	if c.TokenCacheDir == "" || !c.usesKey() {
+		return ""
+	}
+	keyID := agentKeyID(c.Credential)
+	if keyID == "" {
+		return ""
+	}
+	sum := sha256.Sum256([]byte(c.Endpoint + "\x00" + keyID))
+	return filepath.Join(c.TokenCacheDir, hex.EncodeToString(sum[:16])+".json")
+}
+
+func (c *Client) readCachedToken() (string, time.Time, bool) {
+	path := c.tokenCachePath()
+	if path == "" {
+		return "", time.Time{}, false
+	}
+	info, err := os.Stat(path)
+	if err != nil || !info.Mode().IsRegular() || info.Mode().Perm()&0o077 != 0 {
+		return "", time.Time{}, false
+	}
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return "", time.Time{}, false
+	}
+	var entry cachedToken
+	if json.Unmarshal(raw, &entry) != nil || entry.Token == "" || entry.Endpoint != c.Endpoint || entry.KeyID != agentKeyID(c.Credential) {
+		return "", time.Time{}, false
+	}
+	expires, err := time.Parse(time.RFC3339Nano, entry.ExpiresAt)
+	if err != nil || time.Until(expires) <= refreshBefore {
+		return "", time.Time{}, false
+	}
+	return entry.Token, expires, true
+}
+
+func (c *Client) writeCachedToken(token string, expires time.Time) {
+	path := c.tokenCachePath()
+	if path == "" {
+		return
+	}
+	if err := os.MkdirAll(c.TokenCacheDir, 0o700); err != nil {
+		return
+	}
+	raw, err := json.Marshal(cachedToken{
+		Endpoint:  c.Endpoint,
+		KeyID:     agentKeyID(c.Credential),
+		Token:     token,
+		ExpiresAt: expires.UTC().Format(time.RFC3339Nano),
+	})
+	if err != nil {
+		return
+	}
+	tmp, err := os.CreateTemp(c.TokenCacheDir, ".tok-*")
+	if err != nil {
+		return
+	}
+	name := tmp.Name()
+	defer os.Remove(name)
+	if tmp.Chmod(0o600) == nil {
+		if _, err := tmp.Write(raw); err == nil && tmp.Close() == nil {
+			_ = os.Rename(name, path)
+			return
+		}
+	}
+	_ = tmp.Close()
+}
+
+func (c *Client) clearCachedToken() {
+	if path := c.tokenCachePath(); path != "" {
+		_ = os.Remove(path)
+	}
+}
+
 // bearer is what follows "Bearer " on a request: the credential as it is, a token the service made for the agent key, or nothing. `fresh` asks for a new token even if one is held.
 func (c *Client) bearer(ctx context.Context, fresh bool) (string, error) {
 	if c.Credential == "" {
@@ -85,12 +179,21 @@ func (c *Client) bearer(ctx context.Context, fresh bool) (string, error) {
 	if !fresh && c.held.token != "" && time.Until(c.held.expires) > refreshBefore {
 		return c.held.token, nil
 	}
+	if !fresh {
+		if token, expires, ok := c.readCachedToken(); ok {
+			c.held.token, c.held.expires = token, expires
+			return token, nil
+		}
+	} else {
+		c.clearCachedToken()
+	}
 	token, expires, err := c.exchange(ctx)
 	if err != nil {
 		c.held.token = ""
 		return "", err
 	}
 	c.held.token, c.held.expires = token, expires
+	c.writeCachedToken(token, expires)
 	return token, nil
 }
 

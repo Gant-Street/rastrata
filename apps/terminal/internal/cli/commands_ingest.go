@@ -30,7 +30,7 @@ func init() {
 		"accept":     {"Draft entries from suggestions: accept (ITEM_ID... | filter) [--proposal=ID] [--proposer=NAME] [--min-confidence=N] [--allow-duplicate]", runInboxAccept},
 		"exclude":    {"Set lines aside with a reason: exclude (ITEM_ID... | filter) --reason=TEXT", runInboxExclude},
 		"restore":    {"Return excluded or drafted lines to review: restore (ITEM_ID... | filter) --reason=TEXT", runInboxRestore},
-		"post":       {"Post drafted lines (prepare and commit each): post (ITEM_ID... | filter) [--limit=N]", runInboxPost},
+		"post":       {"Post drafted lines (prepare and commit each): post (ITEM_ID... | filter) [--dry-run] [--limit=N]", runInboxPost},
 		"source":     {"Set a provider account's chart account or cutover date: source PROVIDER ACCOUNT_KEY [--account=ID] [--start-on=DATE]", runInboxSource},
 		"balances":   {"Provider balances against the books: balances [--provider=P] [--source=ACCOUNT_KEY]", runInboxBalances},
 	} {
@@ -353,14 +353,22 @@ func runInboxRestore(r Runner, ctx context.Context, o Options, c *api.Client) in
 }
 
 func runInboxPost(r Runner, ctx context.Context, o Options, c *api.Client) int {
-	const usage = "inbox post (ITEM_ID... | filter options | --all) [--limit=N]; each call posts a bounded number of lines and reports how many remain: call it again until remaining is 0. A call by filter leaves alone the lines the ledger refused before, until the calendar, a month or the chart changes (skipped, code refused_earlier, with the reason); name one by its ITEM_ID to try it now"
-	allowed := inboxActionFlags()
+	const usage = "inbox post (ITEM_ID... | filter options | --all) [--dry-run] [--limit=N]; each call posts a bounded number of lines and reports how many remain: call it again until remaining is 0. Pass --dry-run to validate and see per-account balance deltas without committing. A call by filter leaves alone the lines the ledger refused before, until the calendar, a month or the chart changes (skipped, code refused_earlier, with the reason); name one by its ITEM_ID to try it now"
+	allowed := inboxActionFlags("dry-run")
 	if problem := inboxFlagProblem(o, allowed, inboxValued(allowed)); problem != "" {
 		return inboxUsage(r, o, problem, usage)
 	}
 	input, err := inboxSelection(o, usage)
 	if err != nil {
 		return inboxUsage(r, o, err.Error(), usage)
+	}
+	if value, given := o.Flags["dry-run"]; given {
+		if value != "true" && value != "false" {
+			return inboxUsage(r, o, "--dry-run must be true or false", usage)
+		}
+		if value == "true" {
+			input["dryRun"] = true
+		}
 	}
 	return inboxCall(r, ctx, o, c, "inbox.post", input)
 }

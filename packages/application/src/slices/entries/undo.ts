@@ -22,6 +22,7 @@
  * was matched to an entry booked by hand has nothing of its own to reverse: only the link is
  * removed. */
 import type { MutationReceipt, PreparedOperation } from "../../contracts.ts";
+import { lockedPeriodForDate } from "../../calendar/periods.ts";
 import type {
   InboxUndoInput,
   InboxUndoReport,
@@ -376,6 +377,18 @@ async function undoOne(
     if (row.matched_journal_id === null)
       return fail(row, "no_entry", "This line has no entry to undo. Nothing was changed.");
     const journalId = row.matched_journal_id;
+    const { aggregate } = await service.readAggregate();
+    const booked = aggregate.state.journals.find((entry) => entry.journal.id === journalId);
+    const dates = [row.posted_on, ...(booked ? [booked.journal.accountingDate as string] : [])];
+    for (const day of dates) {
+      const locked = lockedPeriodForDate(aggregate.state, day);
+      if (locked)
+        return fail(
+          row,
+          "fiscal_period_admission",
+          `Period ${locked.label} is closed. Reopen it before unlinking a transaction dated ${day}.`,
+        );
+    }
     returnToReview(store, now, row, { journalId, reason: why }, principal);
     return result(row, "applied", {
       status: "new",

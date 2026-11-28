@@ -17,6 +17,8 @@ import {
   readBookSettings,
   rememberBookUpdate,
 } from "../../book-settings";
+import { currentAccount } from "../../boot";
+import { WORKSPACE_RENAMED_EVENT } from "../../standing";
 
 /** One retained write at a time for this form. */
 const WORKFLOW = "book-settings";
@@ -59,6 +61,18 @@ export function BusinessSettings() {
     rememberBookUpdate(result);
     setMessage(result.changed.length === 0 ? businessWords.nothingChanged : businessWords.saved);
     setUncertain(false);
+    // Keep the control-plane workspace name in sync when a hosted business is renamed.
+    if (result.changed.includes("name")) {
+      const account = currentAccount();
+      const id = account?.scope();
+      if (account && id) {
+        void account.renameWorkspace(id, result.name).then(() => {
+          window.dispatchEvent(
+            new CustomEvent(WORKSPACE_RENAMED_EVENT, { detail: { id, name: result.name } }),
+          );
+        });
+      }
+    }
   };
 
   async function save(values: BusinessValues) {

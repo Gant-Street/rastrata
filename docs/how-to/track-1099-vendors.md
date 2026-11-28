@@ -78,6 +78,7 @@ The payee names come from your bank transactions, so it helps to have imported a
    - **Tax classification on the W-9**, if you want it recorded (individual or sole proprietor, C corporation,
      S corporation, partnership, trust or estate, or an LLC taxed as one of those).
    - **How it is paid**: *Not confirmed*, *Bank transfer, check or cash*, or *Card or payment app*.
+   - **Filing details (optional)**: **Legal name**, **Email**, **TIN / W-9 status** (*Not collected*, *On file*, or *Verified*), and **Mailing address**. These track filing readiness without storing a taxpayer identification number.
    - **Notes**. Never a taxpayer identification number.
 3. **Save.** Every save is a new version of the vendor, with who and when, shown under **History**. Two people
    cannot overwrite each other: a change names the version it changes, and a stale one is refused with a message

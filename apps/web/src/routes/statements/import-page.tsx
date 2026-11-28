@@ -18,6 +18,7 @@ import type { Role } from "../../account";
 import { BrowserApplicationClient } from "../../application-client";
 import { createLoader } from "../../loader";
 import { currentRole, may } from "../../role";
+import { workspaceReadOnly } from "../../standing";
 import { createAccountDrawers } from "../accounting/account-drawers";
 import { createImportController } from "./controller";
 
@@ -72,7 +73,7 @@ export function ImportPage() {
   // offered it; the service answers for itself).
   const [role, setRole] = createSignal<Role | null>(null);
   void currentRole().then(setRole);
-  const mayMake = () => may(role(), "configure");
+  const mayMake = () => may(role(), "configure") && !workspaceReadOnly();
 
   // The books' first bank or card account can be made here, from the picker, the way the Chart of accounts
   // makes one: the same drawer, opened on a bank account with the name that was typed, and the account it makes
@@ -166,155 +167,212 @@ export function ImportPage() {
         }
       />
 
-      <Switch>
-        <Match when={controller.stage() !== "review"}>
-          <ImportResult
-            state={controller.stage() === "done" ? "done" : "uncertain"}
-            result={controller.result() ?? undefined}
-            resuming={controller.committing()}
-            onResume={() => void controller.resume()}
-            onAnother={controller.startOver}
-            inboxLink={
-              <a class="rt-button" data-variant="primary" data-size="md" href="/inbox">
-                {words.openInbox}
-              </a>
-            }
-          />
-        </Match>
-        <Match when={true}>
-          <div class="rt-imp-pair" data-checking={checking() ? "" : undefined}>
-            <Show when={checking()}>
-              <p class="rt-imp-file" data-facts>
-                <strong>{upload().name}</strong> <span>{words.into}</span>
-              </p>
-            </Show>
-            <section class="rt-imp-step" aria-labelledby="import-account-title">
-              <h2 id="import-account-title" class="rt-sr-only">
-                {words.accountTitle}
-              </h2>
-              <Show when={chart.error() !== undefined}>
-                <Notice title={words.accountsFailed} tone="error" role="alert">
-                  <Button
-                    label="Try again"
-                    variant="secondary"
-                    onClick={() => void chart.reload()}
-                  />
-                </Notice>
-              </Show>
-              <Show when={chart.error() === undefined}>
-                <Show
-                  when={chart.loading() || choices().length > 0 || mayMake()}
-                  fallback={
-                    <EmptyState title={words.noAccountsTitle}>{words.noAccounts}</EmptyState>
-                  }
-                >
-                  <AccountPicker
-                    id={PICKER_ID}
-                    accounts={choices()}
-                    label={words.accountLabel}
-                    hideLabel={checking()}
-                    compact={checking()}
-                    hint={own().length === 0 ? words.firstAccountHint : ""}
-                    state={chart.loading() ? "loading" : "ready"}
-                    value={controller.account()}
-                    onChange={controller.setAccount}
-                    onCreate={
-                      mayMake()
-                        ? (typed) => drawers.openNew(PICKER_ID, { name: typed, kind: "bank" })
-                        : undefined
-                    }
-                  />
-                </Show>
-              </Show>
-            </section>
+      <Show when={workspaceReadOnly()}>
+        <Notice title={words.readOnlyTitle} tone="info">
+          <p>{words.readOnlyBody}</p>
+        </Notice>
+      </Show>
 
-            <Show when={!checking()}>
-              <section class="rt-imp-step" aria-labelledby="import-file-title">
-                <h2 id="import-file-title" class="rt-sr-only">
-                  {words.fileTitle}
-                </h2>
-                <ImportFileDrop
-                  state={upload().state}
-                  fileName={upload().name}
-                  fileSize={upload().size}
-                  error={upload().error}
-                  onFile={(file) => void controller.chooseFile(file)}
-                />
-              </section>
+      <Show
+        when={
+          !workspaceReadOnly() && controller.queueTotal() > 1 && controller.stage() === "review"
+        }
+      >
+        <div class="rt-imp-queue" role="status">
+          <span>
+            {words.queueStatus(
+              controller.queueIndex(),
+              controller.queueTotal(),
+              controller.queue().length,
+            )}
+          </span>
+          <div class="rt-imp-queue-actions">
+            <Show when={controller.queue().length > 0}>
+              <Button
+                variant="quiet"
+                size="sm"
+                label={words.skipQueued}
+                onClick={() => void controller.nextQueued()}
+              />
             </Show>
+            <Button
+              variant="quiet"
+              size="sm"
+              label={words.clearQueue}
+              onClick={controller.clearQueue}
+            />
           </div>
+        </div>
+      </Show>
 
-          <Show when={controller.receipt() && !controller.account()}>
-            <p class="rt-hint" role="status">
-              {words.needAccountFirst}
-            </p>
-          </Show>
-
-          <Show when={controller.loadingFirst()}>
-            <p class="rt-hint" role="status">
-              {words.reading(upload().name ?? "")}
-            </p>
-          </Show>
-          <Show when={!controller.shown() && controller.failed()}>
-            <Notice title={words.previewFailed} tone="error" role="alert">
-              {controller.failed()}
-            </Notice>
-          </Show>
-
-          <Show when={controller.shown()}>
-            {(preview) => (
-              <section class="rt-imp-step" aria-labelledby="import-check-title">
-                <h2 id="import-check-title" class="rt-sr-only" tabindex={-1}>
-                  {words.checkTitle}
+      <Show when={!workspaceReadOnly()}>
+        <Switch>
+          <Match when={controller.stage() !== "review"}>
+            <ImportResult
+              state={controller.stage() === "done" ? "done" : "uncertain"}
+              result={controller.result() ?? undefined}
+              resuming={controller.committing()}
+              onResume={() => void controller.resume()}
+              nextLabel={
+                controller.queue().length > 0
+                  ? words.nextQueued(controller.queue().length)
+                  : undefined
+              }
+              onNext={
+                controller.queue().length > 0 ? () => void controller.nextQueued() : undefined
+              }
+              onAnother={controller.startOver}
+              inboxLink={
+                <a
+                  class="rt-button"
+                  data-variant={controller.queue().length > 0 ? "secondary" : "primary"}
+                  data-size="md"
+                  href="/inbox"
+                >
+                  {words.openInbox}
+                </a>
+              }
+            />
+          </Match>
+          <Match when={true}>
+            <div class="rt-imp-pair" data-checking={checking() ? "" : undefined}>
+              <Show when={checking()}>
+                <p class="rt-imp-file" data-facts>
+                  <strong>{upload().name}</strong> <span>{words.into}</span>
+                </p>
+              </Show>
+              <section class="rt-imp-step" aria-labelledby="import-account-title">
+                <h2 id="import-account-title" class="rt-sr-only">
+                  {words.accountTitle}
                 </h2>
-                <Show when={controller.commitError()}>
-                  <Notice title={words.commitFailed} tone="error" role="alert">
-                    {controller.commitError()}
+                <Show when={chart.error() !== undefined}>
+                  <Notice title={words.accountsFailed} tone="error" role="alert">
+                    <Button
+                      label="Try again"
+                      variant="secondary"
+                      onClick={() => void chart.reload()}
+                    />
                   </Notice>
                 </Show>
-                <ImportReview
-                  preview={preview()}
-                  refreshing={controller.refreshing()}
-                  failed={controller.failed() || undefined}
-                  filter={controller.filter()}
-                  page={controller.page()}
-                  startOn={controller.startOn()}
-                  catchUp={controller.catchUp()}
-                  ignoreIds={controller.ignoreIds()}
-                  invertBalance={controller.invertBalance()}
-                  skipRows={controller.skipRows()}
-                  committing={controller.committing()}
-                  resetKey={resetKey()}
-                  presets={presets.value()?.presets}
-                  presetId={controller.presetId()}
-                  onPreset={controller.choosePreset}
-                  save={{
-                    name: controller.profileName(),
-                    saving: controller.saving(),
-                    message: controller.saved() || undefined,
-                    error: controller.saveError() || undefined,
-                    onName: controller.setProfileName,
-                    onSave: () => void controller.saveProfile(),
-                  }}
-                  onFilter={controller.setFilter}
-                  onPage={controller.setPage}
-                  onStartOn={controller.setStartOn}
-                  onCatchUp={controller.setCatchUp}
-                  onIgnoreIds={controller.setIgnoreIds}
-                  onInvertBalance={controller.setInvertBalance}
-                  onSkipRows={controller.setSkipRows}
-                  onMapping={(next) =>
-                    controller.chooseMapping(next as Parameters<typeof controller.chooseMapping>[0])
-                  }
-                  onOfxAccount={controller.chooseOfxAccount}
-                  onCommit={() => void controller.commit()}
-                  onStartOver={controller.startOver}
-                />
+                <Show when={chart.error() === undefined}>
+                  <Show
+                    when={chart.loading() || choices().length > 0 || mayMake()}
+                    fallback={
+                      <EmptyState title={words.noAccountsTitle}>{words.noAccounts}</EmptyState>
+                    }
+                  >
+                    <AccountPicker
+                      id={PICKER_ID}
+                      accounts={choices()}
+                      label={words.accountLabel}
+                      hideLabel={checking()}
+                      compact={checking()}
+                      hint={own().length === 0 ? words.firstAccountHint : ""}
+                      state={chart.loading() ? "loading" : "ready"}
+                      value={controller.account()}
+                      onChange={controller.setAccount}
+                      onCreate={
+                        mayMake()
+                          ? (typed) => drawers.openNew(PICKER_ID, { name: typed, kind: "bank" })
+                          : undefined
+                      }
+                    />
+                  </Show>
+                </Show>
               </section>
-            )}
-          </Show>
-        </Match>
-      </Switch>
+
+              <Show when={!checking()}>
+                <section class="rt-imp-step" aria-labelledby="import-file-title">
+                  <h2 id="import-file-title" class="rt-sr-only">
+                    {words.fileTitle}
+                  </h2>
+                  <ImportFileDrop
+                    multiple
+                    state={upload().state}
+                    fileName={upload().name}
+                    fileSize={upload().size}
+                    error={upload().error}
+                    onFile={(file) => void controller.chooseFile(file)}
+                    onFiles={(files) => void controller.chooseFiles(files)}
+                  />
+                </section>
+              </Show>
+            </div>
+
+            <Show when={controller.receipt() && !controller.account()}>
+              <p class="rt-hint" role="status">
+                {words.needAccountFirst}
+              </p>
+            </Show>
+
+            <Show when={controller.loadingFirst()}>
+              <p class="rt-hint" role="status">
+                {words.reading(upload().name ?? "")}
+              </p>
+            </Show>
+            <Show when={!controller.shown() && controller.failed()}>
+              <Notice title={words.previewFailed} tone="error" role="alert">
+                {controller.failed()}
+              </Notice>
+            </Show>
+
+            <Show when={controller.shown()}>
+              {(preview) => (
+                <section class="rt-imp-step" aria-labelledby="import-check-title">
+                  <h2 id="import-check-title" class="rt-sr-only" tabindex={-1}>
+                    {words.checkTitle}
+                  </h2>
+                  <Show when={controller.commitError()}>
+                    <Notice title={words.commitFailed} tone="error" role="alert">
+                      {controller.commitError()}
+                    </Notice>
+                  </Show>
+                  <ImportReview
+                    preview={preview()}
+                    refreshing={controller.refreshing()}
+                    failed={controller.failed() || undefined}
+                    filter={controller.filter()}
+                    page={controller.page()}
+                    startOn={controller.startOn()}
+                    catchUp={controller.catchUp()}
+                    ignoreIds={controller.ignoreIds()}
+                    invertBalance={controller.invertBalance()}
+                    skipRows={controller.skipRows()}
+                    committing={controller.committing()}
+                    resetKey={resetKey()}
+                    presets={presets.value()?.presets}
+                    presetId={controller.presetId()}
+                    onPreset={controller.choosePreset}
+                    save={{
+                      name: controller.profileName(),
+                      saving: controller.saving(),
+                      message: controller.saved() || undefined,
+                      error: controller.saveError() || undefined,
+                      onName: controller.setProfileName,
+                      onSave: () => void controller.saveProfile(),
+                    }}
+                    onFilter={controller.setFilter}
+                    onPage={controller.setPage}
+                    onStartOn={controller.setStartOn}
+                    onCatchUp={controller.setCatchUp}
+                    onIgnoreIds={controller.setIgnoreIds}
+                    onInvertBalance={controller.setInvertBalance}
+                    onSkipRows={controller.setSkipRows}
+                    onMapping={(next) =>
+                      controller.chooseMapping(
+                        next as Parameters<typeof controller.chooseMapping>[0],
+                      )
+                    }
+                    onOfxAccount={controller.chooseOfxAccount}
+                    onCommit={() => void controller.commit()}
+                    onStartOver={controller.startOver}
+                  />
+                </section>
+              )}
+            </Show>
+          </Match>
+        </Switch>
+      </Show>
 
       {/* What was imported before, when something was: beside the choice of a file, where "did I already
           bring this one in?" is asked. */}

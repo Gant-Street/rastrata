@@ -1217,16 +1217,43 @@ export type InboxRecategorizeReport = {
   readonly remaining: number;
   readonly next: string | null;
 };
+export type EntityAddress = {
+  readonly line1?: string;
+  readonly line2?: string;
+  readonly city?: string;
+  readonly state?: string;
+  readonly postalCode?: string;
+  readonly country?: string;
+};
+export type BookEntityProfile = {
+  readonly legalName?: string | null;
+  readonly ein?: string | null;
+  readonly entityType?:
+    | "sole_proprietorship"
+    | "single_member_llc"
+    | "multi_member_llc"
+    | "s_corp"
+    | "c_corp"
+    | "partnership"
+    | "nonprofit"
+    | "other"
+    | null;
+  readonly formationState?: string | null;
+  readonly address?: EntityAddress | null;
+  readonly contactEmail?: string | null;
+};
 export type BookSettings = {
   readonly dateFormat: "medium" | "numeric" | "iso";
   readonly showAccountNumbers: boolean;
   readonly acceptMode: "post" | "draft";
+  readonly entity?: BookEntityProfile;
 };
 export type BookUpdateInput = {
   readonly name?: string;
   readonly dateFormat?: "medium" | "numeric" | "iso";
   readonly showAccountNumbers?: boolean;
   readonly acceptMode?: "post" | "draft";
+  readonly entity?: BookEntityProfile;
 };
 export type BookUpdateResult = {
   readonly name: string;
@@ -1540,6 +1567,15 @@ export type InboxPostInput = {
   readonly filter?: InboxFilter;
   readonly expectedCount?: number;
   readonly limit?: number;
+  readonly dryRun?: boolean;
+};
+export type InboxAccountDelta = {
+  readonly accountId: string;
+  readonly code: string;
+  readonly name: string;
+  readonly debit: string;
+  readonly credit: string;
+  readonly net: string;
 };
 export type InboxActionResult = {
   readonly itemId: string;
@@ -1559,6 +1595,8 @@ export type InboxActionReport = {
   readonly skipped: number;
   readonly failed: number;
   readonly remaining: number;
+  readonly dryRun?: boolean;
+  readonly accountDeltas?: readonly InboxAccountDelta[];
 };
 export type InboxSource = {
   readonly provider: string;
@@ -2264,6 +2302,11 @@ export type BookRetireInput = Readonly<Record<string, never>>;
 export type BookRetirement = { readonly retired: boolean; readonly retiredAt: string | null };
 export type BookAccessInput = { readonly readOnly: boolean };
 export type BookAccess = { readonly readOnly: boolean; readonly readOnlySince: string | null };
+export type BookUsage = {
+  readonly statementsImported: number;
+  readonly transactionsImported: number;
+  readonly exportsCreated: number;
+};
 export type PayeeTally = {
   readonly received: string;
   readonly spent: string;
@@ -5156,6 +5199,14 @@ export type TaxVendorClassification =
   | "llc_p"
   | "other";
 export type TaxVendorPaidBy = "unknown" | "bank" | "card_or_network";
+export type TaxVendorTinStatus = "not_collected" | "on_file" | "verified";
+export type TaxVendorAddress = {
+  readonly line1?: string;
+  readonly line2?: string;
+  readonly city?: string;
+  readonly state?: string;
+  readonly postalCode?: string;
+};
 export type TaxVendorAttention = "undecided" | "w9_missing" | "method_unconfirmed";
 export type TaxVendor = {
   readonly id: string;
@@ -5169,6 +5220,10 @@ export type TaxVendor = {
   readonly classification: TaxVendorClassification | null;
   readonly paidBy: TaxVendorPaidBy;
   readonly notes: string;
+  readonly legalName?: string | null;
+  readonly address?: TaxVendorAddress | null;
+  readonly email?: string | null;
+  readonly tinStatus?: TaxVendorTinStatus;
   readonly recordedAt: string;
   readonly principal: string;
 };
@@ -5285,6 +5340,10 @@ export type TaxVendorSaveInput = {
   readonly classification?: TaxVendorClassification | null;
   readonly paidBy?: TaxVendorPaidBy;
   readonly notes?: string;
+  readonly legalName?: string | null;
+  readonly address?: TaxVendorAddress | null;
+  readonly email?: string | null;
+  readonly tinStatus?: TaxVendorTinStatus;
 };
 export type TaxVendorSaved = {
   readonly vendor: TaxVendor;
@@ -5568,6 +5627,7 @@ export interface ApplicationInputs {
   readonly "book.retire": BookRetireInput;
   readonly "book.unretire": BookRetireInput;
   readonly "book.access": BookAccessInput;
+  readonly "book.usage": Empty;
   readonly "payees.list": PayeeListInput;
   readonly "payees.get": PayeeGetInput;
   readonly "payees.save": PayeeSaveInput;
@@ -5658,6 +5718,7 @@ export interface ApplicationInputs {
   readonly "taxChecks.get": TaxChecksInput;
   readonly "taxSummary.get": TaxSummaryInput;
   readonly "taxPack.build": TaxPackInput;
+  readonly "taxCpaPacket.build": TaxPackInput;
   readonly "taxVendors.list": TaxVendorsInput;
   readonly "taxVendors.export": TaxVendorsExportInput;
   readonly "taxVendors.get": TaxVendorGetInput;
@@ -5757,6 +5818,7 @@ export interface ApplicationOutputs {
   readonly "book.retire": BookRetirement;
   readonly "book.unretire": BookRetirement;
   readonly "book.access": BookAccess;
+  readonly "book.usage": BookUsage;
   readonly "payees.list": PayeeList;
   readonly "payees.get": PayeeDetail;
   readonly "payees.save": PayeeSaved;
@@ -5847,6 +5909,7 @@ export interface ApplicationOutputs {
   readonly "taxChecks.get": TaxChecks;
   readonly "taxSummary.get": TaxSummary;
   readonly "taxPack.build": TaxPack;
+  readonly "taxCpaPacket.build": TaxPack;
   readonly "taxVendors.list": TaxVendors;
   readonly "taxVendors.export": TaxExport;
   readonly "taxVendors.get": TaxVendorDetail;

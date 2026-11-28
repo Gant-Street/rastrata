@@ -7224,6 +7224,125 @@
       ],
       "additionalProperties": false
     },
+    "EntityAddress": {
+      "type": "object",
+      "properties": {
+        "line1": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "line2": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "city": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "state": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "postalCode": {
+          "type": "string",
+          "maxLength": 20
+        },
+        "country": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 2,
+          "pattern": "^[A-Za-z]{2}$"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "BookEntityProfile": {
+      "type": "object",
+      "properties": {
+        "legalName": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ein": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 10,
+              "pattern": "^\\d{2}-?\\d{7}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "entityType": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "sole_proprietorship",
+                "single_member_llc",
+                "multi_member_llc",
+                "s_corp",
+                "c_corp",
+                "partnership",
+                "nonprofit",
+                "other"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "formationState": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 2,
+              "pattern": "^[A-Za-z]{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "address": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EntityAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "contactEmail": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 254,
+              "pattern": "^[^\\s@]+@[^\\s@]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
     "BookSettings": {
       "type": "object",
       "properties": {
@@ -7244,6 +7363,9 @@
             "post",
             "draft"
           ]
+        },
+        "entity": {
+          "$ref": "#/$defs/BookEntityProfile"
         }
       },
       "required": [
@@ -7279,6 +7401,9 @@
             "post",
             "draft"
           ]
+        },
+        "entity": {
+          "$ref": "#/$defs/BookEntityProfile"
         }
       },
       "required": [],
@@ -9056,9 +9181,54 @@
           "type": "integer",
           "minimum": 1,
           "maximum": 1000
+        },
+        "dryRun": {
+          "type": "boolean"
         }
       },
       "required": [],
+      "additionalProperties": false
+    },
+    "InboxAccountDelta": {
+      "type": "object",
+      "properties": {
+        "accountId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "debit": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,15})\\.[0-9]{2}$"
+        },
+        "credit": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]{0,15})\\.[0-9]{2}$"
+        },
+        "net": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$"
+        }
+      },
+      "required": [
+        "accountId",
+        "code",
+        "name",
+        "debit",
+        "credit",
+        "net"
+      ],
       "additionalProperties": false
     },
     "InboxActionResult": {
@@ -9150,6 +9320,16 @@
         "remaining": {
           "type": "integer",
           "minimum": 0
+        },
+        "dryRun": {
+          "type": "boolean"
+        },
+        "accountDeltas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InboxAccountDelta"
+          },
+          "maxItems": 500
         }
       },
       "required": [
@@ -12379,6 +12559,29 @@
       "required": [
         "readOnly",
         "readOnlySince"
+      ],
+      "additionalProperties": false
+    },
+    "BookUsage": {
+      "type": "object",
+      "properties": {
+        "statementsImported": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "transactionsImported": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "exportsCreated": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "statementsImported",
+        "transactionsImported",
+        "exportsCreated"
       ],
       "additionalProperties": false
     },
@@ -28787,7 +28990,7 @@
           "items": {
             "$ref": "#/$defs/TaxPackFile"
           },
-          "maxItems": 40
+          "maxItems": 60
         },
         "manifestSha256": {
           "type": "string",
@@ -28882,6 +29085,41 @@
         "card_or_network"
       ]
     },
+    "TaxVendorTinStatus": {
+      "type": "string",
+      "enum": [
+        "not_collected",
+        "on_file",
+        "verified"
+      ]
+    },
+    "TaxVendorAddress": {
+      "type": "object",
+      "properties": {
+        "line1": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "line2": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "city": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "state": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "postalCode": {
+          "type": "string",
+          "maxLength": 20
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
     "TaxVendorAttention": {
       "type": "string",
       "enum": [
@@ -28959,6 +29197,43 @@
         "notes": {
           "type": "string",
           "maxLength": 500
+        },
+        "legalName": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "address": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TaxVendorAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "email": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 254,
+              "pattern": "^[^\\s@]+@[^\\s@]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tinStatus": {
+          "$ref": "#/$defs/TaxVendorTinStatus"
         },
         "recordedAt": {
           "type": "string",
@@ -29568,6 +29843,43 @@
         "notes": {
           "type": "string",
           "maxLength": 500
+        },
+        "legalName": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "address": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TaxVendorAddress"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "email": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 254,
+              "pattern": "^[^\\s@]+@[^\\s@]+$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tinStatus": {
+          "$ref": "#/$defs/TaxVendorTinStatus"
         }
       },
       "required": [],
@@ -31680,6 +31992,18 @@
       }
     },
     {
+      "name": "book.usage",
+      "description": "Count imported statements, imported transactions and created exports for this book, for account-level trial observability. Only the control plane's key may call it.",
+      "permission": "read",
+      "writes": false,
+      "input": {
+        "$ref": "#/$defs/Empty"
+      },
+      "output": {
+        "$ref": "#/$defs/BookUsage"
+      }
+    },
+    {
       "name": "payees.list",
       "description": "List the payees: the one list of people and businesses the book pays or is paid by, each with one name, the words that identify it in a bank's text, an optional default account, a note and whether it has 1099 details (a 1099 vendor is a payee with 1099 details; the ids are the same). Retired payees are left out unless asked for. payeesRevision and payeesHash name the list that was read.",
       "permission": "read",
@@ -32750,6 +33074,18 @@
     {
       "name": "taxPack.build",
       "description": "Build the year-end pack for a tax year as files: the year's profit and loss, balance sheet, cash flow, trial balance and general ledger as CSV, the tax worksheet with the accounts and postings behind it, a README that says plainly what is and is not in it, the checks to look at first, and a manifest with each file's SHA-256 and the population hash it was built from. Everything comes from one book revision; building it again from the same book gives the same bytes. Returns the files as text for the caller to write to a folder or a zip. Does not give tax advice, file anything or calculate any tax.",
+      "permission": "read",
+      "writes": false,
+      "input": {
+        "$ref": "#/$defs/TaxPackInput"
+      },
+      "output": {
+        "$ref": "#/$defs/TaxPack"
+      }
+    },
+    {
+      "name": "taxCpaPacket.build",
+      "description": "Build the unified CPA hand-off packet for a tax year in one deterministic bundle: all five financial statements (profit and loss, balance sheet, cash flow, trial balance, general ledger), the tax worksheet and its detail, the 1099 vendor and payment summaries, the sales-tax summary when tagged, the chart of accounts, every journal with bank/provider provenance and correction links, the change log, bank reconciliations, an adjusting-entries template, a README and a SHA-256 manifest. Everything comes from one book revision. Does not give tax advice, file anything or calculate any tax.",
       "permission": "read",
       "writes": false,
       "input": {

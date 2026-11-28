@@ -55,6 +55,10 @@ export function createImportController(client: BrowserApplicationClient) {
   /** The last preview that was read, kept while a newer one is fetched so nothing flashes away. */
   const [shown, setShown] = createSignal<Preview | null>(null);
   const [failed, setFailed] = createSignal("");
+  /** Additional statements waiting in a multi-file drop queue (processed one by one). */
+  const [queue, setQueue] = createSignal<readonly File[]>([]);
+  const [queueTotal, setQueueTotal] = createSignal(0);
+  const [queueIndex, setQueueIndex] = createSignal(0);
 
   const request = createMemo<PreviewInput | null>(() => {
     const file = receipt();
@@ -275,6 +279,45 @@ export function createImportController(client: BrowserApplicationClient) {
     }
   };
 
+  const chooseFiles = async (files: readonly File[]) => {
+    if (files.length === 0) return;
+    if (files.length === 1 && files[0]) {
+      batch(() => {
+        setQueue([]);
+        setQueueTotal(0);
+        setQueueIndex(0);
+      });
+      await chooseFile(files[0]);
+      return;
+    }
+    const ordered = [...files].sort((left, right) => left.name.localeCompare(right.name));
+    const [first, ...rest] = ordered;
+    batch(() => {
+      setQueue(rest);
+      setQueueTotal(ordered.length);
+      setQueueIndex(1);
+    });
+    if (first) await chooseFile(first);
+  };
+
+  const nextQueued = async () => {
+    const waiting = queue();
+    const [next, ...rest] = waiting;
+    if (!next) return;
+    batch(() => {
+      setQueue(rest);
+      setQueueIndex((current) => current + 1);
+    });
+    await chooseFile(next);
+  };
+
+  const clearQueue = () =>
+    batch(() => {
+      setQueue([]);
+      setQueueTotal(0);
+      setQueueIndex(0);
+    });
+
   const startOver = () =>
     batch(() => {
       setReceipt(null);
@@ -283,6 +326,7 @@ export function createImportController(client: BrowserApplicationClient) {
       setResult(null);
       setCommitError("");
       setUpload({ state: "idle" });
+      clearQueue();
     });
 
   // A request the browser still holds from before a reload is resumed, never repeated.
@@ -301,6 +345,12 @@ export function createImportController(client: BrowserApplicationClient) {
     upload,
     receipt,
     chooseFile,
+    chooseFiles,
+    queue,
+    queueTotal,
+    queueIndex,
+    nextQueued,
+    clearQueue,
     shown,
     failed,
     refreshing,

@@ -126,6 +126,27 @@ export function lockedPeriods(state: BookState): Set<string> {
   return new Set([...last].filter(([, kind]) => kind === "close").map(([id]) => id));
 }
 
+/** The locked period whose calendar range contains `day`, or null when `day` is not in a locked period. */
+export function lockedPeriodForDate(
+  state: BookState,
+  day: string,
+): {
+  readonly id: string;
+  readonly label: string;
+  readonly startsOn: string;
+  readonly endsOn: string;
+} | null {
+  const locked = lockedPeriods(state);
+  if (locked.size === 0) return null;
+  for (const period of state.periods) {
+    const startsOn = period.startsOn as string;
+    const endsOn = period.endsOn as string;
+    if (locked.has(period.id) && startsOn <= day && day <= endsOn)
+      return { id: period.id as string, label: period.label, startsOn, endsOn };
+  }
+  return null;
+}
+
 /** `booksBegan` is the day the books began (the recorded cutover date), when there is one: a period
  * that ends before it is before the books began. `inboxDates` is every day a bank transaction in the
  * Inbox is dated on, for `empty`; null when they could not be read, which calls no period empty. */

@@ -24,4 +24,9 @@ export const membersTools: Readonly<Record<string, OperationMetadata>> = {
     reason:
       "Whether a workspace is read-only follows its subscription and is the control plane's word alone; a model must never be able to set it or lift it.",
   },
+  "book.usage": {
+    hidden: true,
+    reason:
+      "Account-level trial usage counts are collected by the control plane alone; a model has no need to call it.",
+  },
 };

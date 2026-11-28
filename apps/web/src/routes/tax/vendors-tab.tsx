@@ -89,7 +89,7 @@ export function VendorsTab(props: {
       const saved = await props.client.write(
         "taxVendors.save",
         {
-          ...vendorFields(values),
+          ...vendorFields(values, current.vendor),
           ...(current.vendor
             ? { vendorId: current.vendor.id, expectedVersion: current.vendor.version }
             : {}),

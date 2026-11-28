@@ -36,8 +36,46 @@ type Connection struct {
 	Name          string `json:"name,omitempty"`
 	WorkspaceID   string `json:"workspace,omitempty"`
 	WorkspaceName string `json:"workspaceName,omitempty"`
+	WorkspaceSlug string `json:"workspaceSlug,omitempty"`
+	Alias         string `json:"alias,omitempty"`
 	ConnectedAt   string `json:"connectedAt"`
 	ExpiresAt     string `json:"expiresAt,omitempty"`
+}
+
+// SlugifyWorkspace converts a workspace name into a lowercase CLI selector slug.
+func SlugifyWorkspace(name string) string {
+	var b strings.Builder
+	lastHyphen := false
+	for _, r := range strings.ToLower(strings.TrimSpace(name)) {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') {
+			b.WriteRune(r)
+			lastHyphen = false
+		} else if b.Len() > 0 && !lastHyphen {
+			b.WriteByte('-')
+			lastHyphen = true
+		}
+		if b.Len() >= 48 {
+			break
+		}
+	}
+	return strings.TrimRight(b.String(), "-")
+}
+
+// SelectorOf returns the primary short name a person passes to --workspace for this connection.
+func (c Connection) SelectorOf() string {
+	if c.Alias != "" {
+		return c.Alias
+	}
+	if c.WorkspaceSlug != "" {
+		return c.WorkspaceSlug
+	}
+	if slug := SlugifyWorkspace(c.WorkspaceName); slug != "" {
+		return slug
+	}
+	if c.WorkspaceID != "" {
+		return c.WorkspaceID
+	}
+	return c.Directory
 }
 
 type connectionsFile struct {
@@ -138,16 +176,140 @@ func SaveConnections(getenv func(string) string, connections []Connection) error
 	return nil
 }
 
-// PutConnection adds a connection, in place of the one the same folder had to the same address.
+// PutConnection adds a connection. For hosted workspaces (WorkspaceID != ""), connections are keyed
+// by (Endpoint, WorkspaceID) so connecting a second LLC from the same directory never overwrites the
+// first. For local non-workspace connections, it replaces any previous entry for the same folder and
+// endpoint. If an alias is explicitly set, any earlier connection on the same endpoint drops that alias.
 func PutConnection(connections []Connection, added Connection) []Connection {
 	kept := make([]Connection, 0, len(connections)+1)
 	for _, connection := range connections {
-		if connection.Directory == added.Directory && connection.Endpoint == added.Endpoint {
+		if added.WorkspaceID != "" && connection.WorkspaceID != "" {
+			if connection.Endpoint == added.Endpoint && connection.WorkspaceID == added.WorkspaceID {
+				continue
+			}
+		} else if connection.Directory == added.Directory && connection.Endpoint == added.Endpoint && connection.WorkspaceID == added.WorkspaceID {
 			continue
+		}
+		if added.Alias != "" && connection.Endpoint == added.Endpoint && strings.EqualFold(connection.Alias, added.Alias) {
+			connection.Alias = ""
 		}
 		kept = append(kept, connection)
 	}
 	return append(kept, added)
+}
+
+func matchesSelector(connection Connection, selector string) bool {
+	s := strings.TrimSpace(selector)
+	if s == "" {
+		return false
+	}
+	if connection.Alias != "" && strings.EqualFold(connection.Alias, s) {
+		return true
+	}
+	if connection.WorkspaceSlug != "" && strings.EqualFold(connection.WorkspaceSlug, s) {
+		return true
+	}
+	if connection.WorkspaceID != "" && strings.EqualFold(connection.WorkspaceID, s) {
+		return true
+	}
+	if connection.WorkspaceName != "" {
+		if strings.EqualFold(connection.WorkspaceName, s) {
+			return true
+		}
+		if slug := SlugifyWorkspace(connection.WorkspaceName); slug != "" && strings.EqualFold(slug, s) {
+			return true
+		}
+	}
+	return false
+}
+
+func formatAvailableWorkspaces(connections []Connection) string {
+	labels := make([]string, 0, len(connections))
+	for _, c := range connections {
+		label := c.SelectorOf()
+		if c.WorkspaceName != "" && !strings.EqualFold(label, c.WorkspaceName) {
+			label = label + " (" + c.WorkspaceName + ")"
+		}
+		labels = append(labels, label)
+	}
+	sort.Strings(labels)
+	return strings.Join(labels, ", ")
+}
+
+// ResolveConnection selects a single connection for a command, failing closed whenever multiple
+// workspaces could match rather than silently picking the most recent one.
+func ResolveConnection(connections []Connection, folder, endpoint, selector string, anywhere bool) (*Connection, error) {
+	var candidates []Connection
+	for _, connection := range connections {
+		if endpoint == "" || connection.Endpoint == endpoint {
+			candidates = append(candidates, connection)
+		}
+	}
+	if len(candidates) == 0 {
+		if selector != "" {
+			return nil, fmt.Errorf("no connected workspace matches %q; run rastrata workspaces to see connected workspaces", selector)
+		}
+		return nil, nil
+	}
+	if strings.TrimSpace(selector) != "" {
+		var matched []Connection
+		for _, c := range candidates {
+			if matchesSelector(c, selector) {
+				matched = append(matched, c)
+			}
+		}
+		switch len(matched) {
+		case 0:
+			return nil, fmt.Errorf("no connected workspace matches %q (connected: %s)", selector, formatAvailableWorkspaces(candidates))
+		case 1:
+			chosen := matched[0]
+			return &chosen, nil
+		default:
+			return nil, fmt.Errorf("multiple connected workspaces match %q (%s); pass the workspace ID or set an --alias with rastrata connect", selector, formatAvailableWorkspaces(matched))
+		}
+	}
+
+	// No explicit selector: check directory matches first (deepest ancestor wins).
+	bestLen := -1
+	var inFolder []Connection
+	for _, candidate := range candidates {
+		if !within(folder, candidate.Directory) {
+			continue
+		}
+		if len(candidate.Directory) > bestLen {
+			bestLen = len(candidate.Directory)
+			inFolder = []Connection{candidate}
+		} else if len(candidate.Directory) == bestLen {
+			inFolder = append(inFolder, candidate)
+		}
+	}
+	if len(inFolder) == 1 {
+		chosen := inFolder[0]
+		return &chosen, nil
+	}
+	if len(inFolder) > 1 {
+		return nil, fmt.Errorf("multiple workspaces are connected in this folder (%s); pass --workspace <slug> or set RASTRATA_WORKSPACE", formatAvailableWorkspaces(inFolder))
+	}
+	if !anywhere {
+		return nil, nil
+	}
+	if len(candidates) == 1 {
+		chosen := candidates[0]
+		return &chosen, nil
+	}
+	return nil, fmt.Errorf("multiple workspaces are connected (%s); pass --workspace <slug> or set RASTRATA_WORKSPACE", formatAvailableWorkspaces(candidates))
+}
+
+// RemoveConnection removes matching connections (by selector, or exact WorkspaceID+Endpoint+Directory).
+func RemoveConnection(connections []Connection, target Connection) []Connection {
+	kept := make([]Connection, 0, len(connections))
+	for _, c := range connections {
+		if c.Endpoint == target.Endpoint && c.Directory == target.Directory && c.WorkspaceID == target.WorkspaceID && c.KeyID == target.KeyID {
+			continue
+		}
+		kept = append(kept, c)
+	}
+	return kept
 }
 
 // within says whether a folder is another or is under it.

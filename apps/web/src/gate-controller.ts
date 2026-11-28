@@ -158,6 +158,8 @@ export class GateController {
   #nonce = 0;
   #invitation: { view: InvitationView; token: string } | null = null;
   #request: { name: string; id: string } | null = null;
+  /** The workspace id returned in `"provisioning"` state so `refresh()` opens it as soon as it becomes ready, even when the account already owns other workspaces. */
+  #pendingWorkspaceId: string | null = null;
   /** The address a code was last asked for. */
   #email = "";
   /** Whether this browser offers passkeys among the email field's suggestions; read once, at the start. */
@@ -574,10 +576,17 @@ export class GateController {
     const listed = await this.#options.account.workspaces();
     if (!listed.ok) return;
     const waiting = listed.value.some((workspace) => workspace.state === "provisioning");
-    // The one the person has just made is opened as soon as it is ready.
-    if (this.#request && listed.value.length === 1 && listed.value[0]?.state === "ready") {
-      noteSetupPending(listed.value[0].id, true);
-      await this.open(listed.value[0].id);
+    // The workspace the person has just made is opened as soon as it is ready, whether it is their first or their tenth.
+    const created =
+      this.#pendingWorkspaceId !== null
+        ? listed.value.find((workspace) => workspace.id === this.#pendingWorkspaceId)
+        : this.#request && listed.value.length === 1
+          ? listed.value[0]
+          : undefined;
+    if (created?.state === "ready") {
+      this.#pendingWorkspaceId = null;
+      noteSetupPending(created.id, true);
+      await this.open(created.id);
       return;
     }
     this.#set({ ...current, workspaces: listed.value, waiting });
@@ -603,10 +612,12 @@ export class GateController {
       return;
     }
     if (answer.value.state === "ready") {
+      this.#pendingWorkspaceId = null;
       noteSetupPending(answer.value.id, true);
       await this.open(answer.value.id);
       return;
     }
+    this.#pendingWorkspaceId = answer.value.id;
     const listed = await this.#options.account.workspaces();
     this.#set({
       ...current,

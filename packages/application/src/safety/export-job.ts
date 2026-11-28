@@ -10,6 +10,7 @@ import { backupIdFor } from "./manifest.ts";
 import type { JobResult } from "./jobs.ts";
 import { safetyRuntime } from "./jobs.ts";
 import { exportHost } from "./operations.ts";
+import { readBookSettings } from "../slices/entries/settings.ts";
 import type { LedgerHead, Progress } from "./types.ts";
 
 type OutcomePage = Awaited<ReturnType<ApplicationService["outcomePage"]>>;
@@ -142,13 +143,19 @@ export async function exportBook(
   const genesis = (await service.outcomePage()).genesis;
   const now = runtime.now();
   const id = backupIdFor(now.toISOString(), head);
+  const entity = readBookSettings(service).entity;
   const sink = await host.beginExport(id);
   try {
     const manifest = await writeOpenExport(
       {
         id,
         createdAt: now.toISOString(),
-        book: { id: service.bookId, name: setup.name, currency: setup.currency },
+        book: {
+          id: service.bookId,
+          name: setup.name,
+          currency: setup.currency,
+          ...(entity ? { entity } : {}),
+        },
         setup,
         ledger: { head, genesis },
         state: aggregate.state,

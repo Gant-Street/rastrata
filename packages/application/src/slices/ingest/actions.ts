@@ -7,7 +7,8 @@
  *
  * A person's choice and a proposer's suggestion are both only ever a set of legs. The pipeline
  * checks them against the chart as it is now before drafting, whoever made them. */
-import type { BookedJournal } from "@rastrata/kernel";
+import type { BookedJournal, BookState } from "@rastrata/kernel";
+import { lockedPeriodForDate } from "../../calendar/periods.ts";
 import type { JournalDraftData, SavedDraft } from "../../contracts.ts";
 import type {
   InboxAcceptInput,
@@ -53,6 +54,7 @@ export interface ActionContext {
   readonly store: ApplicationStore;
   /** The instant the action happens; one value for the whole call. */
   readonly now: string;
+  readonly state: BookState;
   readonly chart: ReadonlyMap<string, ChartAccount>;
   readonly journals: Pick<ReadonlyMap<string, BookedJournal>, "get">;
   /** The book's currency. */
@@ -74,6 +76,7 @@ export async function actionContext(
     service,
     store: runtime.store,
     now: runtime.now(),
+    state: aggregate.state,
     chart: chartOf(aggregate.state),
     journals: options.journals
       ? { get: (id: string) => matchIndexFor(aggregate.state).journal(id) }
@@ -575,6 +578,15 @@ function acceptMatch(
       "proposal_stale",
       "The entry this line matched no longer exists. Refresh the Inbox.",
     );
+  for (const day of [row.posted_on, booked.journal.accountingDate as string]) {
+    const locked = lockedPeriodForDate(ctx.state, day);
+    if (locked)
+      return failed(
+        row,
+        "fiscal_period_admission",
+        `Period ${locked.label} is closed. Reopen it before matching a transaction dated ${day}.`,
+      );
+  }
   const moved = booked.journal.postings
     .filter((posting) => posting.accountId === row.ledger_account_id)
     .reduce((total, posting) => total + posting.bookValue.amount.coefficient, 0n);

@@ -24,6 +24,7 @@ type ConnectedAgent struct {
 	ExpiresAt     string
 	WorkspaceID   string
 	WorkspaceName string
+	WorkspaceSlug string
 }
 
 var connectCodeShape = regexp.MustCompile(`^[0-9A-Za-z][0-9A-Za-z -]{6,30}[0-9A-Za-z]$`)
@@ -67,13 +68,14 @@ func (c *Client) ConnectAgent(ctx context.Context, code, name string) (Connected
 			Workspace struct {
 				ID   string `json:"id"`
 				Name string `json:"name"`
+				Slug string `json:"slug"`
 			} `json:"workspace"`
 		}
 		if err := json.Unmarshal(raw, &made); err != nil || !IsAgentKey(made.Secret) {
 			// The code is used up and the key cannot be kept: say what to do about the key that was made.
 			return ConnectedAgent{}, c.Failure("response_invalid", "The service's answer to the code was not understood. If an agent now shows in your workspace's agent settings, disconnect it there, then get a new code.", "", false)
 		}
-		return ConnectedAgent{Key: made.Secret, KeyID: made.Key.ID, Name: made.Key.Name, Scopes: made.Key.Scopes, ExpiresAt: made.Key.ExpiresAt, WorkspaceID: made.Workspace.ID, WorkspaceName: made.Workspace.Name}, nil
+		return ConnectedAgent{Key: made.Secret, KeyID: made.Key.ID, Name: made.Key.Name, Scopes: made.Key.Scopes, ExpiresAt: made.Key.ExpiresAt, WorkspaceID: made.Workspace.ID, WorkspaceName: made.Workspace.Name, WorkspaceSlug: made.Workspace.Slug}, nil
 	}
 	var refusal struct {
 		Code    string `json:"code"`

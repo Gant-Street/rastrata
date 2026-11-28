@@ -23,6 +23,9 @@ export function FileField(props: {
   describedBy?: string | undefined;
   invalid?: boolean | undefined;
   onFile: (file: File) => void;
+  /** Allow choosing or dropping multiple files at once; all files are reported in order. */
+  multiple?: boolean | undefined;
+  onFiles?: ((files: File[]) => void) | undefined;
   /** More than one file was dropped; none is reported. */
   onTooMany?: (() => void) | undefined;
   /** The field is a place to drop the file. */
@@ -40,15 +43,26 @@ export function FileField(props: {
   actionsClass?: string | undefined;
 }): JSX.Element {
   const take = (accepted: File[], rejected: { file: File; errors: string[] }[]) => {
-    if (accepted.length + rejected.length > 1) {
+    const all = [...accepted, ...rejected.map((item) => item.file)];
+    if (props.multiple) {
+      if (all.length === 0) return;
+      if (props.onFiles) {
+        props.onFiles(all);
+        return;
+      }
+      const first = all[0];
+      if (first) props.onFile(first);
+      return;
+    }
+    if (all.length > 1) {
       props.onTooMany?.();
       return;
     }
-    const file = accepted[0] ?? rejected[0]?.file;
+    const file = all[0];
     if (file) props.onFile(file);
   };
   const upload = useFileUpload(() => ({
-    maxFiles: 1,
+    maxFiles: props.multiple ? 24 : 1,
     disabled: props.disabled ?? false,
     invalid: props.invalid ?? false,
     allowDrop: props.drop ?? false,

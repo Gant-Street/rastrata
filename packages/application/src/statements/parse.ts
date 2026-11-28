@@ -22,6 +22,7 @@ import { quoteCell } from "./hostile.ts";
 import { parseOfxText } from "./ofx.ts";
 import { type CsvPreset, presetById } from "./presets.ts";
 import { binaryKind, decodeText, type TextEncoding } from "./text.ts";
+import { isZip, sheetTable } from "./xlsx.ts";
 
 /** Statement bytes in, lines out: the one function the import operations call.
  *
@@ -188,11 +189,23 @@ export function parseStatement(request: ParseRequest): StatementParse {
       );
       return failed(diagnostics, bytes.length);
     }
+    if (isZip(bytes)) {
+      try {
+        const table = sheetTable(bytes);
+        return parseCsvTable(request, table, "", "utf-8", diagnostics, bytes.length, ",");
+      } catch {
+        diagnostics.error(
+          "unsupported_file",
+          "This is a ZIP archive or an unreadable Excel workbook, not a statement file. Export the statement as CSV, Excel (.xlsx), OFX, QFX or QBO from your bank instead.",
+        );
+        return failed(diagnostics, bytes.length);
+      }
+    }
     const kind = binaryKind(bytes);
     if (kind) {
       diagnostics.error(
         "unsupported_file",
-        `This is ${kind}, not a statement file. Export the statement as CSV, OFX, QFX or QBO from your bank instead.`,
+        `This is ${kind}, not a statement file. Export the statement as CSV, Excel (.xlsx), OFX, QFX or QBO from your bank instead.`,
       );
       return failed(diagnostics, bytes.length);
     }
@@ -311,6 +324,24 @@ function parseCsvFile(
   }
   const delimiter = explicit?.delimiter ?? preset?.mapping.delimiter ?? sniffDelimiter(text);
   const table: CsvTable = tokenizeCsv(text, delimiter);
+  return parseCsvTable(request, table, text, encoding, diagnostics, text.length, delimiter);
+}
+
+function parseCsvTable(
+  request: ParseRequest,
+  table: CsvTable,
+  text: string,
+  encoding: TextEncoding,
+  diagnostics: Diagnostics,
+  size: number,
+  delimiter: Delimiter,
+): StatementParse {
+  const explicit = request.mapping;
+  const preset = request.preset !== undefined ? presetById(request.preset) : undefined;
+  if (request.preset !== undefined && !preset) {
+    diagnostics.error("unknown_preset", `There is no preset ${quoteCell(request.preset, 40)}`);
+    return failed(diagnostics, size, "csv");
+  }
   if (table.truncated)
     diagnostics.error(
       "too_many_rows",
@@ -373,7 +404,7 @@ function parseCsvFile(
         : "Could not tell which columns hold the date, amount and description. Choose the columns below.",
     );
     return {
-      ...failed(diagnostics, text.length, "csv"),
+      ...failed(diagnostics, size, "csv"),
       encoding,
       provider: "csv",
       accountKey: request.accountKey,
@@ -446,7 +477,7 @@ function parseCsvFile(
   return {
     format: "csv",
     provider: "csv",
-    size: text.length,
+    size,
     encoding,
     lines,
     balances,

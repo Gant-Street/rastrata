@@ -44,12 +44,14 @@ import {
   CLASSIFICATIONS,
   EXEMPT_REASONS,
   PAID_BY,
+  TIN_STATUSES,
   VENDOR_REPORTING,
   W9_STATES,
   compileVendorTotals,
   type PayeeSource,
   type Payment,
   type Vendor,
+  type VendorAddress,
   type VendorTotals,
 } from "../../tax/vendors.ts";
 import { paymentsCsv, vendorsCsv } from "../../tax/vendors-csv.ts";
@@ -121,6 +123,10 @@ const vendorWire = (vendor: Vendor): TaxVendor => ({
   classification: vendor.classification,
   paidBy: vendor.paidBy,
   notes: vendor.notes,
+  ...(vendor.legalName ? { legalName: vendor.legalName } : {}),
+  ...(vendor.address ? { address: { ...vendor.address } } : {}),
+  ...(vendor.email ? { email: vendor.email } : {}),
+  ...(vendor.tinStatus ? { tinStatus: vendor.tinStatus } : {}),
   recordedAt: vendor.recordedAt,
   principal: vendor.principal,
 });
@@ -478,6 +484,29 @@ function oneOf<T extends string>(list: readonly T[], value: unknown, field: stri
   );
 }
 
+const VENDOR_EMAIL_RE = /^[^\s@]+@[^\s@]+$/;
+
+function cleanVendorAddress(value: unknown): VendorAddress | null {
+  if (value === null) return null;
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    return refuse("invalid_input", "address must be an object or null.", 400, "input.address");
+  const raw = value as Record<string, unknown>;
+  const out: Record<string, string> = {};
+  const specs = [
+    ["line1", 200],
+    ["line2", 200],
+    ["city", 120],
+    ["state", 40],
+    ["postalCode", 20],
+  ] as const;
+  for (const [key, max] of specs) {
+    if (raw[key] === undefined || raw[key] === null) continue;
+    const text = sanitizeText(String(raw[key]), max);
+    if (text !== "") out[key] = text;
+  }
+  return Object.keys(out).length > 0 ? (out as VendorAddress) : null;
+}
+
 const bodyOfVendor = (vendor: Vendor): VendorBody => ({
   name: vendor.name,
   payeeKeys: vendor.payeeKeys,
@@ -488,6 +517,10 @@ const bodyOfVendor = (vendor: Vendor): VendorBody => ({
   classification: vendor.classification,
   paidBy: vendor.paidBy,
   notes: vendor.notes,
+  ...(vendor.legalName ? { legalName: vendor.legalName } : {}),
+  ...(vendor.address ? { address: vendor.address } : {}),
+  ...(vendor.email ? { email: vendor.email } : {}),
+  ...(vendor.tinStatus ? { tinStatus: vendor.tinStatus } : {}),
 });
 
 export function saveVendor(
@@ -580,6 +613,29 @@ export function saveVendor(
     const w9On = input.w9On === undefined ? base.w9On : (input.w9On as string | null);
     if (w9On !== null && !isDate(w9On))
       refuse("invalid_input", "w9On must be a real date (YYYY-MM-DD).", 400, "input.w9On");
+    const legalName =
+      input.legalName === undefined
+        ? (base.legalName ?? null)
+        : input.legalName === null
+          ? null
+          : sanitizeText(String(input.legalName), 200) || null;
+    const address =
+      input.address === undefined ? (base.address ?? null) : cleanVendorAddress(input.address);
+    let email = base.email ?? null;
+    if (input.email !== undefined) {
+      if (input.email === null) email = null;
+      else {
+        const cleaned = String(input.email).trim().toLowerCase();
+        if (cleaned === "") email = null;
+        else if (!VENDOR_EMAIL_RE.test(cleaned) || cleaned.length > 254)
+          refuse("invalid_input", "email must be a valid email address.", 400, "input.email");
+        else email = cleaned;
+      }
+    }
+    const tinStatus =
+      input.tinStatus === undefined
+        ? base.tinStatus
+        : oneOf(TIN_STATUSES, input.tinStatus, "tinStatus");
     const body: VendorBody = {
       name,
       payeeKeys:
@@ -598,6 +654,10 @@ export function saveVendor(
             : oneOf(CLASSIFICATIONS, input.classification, "classification"),
       paidBy: input.paidBy === undefined ? base.paidBy : oneOf(PAID_BY, input.paidBy, "paidBy"),
       notes: input.notes === undefined ? base.notes : sanitizeText(String(input.notes), 500),
+      ...(legalName !== null ? { legalName } : {}),
+      ...(address !== null ? { address } : {}),
+      ...(email !== null ? { email } : {}),
+      ...(tinStatus !== undefined ? { tinStatus } : {}),
     };
     if (current && JSON.stringify(body) === JSON.stringify(bodyOfVendor(current)))
       return {

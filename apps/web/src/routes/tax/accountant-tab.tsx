@@ -30,6 +30,7 @@ export function AccountantTab(props: {
   const [packPhase, setPackPhase] = createSignal<"idle" | "building" | "failed">("idle");
   const [packFailure, setPackFailure] = createSignal<string | undefined>();
   const [downloading, setDownloading] = createSignal(false);
+  const [downloadingCpa, setDownloadingCpa] = createSignal(false);
   const [packMessage, setPackMessage] = createSignal("");
   const packState = () => {
     if (packPhase() === "building") return "building" as const;
@@ -74,6 +75,28 @@ export function AccountantTab(props: {
       setPackMessage(failureText(cause, taxWords.packFailed));
     } finally {
       setDownloading(false);
+    }
+  }
+
+  async function downloadCpaPacket() {
+    const taxYear = props.year();
+    if (taxYear === undefined || downloadingCpa()) return;
+    setDownloadingCpa(true);
+    setPackFailure(undefined);
+    setPackMessage("");
+    try {
+      const built = await props.client.read("taxCpaPacket.build", { taxYear });
+      const bytes = zipFiles(
+        built.folder,
+        built.files.map((file) => ({ path: file.path, content: file.content })),
+      );
+      setPackMessage(
+        taxWords.packSaved(saveBytes(`${built.folder}.zip`, "application/zip", bytes)),
+      );
+    } catch (cause) {
+      setPackFailure(failureText(cause, taxWords.cpaPacketFailed));
+    } finally {
+      setDownloadingCpa(false);
     }
   }
 
@@ -207,7 +230,20 @@ export function AccountantTab(props: {
         message={packMessage()}
         failure={packFailure()}
         extra={
-          <Button variant="quiet" label={taxWords.accountantTemplate} onClick={downloadTemplate} />
+          <>
+            <Button
+              variant="secondary"
+              label={taxWords.cpaPacketDownload}
+              pending={downloadingCpa()}
+              pendingLabel={taxWords.cpaPacketBuilding}
+              onClick={() => void downloadCpaPacket()}
+            />
+            <Button
+              variant="quiet"
+              label={taxWords.accountantTemplate}
+              onClick={downloadTemplate}
+            />
+          </>
         }
       />
       <section class="rt-tax-pack" aria-labelledby="tax-bring-title">

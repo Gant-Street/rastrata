@@ -341,6 +341,109 @@ function readme(input: {
   return `${lines.join("\n")}\n`;
 }
 
+/** The accounting files (chart of accounts, journal with provenance, changes, reconciliations and
+ * adjusting-entries template) without duplicating the trial balance and general ledger, for inclusion
+ * in the unified CPA hand-off packet (`taxCpaPacket.build`). */
+export function buildAccountantSupplement(
+  state: BookState,
+  request: AccountantRequest,
+  bookName: string,
+  prefix = "accounting/",
+): {
+  readonly files: readonly TaxFile[];
+  readonly populations: Readonly<Record<string, string>>;
+  readonly extraReadmes: readonly string[];
+  readonly extraNotes: readonly string[];
+} {
+  const context = reportContext(state, request.to);
+  const range = resolveRange(context, request.to, request.from);
+  const column = compileColumn(context, range.from, request.to);
+  const populations: Record<string, string> = {};
+  const evidence = [...request.provenance.entries()]
+    .map(([journalId, item]) => [
+      journalId,
+      item.provider,
+      item.accountKey,
+      item.providerId,
+      item.decidedBy,
+    ])
+    .sort((left, right) => (left.join("\u0000") < right.join("\u0000") ? -1 : 1));
+  const journalPopulation = hashCanonical({
+    type: "TaxAccountantJournalPopulation",
+    compilerVersion: ACCOUNTANT_VERSION,
+    ledgerPopulationHash: column.populationHash,
+    from: range.from,
+    to: request.to,
+    provenanceRead: request.provenanceRead,
+    provenance: evidence,
+  }).digest;
+  populations.journals = journalPopulation;
+
+  const base = {
+    book: bookName,
+    currency: state.identity.functionalCommodityId,
+    basis: context.basis,
+    periodStart: range.from,
+    periodEnd: request.to,
+    bookRevision: state.bookRevision.toString(),
+    compilerVersion: ACCOUNTANT_VERSION,
+  };
+  const header = (title: string, population: string): TaxFileHeader => ({
+    ...base,
+    title,
+    populationHash: population,
+    extra: [
+      ["Ledger population hash", column.populationHash],
+      ["Tag map hash", request.tags.hash],
+      ["Notice", TAX_DISCLAIMER_LONG],
+    ],
+  });
+
+  const extras = (request.extras ?? []).map((make) => make(header));
+  const journal = journalCsv(header("Journal", journalPopulation), state, request);
+  const files: TaxFile[] = [
+    {
+      path: `${prefix}chart-of-accounts.csv`,
+      mediaType: CSV_TYPE,
+      description:
+        "Every account in the chart on the last day with its type, parent, dates and tags. The Account column of the adjusting entries is a code from here.",
+      content: chartCsv(
+        header("Chart of accounts", column.populationHash),
+        state,
+        request.to,
+        request.tags,
+      ),
+      population: column.populationHash,
+    },
+    {
+      path: `${prefix}journal.csv`,
+      mediaType: CSV_TYPE,
+      description:
+        "Every journal dated in the range, one row per line, with where it came from: its source, the imported bank line or provider payout it was posted from, who decided it, and any journal that corrects or was corrected by it.",
+      content: journal.content,
+      population: journalPopulation,
+    },
+  ];
+  for (const extra of extras) {
+    files.push({ ...extra.file, path: `${prefix}${extra.file.path}` });
+    if (extra.file.population) populations[extra.name] = extra.file.population;
+  }
+  files.push({
+    path: `${prefix}adjusting-entries-template.csv`,
+    mediaType: CSV_TYPE,
+    description:
+      "The empty template for the adjusting entries an accountant sends back: one row per line, with the columns the import reads.",
+    content: ADJUSTMENTS_TEMPLATE,
+    population: null,
+  });
+  return {
+    files,
+    populations,
+    extraReadmes: extras.map((extra) => extra.readme),
+    extraNotes: request.extraNotes ?? [],
+  };
+}
+
 /** The accountant pack for a range. */
 export function buildAccountantPack(
   state: BookState,

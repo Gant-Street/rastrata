@@ -1418,17 +1418,37 @@ type InboxRecategorizeReport struct {
 	Next      *string                   `json:"next"`
 }
 
+type EntityAddress struct {
+	Line1      *string `json:"line1,omitempty"`
+	Line2      *string `json:"line2,omitempty"`
+	City       *string `json:"city,omitempty"`
+	State      *string `json:"state,omitempty"`
+	PostalCode *string `json:"postalCode,omitempty"`
+	Country    *string `json:"country,omitempty"`
+}
+
+type BookEntityProfile struct {
+	LegalName      *string        `json:"legalName,omitempty"`
+	Ein            *string        `json:"ein,omitempty"`
+	EntityType     *string        `json:"entityType,omitempty"`
+	FormationState *string        `json:"formationState,omitempty"`
+	Address        *EntityAddress `json:"address,omitempty"`
+	ContactEmail   *string        `json:"contactEmail,omitempty"`
+}
+
 type BookSettings struct {
-	DateFormat         string `json:"dateFormat"`
-	ShowAccountNumbers bool   `json:"showAccountNumbers"`
-	AcceptMode         string `json:"acceptMode"`
+	DateFormat         string             `json:"dateFormat"`
+	ShowAccountNumbers bool               `json:"showAccountNumbers"`
+	AcceptMode         string             `json:"acceptMode"`
+	Entity             *BookEntityProfile `json:"entity,omitempty"`
 }
 
 type BookUpdateInput struct {
-	Name               *string `json:"name,omitempty"`
-	DateFormat         *string `json:"dateFormat,omitempty"`
-	ShowAccountNumbers *bool   `json:"showAccountNumbers,omitempty"`
-	AcceptMode         *string `json:"acceptMode,omitempty"`
+	Name               *string            `json:"name,omitempty"`
+	DateFormat         *string            `json:"dateFormat,omitempty"`
+	ShowAccountNumbers *bool              `json:"showAccountNumbers,omitempty"`
+	AcceptMode         *string            `json:"acceptMode,omitempty"`
+	Entity             *BookEntityProfile `json:"entity,omitempty"`
 }
 
 type BookUpdateResult struct {
@@ -1796,6 +1816,16 @@ type InboxPostInput struct {
 	Filter        *InboxFilter `json:"filter,omitempty"`
 	ExpectedCount *int         `json:"expectedCount,omitempty"`
 	Limit         *int         `json:"limit,omitempty"`
+	DryRun        *bool        `json:"dryRun,omitempty"`
+}
+
+type InboxAccountDelta struct {
+	AccountID string `json:"accountId"`
+	Code      string `json:"code"`
+	Name      string `json:"name"`
+	Debit     string `json:"debit"`
+	Credit    string `json:"credit"`
+	Net       string `json:"net"`
 }
 
 type InboxActionResult struct {
@@ -1812,11 +1842,13 @@ type InboxActionResult struct {
 }
 
 type InboxActionReport struct {
-	Results   []InboxActionResult `json:"results"`
-	Applied   int                 `json:"applied"`
-	Skipped   int                 `json:"skipped"`
-	Failed    int                 `json:"failed"`
-	Remaining int                 `json:"remaining"`
+	Results       []InboxActionResult  `json:"results"`
+	Applied       int                  `json:"applied"`
+	Skipped       int                  `json:"skipped"`
+	Failed        int                  `json:"failed"`
+	Remaining     int                  `json:"remaining"`
+	DryRun        *bool                `json:"dryRun,omitempty"`
+	AccountDeltas *[]InboxAccountDelta `json:"accountDeltas,omitempty"`
 }
 
 type InboxSource struct {
@@ -2454,6 +2486,12 @@ type BookAccessInput struct {
 type BookAccess struct {
 	ReadOnly      bool    `json:"readOnly"`
 	ReadOnlySince *string `json:"readOnlySince"`
+}
+
+type BookUsage struct {
+	StatementsImported   int `json:"statementsImported"`
+	TransactionsImported int `json:"transactionsImported"`
+	ExportsCreated       int `json:"exportsCreated"`
 }
 
 type PayeeTally struct {
@@ -5758,6 +5796,16 @@ type TaxVendorClassification = string
 
 type TaxVendorPaidBy = string
 
+type TaxVendorTinStatus = string
+
+type TaxVendorAddress struct {
+	Line1      *string `json:"line1,omitempty"`
+	Line2      *string `json:"line2,omitempty"`
+	City       *string `json:"city,omitempty"`
+	State      *string `json:"state,omitempty"`
+	PostalCode *string `json:"postalCode,omitempty"`
+}
+
 type TaxVendorAttention = string
 
 type TaxVendor struct {
@@ -5772,6 +5820,10 @@ type TaxVendor struct {
 	Classification *TaxVendorClassification `json:"classification"`
 	PaidBy         TaxVendorPaidBy          `json:"paidBy"`
 	Notes          string                   `json:"notes"`
+	LegalName      *string                  `json:"legalName,omitempty"`
+	Address        *TaxVendorAddress        `json:"address,omitempty"`
+	Email          *string                  `json:"email,omitempty"`
+	TinStatus      *TaxVendorTinStatus      `json:"tinStatus,omitempty"`
 	RecordedAt     string                   `json:"recordedAt"`
 	Principal      string                   `json:"principal"`
 }
@@ -5900,6 +5952,10 @@ type TaxVendorSaveInput struct {
 	Classification  *TaxVendorClassification `json:"classification,omitempty"`
 	PaidBy          *TaxVendorPaidBy         `json:"paidBy,omitempty"`
 	Notes           *string                  `json:"notes,omitempty"`
+	LegalName       *string                  `json:"legalName,omitempty"`
+	Address         *TaxVendorAddress        `json:"address,omitempty"`
+	Email           *string                  `json:"email,omitempty"`
+	TinStatus       *TaxVendorTinStatus      `json:"tinStatus,omitempty"`
 }
 
 type TaxVendorSaved struct {
@@ -6468,6 +6524,10 @@ func (c *Client) BookAccess(ctx context.Context, input BookAccessInput, operatio
 	return typedCall[BookAccess](ctx, c, "book.access", input, operationID)
 }
 
+func (c *Client) BookUsage(ctx context.Context, input Empty, operationID string) (BookUsage, error) {
+	return typedCall[BookUsage](ctx, c, "book.usage", input, operationID)
+}
+
 func (c *Client) PayeesList(ctx context.Context, input PayeeListInput, operationID string) (PayeeList, error) {
 	return typedCall[PayeeList](ctx, c, "payees.list", input, operationID)
 }
@@ -6826,6 +6886,10 @@ func (c *Client) TaxSummaryGet(ctx context.Context, input TaxSummaryInput, opera
 
 func (c *Client) TaxPackBuild(ctx context.Context, input TaxPackInput, operationID string) (TaxPack, error) {
 	return typedCall[TaxPack](ctx, c, "taxPack.build", input, operationID)
+}
+
+func (c *Client) TaxCpaPacketBuild(ctx context.Context, input TaxPackInput, operationID string) (TaxPack, error) {
+	return typedCall[TaxPack](ctx, c, "taxCpaPacket.build", input, operationID)
 }
 
 func (c *Client) TaxVendorsList(ctx context.Context, input TaxVendorsInput, operationID string) (TaxVendors, error) {

@@ -3,6 +3,7 @@ import { Button } from "../button";
 import { Dialog } from "../dialog";
 import { ErrorSummary, type FormError } from "../error-summary";
 import { formatDate, formatInstant } from "../format";
+import { Details } from "../kit";
 import { Notice } from "../notice";
 import { SelectField } from "../select-field";
 import { TextArea, TextField } from "../text-field";
@@ -14,6 +15,7 @@ import type {
   TaxVendorPaidBy,
   TaxVendorReason,
   TaxVendorReporting,
+  TaxVendorTinStatus,
   TaxVendorView,
   TaxVendorW9,
 } from "./types";
@@ -59,6 +61,11 @@ const PAID_BY_ITEMS = [
   { value: "bank", label: words.paidByBank },
   { value: "card_or_network", label: words.paidByCard },
 ] as const;
+const TIN_STATUS_ITEMS = [
+  { value: "not_collected", label: words.tinNotCollected },
+  { value: "on_file", label: words.tinOnFile },
+  { value: "verified", label: words.tinVerified },
+] as const;
 
 /** Add or change a vendor: its name, the payee texts that match it to bank lines, whether it needs a 1099
  * (and why not), the W-9, the classification, how it is paid and notes. There is no field for a taxpayer
@@ -91,6 +98,7 @@ export function TaxVendorForm(props: {
       reporting: "reason",
       reason: "reason",
       w9On: "w9On",
+      email: "email",
     };
     const field = about[key];
     if (field) setShown((current) => ({ ...current, [field]: undefined }));
@@ -103,9 +111,19 @@ export function TaxVendorForm(props: {
         ["payees", errors.payees],
         ["reason", errors.reason],
         ["w9On", errors.w9On],
+        ["email", errors.email],
       ] as const
     ).flatMap(([id, message]) => (message ? [{ id: `tax-vendor-${id}`, message }] : []));
   });
+  const hasFilingDetails = () =>
+    Boolean(
+      props.initial.legalName ||
+        props.initial.email ||
+        (props.initial.tinStatus && props.initial.tinStatus !== "not_collected") ||
+        props.initial.addressLine1 ||
+        props.initial.addressCity ||
+        props.initial.addressPostalCode,
+    );
   const submit = () => {
     const errors = vendorErrors(values());
     setShown(errors);
@@ -224,6 +242,73 @@ export function TaxVendorForm(props: {
           value={values().notes}
           onInput={(event) => set("notes", event.currentTarget.value)}
         />
+        <Details summary={words.formFilingDetails} defaultOpen={hasFilingDetails()}>
+          <div class="rt-stack">
+            <TextField
+              id="tax-vendor-legalName"
+              label={words.formLegalName}
+              hint={words.formLegalNameHint}
+              maxLength={200}
+              value={values().legalName ?? ""}
+              onInput={(event) => set("legalName", event.currentTarget.value)}
+            />
+            <div class="rt-tax-formrow">
+              <TextField
+                id="tax-vendor-email"
+                type="email"
+                label={words.formEmail}
+                maxLength={254}
+                value={values().email ?? ""}
+                {...maybeError(shown().email)}
+                onInput={(event) => set("email", event.currentTarget.value)}
+              />
+              <SelectField
+                label={words.formTinStatus}
+                hint={words.formTinStatusHint}
+                items={TIN_STATUS_ITEMS}
+                value={values().tinStatus ?? "not_collected"}
+                onChange={(value) => set("tinStatus", value as TaxVendorTinStatus)}
+              />
+            </div>
+            <TextField
+              id="tax-vendor-addressLine1"
+              label={words.formAddressLine1}
+              maxLength={200}
+              value={values().addressLine1 ?? ""}
+              onInput={(event) => set("addressLine1", event.currentTarget.value)}
+            />
+            <TextField
+              id="tax-vendor-addressLine2"
+              label={words.formAddressLine2}
+              maxLength={200}
+              value={values().addressLine2 ?? ""}
+              onInput={(event) => set("addressLine2", event.currentTarget.value)}
+            />
+            <div class="rt-tax-formrow">
+              <TextField
+                id="tax-vendor-addressCity"
+                label={words.formAddressCity}
+                maxLength={120}
+                value={values().addressCity ?? ""}
+                onInput={(event) => set("addressCity", event.currentTarget.value)}
+              />
+              <TextField
+                id="tax-vendor-addressState"
+                label={words.formAddressState}
+                maxLength={40}
+                value={values().addressState ?? ""}
+                onInput={(event) => set("addressState", event.currentTarget.value)}
+              />
+              <TextField
+                id="tax-vendor-addressPostalCode"
+                label={words.formAddressPostal}
+                maxLength={20}
+                value={values().addressPostalCode ?? ""}
+                onInput={(event) => set("addressPostalCode", event.currentTarget.value)}
+              />
+            </div>
+          </div>
+        </Details>
       </form>
       <Show when={props.vendor}>
         <section class="rt-tax-history" aria-label={words.formHistory}>

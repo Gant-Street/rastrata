@@ -7,7 +7,15 @@ import {
   useLocation,
   useRouter,
 } from "@tanstack/solid-router";
-import { AppHeader, AppNav, Logo, SectionTabs, useToast } from "@rastrata/ui";
+import {
+  AppHeader,
+  AppNav,
+  Logo,
+  SectionTabs,
+  useToast,
+  WorkspaceSwitcher,
+  type WorkspaceOption,
+} from "@rastrata/ui";
 import {
   createEffect,
   createMemo,
@@ -20,6 +28,7 @@ import {
 } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import { footerNote, type Who } from "./access-note";
+import type { WorkspaceSummary } from "./account";
 import { openWorkspace, setupPending } from "./new-book";
 import { AppLink, goTo, onIntent } from "./app-link";
 import { BrowserApplicationClient, WRITE_EVENT } from "./application-client";
@@ -27,6 +36,7 @@ import { BillingBanner } from "./billing-banner";
 import { bannerFor } from "./billing-controller";
 import { currentAccount } from "./boot";
 import { capabilities } from "./capabilities";
+import { clear as forgetHeld } from "./held";
 import { createLoader } from "./loader";
 import { endOpening, fromOpening } from "./opening";
 import { availableRoutes, buildHeader, buildNewActions, pageNameOf, sectionLabel } from "./nav";
@@ -36,7 +46,7 @@ import { allDialogs, allNewActions, navRoutes, searchSourcesFor } from "./routes
 import { Home } from "./routes/home";
 import { helpAudience } from "./routes/help/audience";
 import { helpHref } from "./routes/help/pages";
-import { lanes } from "./routes/registry";
+import { lanes, type SearchSource } from "./routes/registry";
 import {
   AccountsPage,
   JournalDetailPage,
@@ -46,6 +56,7 @@ import {
   PeriodsPage,
   ReportsPage,
 } from "./routes/screens";
+import { matchScore } from "./search/builtin";
 import { SearchHost } from "./search/host";
 import { readService } from "./service-state";
 import {
@@ -56,7 +67,14 @@ import {
   wantsSignIn,
 } from "./session";
 import { SignInScreen } from "./signin";
+import {
+  BILLING_UPDATED_EVENT,
+  setWorkspaceReadOnly,
+  WORKSPACE_RENAMED_EVENT,
+  workspaceReadOnly,
+} from "./standing";
 import { ThemeSwitch } from "./theme-switch";
+import { CreateWorkspaceDialog } from "./workspace-create-dialog";
 
 /** "⌘K" on a Mac, "Ctrl K" elsewhere: the keys that open Search, as the platform writes them. */
 const searchShortcut = (): string =>
@@ -83,7 +101,113 @@ function Shell() {
     return answer.ok ? answer.value.workspace : null;
   });
   const standing = createLoader(standingOpening.fetcher, standingOpening.initial);
-  const sources = searchSourcesFor(routes);
+  createEffect(() => {
+    setWorkspaceReadOnly(standing.value()?.billing?.readOnly === true);
+  });
+  const [workspaces, setWorkspaces] = createSignal<readonly WorkspaceSummary[]>([]);
+  const [workspacesLoading, setWorkspacesLoading] = createSignal(false);
+  const [creatingWorkspace, setCreatingWorkspace] = createSignal(false);
+  const loadWorkspaces = async () => {
+    if (!account) return;
+    setWorkspacesLoading(true);
+    try {
+      const listed = await account.workspaces();
+      if (listed.ok) setWorkspaces(listed.value);
+    } finally {
+      setWorkspacesLoading(false);
+    }
+  };
+  const switchWorkspace = (workspaceId: string) => {
+    if (!account || workspaceId === account.scope()) return;
+    account.select(workspaceId);
+    forgetHeld();
+    window.location.assign("/");
+  };
+  const workspaceOptions = createMemo<readonly WorkspaceOption[]>(() => {
+    const listed = workspaces();
+    if (listed.length > 0) {
+      return listed.map((item) => ({
+        id: item.id,
+        name: item.name,
+        slug: item.slug,
+        role: item.role,
+        state: item.state,
+        readOnly: item.billing?.readOnly === true,
+      }));
+    }
+    const current = standing.value();
+    if (current) {
+      return [
+        {
+          id: current.id,
+          name: current.name,
+          slug: current.slug,
+          role: current.role,
+          state: current.state,
+          readOnly: current.billing?.readOnly === true,
+        },
+      ];
+    }
+    return [];
+  });
+  const currentWorkspaceName = () => {
+    const id = account?.scope();
+    if (!id) return undefined;
+    return workspaces().find((item) => item.id === id)?.name ?? standing.value()?.name;
+  };
+  const workspaceSearchSource = (): SearchSource | null => {
+    if (!account) return null;
+    return {
+      id: "workspaces",
+      label: "Workspaces",
+      order: 15,
+      instant: true,
+      search: async (query) => {
+        const activeId = account.scope();
+        const items = workspaces().filter((item) => item.state === "ready" && item.id !== activeId);
+        const hits = items
+          .map((item) => ({
+            item,
+            score: matchScore(
+              query,
+              item.name,
+              item.slug ? [item.slug, "workspace", "switch"] : ["workspace", "switch"],
+            ),
+          }))
+          .filter((entry) => entry.score > 0)
+          .sort(
+            (left, right) =>
+              right.score - left.score || left.item.name.localeCompare(right.item.name),
+          )
+          .map(({ item }) => ({
+            id: `workspace:${item.id}`,
+            label: item.name,
+            detail: item.billing?.readOnly ? "Switch workspace (read-only)" : "Switch workspace",
+            kind: "action" as const,
+          }));
+        const createScore = matchScore(query, "New workspace", [
+          "create",
+          "business",
+          "llc",
+          "entity",
+        ]);
+        if (createScore > 0) {
+          hits.push({
+            id: "workspace:create",
+            label: "New workspace",
+            detail: "Create another business",
+            kind: "action" as const,
+          });
+        }
+        return hits;
+      },
+    };
+  };
+  const sources = (() => {
+    const base = searchSourcesFor(routes);
+    const extra = workspaceSearchSource();
+    return extra ? [...base, extra] : base;
+  })();
   // A hosted service asks the owner to sign in (a 401 from any request, see `announceSignInRequired`): the
   // sign-in screen is shown over whatever the person was doing, and the page reads again once they are in.
   const [signedOut, setSignedOut] = createSignal(false);
@@ -212,15 +336,36 @@ function Shell() {
     const needSignIn = () => {
       if (!account) setSignedOut(true);
     };
+    const onBillingUpdated = () => {
+      void standing.reload();
+      void book.reload();
+      void loadWorkspaces();
+    };
+    const onWorkspaceRenamed = (event: Event) => {
+      const detail = (event as CustomEvent<{ id?: string; name?: string }>).detail;
+      if (detail?.id && detail?.name) {
+        setWorkspaces((prev) =>
+          prev.map((item) =>
+            item.id === detail.id ? { ...item, name: detail.name as string } : item,
+          ),
+        );
+      }
+      void standing.reload();
+    };
+    if (account) void loadWorkspaces();
     window.addEventListener("keydown", onKey);
     window.addEventListener("rastrata:book-created", reread);
     window.addEventListener(WRITE_EVENT, onWrite);
     window.addEventListener(SIGN_IN_REQUIRED_EVENT, needSignIn);
+    window.addEventListener(BILLING_UPDATED_EVENT, onBillingUpdated);
+    window.addEventListener(WORKSPACE_RENAMED_EVENT, onWorkspaceRenamed);
     onCleanup(() => {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("rastrata:book-created", reread);
       window.removeEventListener(WRITE_EVENT, onWrite);
       window.removeEventListener(SIGN_IN_REQUIRED_EVENT, needSignIn);
+      window.removeEventListener(BILLING_UPDATED_EVENT, onBillingUpdated);
+      window.removeEventListener(WORKSPACE_RENAMED_EVENT, onWorkspaceRenamed);
     });
   });
   // The dialogs the lanes offer (Spend money, Receive money, Transfer) open over any page, so the one that
@@ -230,7 +375,7 @@ function Shell() {
   let opener: HTMLElement | null = null;
   const showing = (element: Element) => (element as HTMLElement).offsetParent !== null;
   const showDialog = (dialogId: string, from: "new" | "elsewhere") => {
-    if (signedOut()) return;
+    if (signedOut() || workspaceReadOnly()) return;
     if (!allDialogs.some((candidate) => candidate.id === dialogId)) return;
     opener =
       from === "new"
@@ -294,6 +439,20 @@ function Shell() {
       </p>
       <AppHeader
         name={bookName()}
+        book={
+          account ? (
+            <WorkspaceSwitcher
+              currentName={bookName() ?? currentWorkspaceName() ?? "Workspace"}
+              currentId={account.scope()}
+              workspaces={workspaceOptions()}
+              loading={workspacesLoading()}
+              onOpen={() => void loadWorkspaces()}
+              onSelect={switchWorkspace}
+              onCreate={() => setCreatingWorkspace(true)}
+              manageHref="/start?choose=1"
+            />
+          ) : undefined
+        }
         wordmark={
           <Link to="/" class="wordmark">
             <Logo />
@@ -304,7 +463,7 @@ function Shell() {
           <AppNav
             sections={header().sections}
             settings={header().settings}
-            newActions={newActions}
+            newActions={workspaceReadOnly() ? [] : newActions}
             location={location().pathname}
             shortcut={searchShortcut()}
             onSearch={() => setSearching(true)}
@@ -392,9 +551,20 @@ function Shell() {
           sources={sources}
           client={client}
           onChoose={(hit) => {
-            if (hit.dialog) showDialog(hit.dialog, "elsewhere");
+            if (hit.id === "workspace:create") setCreatingWorkspace(true);
+            else if (hit.id.startsWith("workspace:"))
+              switchWorkspace(hit.id.slice("workspace:".length));
+            else if (hit.dialog) showDialog(hit.dialog, "elsewhere");
             else if (hit.href) goTo(router, hit.href);
           }}
+        />
+      </Show>
+      <Show when={account && creatingWorkspace()}>
+        <CreateWorkspaceDialog
+          open={true}
+          account={account as NonNullable<typeof account>}
+          onClose={() => setCreatingWorkspace(false)}
+          onOpened={() => window.location.assign("/")}
         />
       </Show>
       <Show when={dialogEntry()}>

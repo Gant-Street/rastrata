@@ -1,5 +1,6 @@
 import { hashCanonical } from "@rastrata/kernel";
 import { readAccountTags } from "../../account-tags.ts";
+import { lockedPeriodForDate } from "../../calendar/periods.ts";
 import type {
   ReconcileAccountStatus,
   ReconcileCleared,
@@ -349,6 +350,18 @@ const badBalance = () =>
     [{ path: "input.statementBalance", message: "Use exactly two decimal places" }],
   );
 
+function assertPeriodOpen(book: BookView, statementDate: string, action: string): void {
+  if (!book.state) return;
+  const locked = lockedPeriodForDate(book.state, statementDate);
+  if (locked)
+    throw fail(
+      "fiscal_period_admission",
+      `Period ${locked.label} (${locked.startsOn} to ${locked.endsOn}) is closed. Reopen the period before ${action} a reconciliation dated ${statementDate}.`,
+      409,
+      [{ path: "statementDate", message: locked.label }],
+    );
+}
+
 // ---- operations ------------------------------------------------------------------------------------------
 
 export function startReconciliation(
@@ -376,6 +389,7 @@ export function startReconciliation(
       return viewOf(service, rs, resumed);
     }
     const book = await rs.readBook();
+    assertPeriodOpen(book, input.statementDate, "starting");
     const account = resolveAccount(book, input.accountId);
     const { last } = openingOf(rs, account.id);
     const problem = statementDateProblem(input.statementDate, {
@@ -537,6 +551,7 @@ export function setStatement(
       return draftView(rs, existing, await sequenceMoved(service, existing));
     const session = requireOpen(rs, input.id, input.expectedVersion);
     const book = await rs.readBook();
+    assertPeriodOpen(book, input.statementDate, "updating");
     const account = resolveAccount(book, session.account_id);
     const { last } = openingOf(rs, account.id);
     const problem = statementDateProblem(input.statementDate, {
@@ -648,6 +663,7 @@ export function completeReconciliation(
     const session = requireOpen(rs, input.id, input.expectedVersion);
     // The one place the draft is checked against the ledger itself, as it is now.
     const book = await rs.readBook();
+    assertPeriodOpen(book, session.statement_date, "completing");
     const account = resolveAccount(book, session.account_id);
     const { cents: opening, last } = openingOf(rs, account.id);
     if ((last?.id ?? "") !== session.baseline)
@@ -762,9 +778,9 @@ export function voidReconciliation(
   service: ApplicationService,
   operationId: string,
   input: { id: string; reason: string },
-): Reconciliation {
+): Promise<Reconciliation> {
   const rs = reconcileState(service);
-  return service.retainRequest(operationId, "reconcile.void", input, () => {
+  return service.retainAsyncRequest(operationId, "reconcile.void", input, async () => {
     const session = rs.store.session(input.id);
     if (!session) throw fail("reconcile_not_found", "No reconciliation has that id.", 404);
     if (session.status !== "completed")
@@ -775,6 +791,8 @@ export function voidReconciliation(
       );
     if (rs.store.voidOf(session.id))
       throw fail("reconcile_already_voided", "This reconciliation is already voided.", 409);
+    const book = await rs.readBook();
+    assertPeriodOpen(book, session.statement_date, "voiding");
     const last = rs.store.lastActive(session.account_id);
     if (!last || last.id !== session.id)
       throw fail(

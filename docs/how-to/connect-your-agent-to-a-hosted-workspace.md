@@ -72,6 +72,19 @@ The page says what to ask, for the choice you made. For an agent that prepares:
 - A hosted workspace keeps the history of your books itself, so there is no backup for you or the agent to make. To keep a copy of your own, an owner can export the books (**Settings**, **Business**, **Export or delete this workspace**, **Export your books**).
 - The first request after a long time can take a few seconds while your books are read.
 
+## Working across more than one business
+
+If you own or work in more than one workspace, connect each one with `rastrata connect <CODE> --alias <short-name>` so one machine can hold separate scoped keys for each business.
+
+```sh
+rastrata workspaces                                # list every connected workspace and its alias
+rastrata --workspace acme-llc reports pnl          # target one business explicitly
+RASTRATA_WORKSPACE=acme-llc rastrata inbox list    # or set it for a shell session
+rastrata disconnect acme-llc                       # remove a saved local connection
+```
+
+Each connection is bound to one workspace and one set of permissions. When more than one workspace is connected and none is pinned in the current folder, `rastrata` refuses to guess and asks you to pass `--workspace` or set `RASTRATA_WORKSPACE`.
+
 ## Disconnect an agent
 
 **Settings**, **Agents**, then **Disconnect** beside the agent. It stops working within a few minutes (new commands at once), and what it did stays in the books. Disconnecting cannot be undone; connect the agent again with a new code if it should work again.

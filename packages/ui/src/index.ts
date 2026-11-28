@@ -31,6 +31,7 @@ export { UiProvider, useUi, directionOf, type Direction } from "./locale";
 export { defaultMessages, mergeMessages, type Messages, type DeepPartial } from "./messages";
 export { Logo, type LogoVariant } from "./brand/logo";
 export { AppHeader } from "./app-header";
+export { WorkspaceSwitcher, type WorkspaceOption } from "./workspace-switcher";
 export { AppNav, type AppNavWords, type NavLinkExtras } from "./app-nav";
 export { SectionTabs, type TabLinkExtras } from "./section-tabs";
 export { introParts } from "./intro";

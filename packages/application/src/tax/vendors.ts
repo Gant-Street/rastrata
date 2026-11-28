@@ -56,6 +56,17 @@ export const CLASSIFICATIONS = [
 export type Classification = (typeof CLASSIFICATIONS)[number];
 export const PAID_BY = ["unknown", "bank", "card_or_network"] as const;
 export type PaidBy = (typeof PAID_BY)[number];
+/** Whether a contractor's TIN is on file (Act 2 e-filing seam; Rastrata stores zero raw TINs in Act 1). */
+export const TIN_STATUSES = ["not_collected", "on_file", "verified"] as const;
+export type TinStatus = (typeof TIN_STATUSES)[number];
+
+export interface VendorAddress {
+  readonly line1?: string;
+  readonly line2?: string;
+  readonly city?: string;
+  readonly state?: string;
+  readonly postalCode?: string;
+}
 
 /** One vendor as it stands: the newest version of what was recorded about it. */
 export interface Vendor {
@@ -71,6 +82,14 @@ export interface Vendor {
   readonly classification: Classification | null;
   readonly paidBy: PaidBy;
   readonly notes: string;
+  /** Optional legal name from Form W-9 when different from the DBA/display name. */
+  readonly legalName?: string | null;
+  /** Optional mailing address for 1099-NEC filing. */
+  readonly address?: VendorAddress | null;
+  /** Optional contractor email for 1099 delivery or W-9 collection. */
+  readonly email?: string | null;
+  /** TIN collection status (Act 2 seam; never stores a raw SSN or EIN). */
+  readonly tinStatus?: TinStatus;
   readonly recordedAt: string;
   readonly principal: string;
 }

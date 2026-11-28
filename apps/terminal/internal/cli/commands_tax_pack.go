@@ -36,6 +36,12 @@ func init() {
 		Run: runTaxPack,
 	})
 	Register(Command{
+		Name: "tax cpa-packet",
+		Summary: "Write the unified CPA hand-off packet (statements, tax worksheet, 1099s, chart, journal, reconciliations, changes and adjusting entries template) to a folder or .zip: tax cpa-packet --year YYYY --out PATH " +
+			"[--form scheduleC|form1120S|form1065] [--from DATE --to DATE] [--meals-percent N]",
+		Run: runTaxCpaPacket,
+	})
+	Register(Command{
 		Name:    "tax verify-pack",
 		Summary: "Check a pack's files against its manifest, offline: tax verify-pack PATH (a folder or .zip)",
 		Offline: true,
@@ -44,6 +50,8 @@ func init() {
 }
 
 const taxPackUsage = "tax pack --year YYYY --out PATH [--form scheduleC|form1120S|form1065] [--from YYYY-MM-DD] [--to YYYY-MM-DD] " +
+	"[--meals-percent 0-100] [--revision N] [--tags-revision N]"
+const taxCpaPacketUsage = "tax cpa-packet --year YYYY --out PATH [--form scheduleC|form1120S|form1065] [--from YYYY-MM-DD] [--to YYYY-MM-DD] " +
 	"[--meals-percent 0-100] [--revision N] [--tags-revision N]"
 
 // packFile is one file of the pack as the service returns it.
@@ -164,6 +172,33 @@ func runTaxPack(r Runner, ctx context.Context, o Options, c *api.Client) int {
 		input["mealsPercent"] = percent
 	}
 	return r.writePack(ctx, o, c, "taxPack.build", input, destination, "pack")
+}
+
+func runTaxCpaPacket(r Runner, ctx context.Context, o Options, c *api.Client) int {
+	if len(o.Args) != 2 {
+		return r.localError(o, "usage_error", "tax cpa-packet takes only options. Use "+taxCpaPacketUsage, 2)
+	}
+	if name, bad := flagsOutside(o, "year", "out", "form", "from", "to", "meals-percent", "tags-revision"); bad {
+		return r.localError(o, "usage_error", "unknown option --"+name+". Use "+taxCpaPacketUsage, 2)
+	}
+	if !rejectBareFlags(r, o, taxCpaPacketUsage, "out", "form", "from", "to", "meals-percent", "tags-revision") {
+		return 2
+	}
+	year, ok := taxYearFlag(r, o, taxCpaPacketUsage)
+	if !ok {
+		return 2
+	}
+	destination := o.Flags["out"]
+	if destination == "" {
+		return r.localError(o, "usage_error", "--out PATH is required: a new folder, or a name ending in .zip. Use "+taxCpaPacketUsage, 2)
+	}
+	input := taxInput(o, year)
+	if percent, given, ok := mealsPercentFlag(r, o, taxCpaPacketUsage); !ok {
+		return 2
+	} else if given {
+		input["mealsPercent"] = percent
+	}
+	return r.writePack(ctx, o, c, "taxCpaPacket.build", input, destination, "CPA packet")
 }
 
 // writePack asks the service for a pack (the year-end pack or the accountant pack: the same shape of

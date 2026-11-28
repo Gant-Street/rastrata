@@ -5,7 +5,8 @@ import { formatDate } from "../format";
 export const words = {
   title: "Import a statement",
   /** The one sentence of the page, while no file has been chosen. */
-  intro: "Download your account's activity from your bank as a CSV, OFX, QFX or QBO file.",
+  intro:
+    "Download your account's activity from your bank as a CSV, XLSX, OFX, QFX or QBO file. You can drop several months at once.",
   back: "Transactions",
 
   accountTitle: "Which account is this for?",
@@ -28,7 +29,15 @@ export const words = {
     "That file is larger than 16 MiB. Download a shorter date range and import it in parts.",
   empty: "That file is empty.",
   notStatement: (kind: string) =>
-    `That looks like ${kind}, which cannot be imported. Download the statement as CSV, OFX, QFX or QBO from your bank instead.`,
+    `That looks like ${kind}, which cannot be imported. Download the statement as CSV, XLSX, OFX, QFX or QBO from your bank instead.`,
+  queueStatus: (current: number, total: number, remaining: number) =>
+    `Statement ${current} of ${total} (${remaining} more waiting).`,
+  nextQueued: (remaining: number) =>
+    remaining === 1 ? "Next statement (1 left)" : `Next statement (${remaining} left)`,
+  skipQueued: "Skip this file",
+  clearQueue: "Clear remaining",
+  readOnlyTitle: "This workspace is read-only",
+  readOnlyBody: "You can review past imports. Subscribe to import new statements.",
   uploading: (name: string) => `Uploading ${name}…`,
   reading: (name: string) => `Reading ${name}…`,
   uploaded: (name: string, size: string) => `${name} (${size})`,

@@ -30,6 +30,9 @@ export interface BootOptions {
   /** Where the page goes; the browser's `location.replace`. */
   readonly go?: (path: string) => void;
   readonly storage?: Pick<Storage, "getItem" | "setItem" | "removeItem"> | null;
+  readonly tabStorage?: Pick<Storage, "getItem" | "setItem" | "removeItem"> | null;
+  /** Query string (for `?workspace=<slug|id>` deep links); defaults to `window.location.search`. */
+  readonly search?: string;
   /** Begin the reads the first screen is drawn from (opening.ts), with this read of the book. The page passes it; a caller that draws nothing leaves it out. */
   readonly readBook?: () => Promise<unknown>;
 }
@@ -55,6 +58,7 @@ export async function bootAccounts(options: BootOptions = {}): Promise<Boot> {
   begin("service", async () => service);
   const readBook = () => begin("book", () => options.readBook?.() ?? Promise.resolve(undefined));
   if (!service.accounts) {
+    account = null;
     readBook();
     return { redirecting: false, account: null };
   }
@@ -70,6 +74,7 @@ export async function bootAccounts(options: BootOptions = {}): Promise<Boot> {
     bookChanged: forgetHeld,
     ...(options.ask ? { ask: options.ask } : {}),
     ...(options.storage !== undefined ? { storage: options.storage } : {}),
+    ...(options.tabStorage !== undefined ? { tabStorage: options.tabStorage } : {}),
     onEnded: (why) => {
       if (leaving) return;
       leaving = true;
@@ -85,6 +90,34 @@ export async function bootAccounts(options: BootOptions = {}): Promise<Boot> {
     },
   });
   account = made;
+  // Deep link to a specific LLC (`?workspace=<slug|id>`): pin this tab to it without disturbing other open tabs.
+  const search = options.search ?? (typeof window !== "undefined" ? window.location.search : "");
+  const query = new URLSearchParams(search);
+  const requested = query.get("workspace")?.trim() ?? "";
+  if (requested !== "") {
+    if (/^wsp_[A-Za-z0-9_-]+$/.test(requested)) {
+      made.select(requested);
+    } else {
+      const listed = await made.workspaces();
+      if (listed.ok) {
+        const lower = requested.toLowerCase();
+        const match = listed.value.find(
+          (item) =>
+            item.state === "ready" && (item.id === requested || item.slug?.toLowerCase() === lower),
+        );
+        if (match) made.select(match.id);
+      }
+    }
+    if (options.search === undefined && typeof window !== "undefined") {
+      const clean = new URL(window.location.href);
+      clean.searchParams.delete("workspace");
+      window.history.replaceState(
+        window.history.state,
+        "",
+        `${clean.pathname}${clean.search}${clean.hash}`,
+      );
+    }
+  }
   if (made.scope() === null) {
     leaving = true;
     go(START_PATH);

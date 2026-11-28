@@ -116,9 +116,16 @@ export interface BillingPageView {
   readonly state: BillingState | null;
   readonly headline: string;
   readonly detail: string | null;
-  /** The owner may subscribe: the workspace has none. */
+  /** Account-level flat pricing coverage note (e.g. how many owned businesses the subscription covers). */
+  readonly coverage: string | null;
+  /** True when the signed-in user is this workspace's billing owner. */
+  readonly isBillingOwner: boolean;
+  /** Number of active businesses owned by the billing owner, and the self-serve plan limit. */
+  readonly ownedWorkspaces: number | null;
+  readonly workspaceLimit: number | null;
+  /** The billing owner may subscribe: the account has none. */
   readonly canSubscribe: boolean;
-  /** The owner may open Stripe's portal: the workspace has a subscription. */
+  /** The billing owner may open Stripe's portal: the account has a subscription. */
   readonly canManage: boolean;
   /** What a subscription costs, as a person writes it (`$19 a month`, `$190 a year`), and what a year saves. */
   readonly prices: {
@@ -139,6 +146,8 @@ export interface BillingOptions {
   readonly control: BillingCalls;
   /** Where the browser goes next: Stripe's own page. */
   readonly go: (address: string) => void;
+  /** Called after checkout completes so the shell refreshes the workspace banner immediately. */
+  readonly onChanged?: () => void;
 }
 
 const messageOf = (cause: unknown, fallback: string): string =>
@@ -218,14 +227,31 @@ export class BillingController {
         state: null,
         headline: "Billing is not set up yet",
         detail: null,
+        coverage: null,
+        isBillingOwner: false,
+        ownedWorkspaces: null,
+        workspaceLimit: null,
         canSubscribe: false,
         canManage: false,
         prices: null,
       };
     const billing = answer.value;
     const words = inWords(billing);
-    const mayManage = MAY_MANAGE.has(role) && billing.canManage;
+    const isBillingOwner = MAY_MANAGE.has(role) && billing.canManage;
     const subscribed = billing.state === "active" || billing.state === "past_due";
+    const ownedWorkspaces =
+      typeof billing.ownedWorkspaces === "number" ? billing.ownedWorkspaces : null;
+    const workspaceLimit =
+      typeof billing.workspaceLimit === "number" ? billing.workspaceLimit : null;
+    const coverage = isBillingOwner
+      ? ownedWorkspaces !== null
+        ? workspaceLimit !== null
+          ? ownedWorkspaces <= 1
+            ? `One subscription covers all businesses you own (${ownedWorkspaces} of ${workspaceLimit} included).`
+            : `One subscription covers all ${ownedWorkspaces} businesses you own (${ownedWorkspaces} of ${workspaceLimit} included).`
+          : `One subscription covers all ${ownedWorkspaces} ${plural(ownedWorkspaces, "business", "businesses")} you own.`
+        : "One subscription covers all businesses you own."
+      : "Billing for this workspace is managed by its billing owner.";
     return {
       workspace,
       role,
@@ -233,8 +259,13 @@ export class BillingController {
       state: billing.state,
       headline: words.headline,
       detail: words.detail,
-      canSubscribe: mayManage && (billing.state === "trialing" || billing.state === "read_only"),
-      canManage: mayManage && subscribed,
+      coverage,
+      isBillingOwner,
+      ownedWorkspaces,
+      workspaceLimit,
+      canSubscribe:
+        isBillingOwner && (billing.state === "trialing" || billing.state === "read_only"),
+      canManage: isBillingOwner && subscribed,
       prices: {
         month: `${money(billing.prices.month)} a month`,
         year: `${money(billing.prices.year)} a year`,
@@ -253,6 +284,7 @@ export class BillingController {
       const done = await control.billingComplete(id, came.session);
       await this.load();
       if (!done.ok) return this.#say({ error: done.message });
+      if (done.value.completed) this.#options.onChanged?.();
       return this.#say(
         done.value.completed
           ? { notice: "Thank you. This workspace is subscribed." }
@@ -310,7 +342,7 @@ export const BANNER_DAYS = 10;
 export function bannerFor(workspace: WorkspaceSummary | null | undefined): Banner | null {
   const billing = workspace?.billing;
   if (!workspace || !billing || workspace.state !== "ready") return null;
-  const owner = MAY_MANAGE.has(workspace.role);
+  const owner = MAY_MANAGE.has(workspace.role) && workspace.billingOwner !== false;
   switch (billing.state) {
     case "trialing": {
       const days = billing.daysLeft ?? 0;
@@ -322,6 +354,18 @@ export function bannerFor(workspace: WorkspaceSummary | null | undefined): Banne
           ? "Subscribe to keep editing after it ends."
           : "An owner of this workspace can subscribe to keep editing after it ends.",
         link: owner ? "Subscribe" : "Billing",
+      };
+    }
+    case "active": {
+      if (!billing.cancelAtPeriodEnd) return null;
+      const ends = billing.periodEnd ? formatDate(billing.periodEnd) : "the end of the period";
+      return {
+        tone: "info",
+        title: "Your subscription will not renew",
+        text: owner
+          ? `It ends on ${ends}, and then your owned workspaces become read-only.`
+          : `It ends on ${ends}, and then this workspace becomes read-only.`,
+        link: owner ? "Manage subscription" : "Billing",
       };
     }
     case "past_due":

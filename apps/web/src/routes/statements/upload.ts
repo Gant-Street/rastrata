@@ -26,8 +26,7 @@ export class UploadError extends Error {
  * service decides by content, not by name; this only saves the trip. */
 const NOT_STATEMENTS: Readonly<Record<string, string>> = {
   ".pdf": "a PDF",
-  ".xlsx": "an Excel workbook",
-  ".xls": "an Excel workbook",
+  ".xls": "a legacy Excel workbook",
   ".numbers": "a Numbers spreadsheet",
   ".png": "an image",
   ".jpg": "an image",
@@ -48,7 +47,7 @@ export function refuseFile(file: Pick<File, "name" | "size">): string | null {
   const extension = dot === -1 ? "" : file.name.slice(dot).toLowerCase();
   const kind = NOT_STATEMENTS[extension];
   return kind
-    ? `That looks like ${kind}, which cannot be imported. Download the statement as CSV, OFX, QFX or QBO from your bank instead.`
+    ? `That looks like ${kind}, which cannot be imported. Download the statement as CSV, XLSX, OFX, QFX or QBO from your bank instead.`
     : null;
 }
 

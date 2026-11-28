@@ -12,18 +12,19 @@ first import is the whole of the setup.
 
 Download the account's activity from your bank's website as one of:
 
-- **CSV** (a spreadsheet file), the universal fallback;
+- **CSV** or **Excel (.xlsx)** spreadsheets, the universal fallbacks (for `.xlsx`, the first worksheet is read);
 - **OFX**, **QFX** or **QBO**, the formats Quicken and QuickBooks read. Prefer these when your bank
   offers them: every transaction carries the bank's own identifier, so importing the same
   transaction twice is impossible, and the file states the account's balance.
 
-A PDF statement, an Excel workbook or a screenshot cannot be imported. Download the CSV or OFX
+A PDF statement, a legacy `.xls` file or a screenshot cannot be imported. Download the CSV, XLSX or OFX
 version instead. A file can be up to 16 MiB; download a shorter date range if yours is larger.
 
 ## 2. Preview it
 
 On the web, open **Transactions**, then **Import statement** (Search finds it by name too; an account's
-own page has the same button). Choose the account and the file, side by side; what you imported before is
+own page has the same button). Choose the account and one or more files (you can drop several months at
+once and review them in sequence); what you imported before is
 listed below them. Once the file is read the page is about it: the file's name and the account, one
 sentence that says what was found ("15 new transactions, Oct 1 to Oct 29, 2026. The statement ends at
 5,411.40."), **Import 15 transactions**, and the first rows to compare with your statement (**Show all**
@@ -169,4 +170,4 @@ to skip rows without the owner's agreement.
 - On the hosted service one request may change about a megabyte of the books once packed, so a file of more than about 5,000 transactions (measured: 5,000 went in, 8,000 were refused), or a file that does not pack well and runs to more than two or three megabytes, is refused with a message that says to send it in smaller parts. Download a shorter date range, such as a quarter, and import each; a second import of the same lines adds nothing.
 <!-- help: end -->
 - Statements are read by one parser per format; if a file is refused, the message names the row.
-- OFX investment statements are not imported. PDF and Excel are not imported.
+- OFX investment statements are not imported. PDF and legacy `.xls` files are not imported.

@@ -17,6 +17,7 @@ var uuid = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-
 type Record struct {
 	Endpoint    string          `json:"endpoint"`
 	BookID      string          `json:"bookId"`
+	WorkspaceID string          `json:"workspaceId,omitempty"`
 	Name        string          `json:"name"`
 	OperationID string          `json:"operationId"`
 	Body        json.RawMessage `json:"body"`
@@ -153,6 +154,11 @@ func (j *Journal) Load(id string) (Record, error) {
 	return record, errors.New("no retained request for that identity; use operations status to inspect server state")
 }
 func (j *Journal) List(endpoint, bookID string) ([]Record, error) {
+	return j.ListForWorkspace(endpoint, bookID, "")
+}
+
+// ListForWorkspace returns retained requests matching endpoint, bookID, and (when non-empty) workspaceID.
+func (j *Journal) ListForWorkspace(endpoint, bookID, workspaceID string) ([]Record, error) {
 	records := []Record{}
 	entries, err := os.ReadDir(j.Directory)
 	if errors.Is(err, fs.ErrNotExist) {
@@ -175,7 +181,7 @@ func (j *Journal) List(endpoint, bookID string) ([]Record, error) {
 		if err != nil {
 			return nil, err
 		}
-		if record.Endpoint == endpoint && record.BookID == bookID {
+		if record.Endpoint == endpoint && record.BookID == bookID && (workspaceID == "" || record.WorkspaceID == workspaceID) {
 			records = append(records, record)
 		}
 	}

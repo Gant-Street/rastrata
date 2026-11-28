@@ -7,12 +7,13 @@ export const billingWords = {
   notHere: "Billing is not here",
   notHereBody: "This page is for a workspace on the service with accounts.",
   subscribeTitle: "Subscribe",
-  subscribeBody: "You pay on Stripe's own page. Rastrata never sees your card.",
+  subscribeBody:
+    "One flat plan covers every business you own. You pay on Stripe's own page; Rastrata never sees your card.",
   subscribe: (price: string) => `Subscribe, ${price}`,
   opening: "Opening Stripe…",
   manageTitle: "Your subscription",
   manageBody:
     "Change the card, switch between monthly and yearly, see your invoices, or cancel, in Stripe's customer portal.",
   manage: "Manage subscription",
-  onlyOwner: "An owner of this workspace manages billing.",
+  onlyOwner: "The billing owner of this workspace manages billing.",
 };

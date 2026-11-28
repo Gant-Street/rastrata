@@ -17,6 +17,9 @@ export function ImportResult(props: {
   inboxLink?: JSX.Element;
   resuming?: boolean | undefined;
   onResume?: (() => void) | undefined;
+  /** When more statements wait in the batch queue, offer a direct button to review the next file. */
+  nextLabel?: string | undefined;
+  onNext?: (() => void) | undefined;
   onAnother: () => void;
 }) {
   const waiting = () => props.result?.waiting ?? 0;
@@ -68,6 +71,13 @@ export function ImportResult(props: {
           </Show>
         </dl>
         <div class="rt-imp-commit-actions">
+          <Show when={props.onNext && props.nextLabel}>
+            <Button
+              label={props.nextLabel as string}
+              variant="primary"
+              onClick={() => props.onNext?.()}
+            />
+          </Show>
           {props.inboxLink}
           <Button label={words.importAnother} variant="secondary" onClick={props.onAnother} />
         </div>

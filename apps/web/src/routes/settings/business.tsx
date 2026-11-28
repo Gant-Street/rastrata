@@ -14,6 +14,7 @@ import { AppLink } from "../../app-link";
 import { BrowserApplicationClient } from "../../application-client";
 import { currentAccount } from "../../boot";
 import { createLoader } from "../../loader";
+import { workspaceReadOnly } from "../../standing";
 import { BusinessSettings } from "../entries/business-settings";
 import { YearStartPanel } from "./year-start";
 
@@ -80,10 +81,14 @@ export function BusinessPage() {
                     then what was fixed when the book was created. */}
                 {/* Changing the name and the display settings needs `configure`: a person without it (an accountant, a member) is shown the book and told who changes it, and not a form that would be refused. */}
                 <Show
-                  when={context().permissions.includes("configure")}
+                  when={context().permissions.includes("configure") && !workspaceReadOnly()}
                   fallback={
                     <Notice title={words.readOnly} tone="info">
-                      <p>{words.readOnlyBody}</p>
+                      <p>
+                        {workspaceReadOnly()
+                          ? "This workspace is read-only. Subscribe to change business settings."
+                          : words.readOnlyBody}
+                      </p>
                     </Notice>
                   }
                 >
@@ -94,7 +99,7 @@ export function BusinessPage() {
                   title={words.facts}
                   hint={words.factsHint}
                   facts={
-                    context().permissions.includes("configure")
+                    context().permissions.includes("configure") && !workspaceReadOnly()
                       ? factsOf(setup())
                       : [{ label: words.name, value: setup().name }, ...factsOf(setup())]
                   }
@@ -102,6 +107,7 @@ export function BusinessPage() {
                 <Show
                   when={
                     context().permissions.includes("configure") &&
+                    !workspaceReadOnly() &&
                     calendar.value()?.calendar.canChangeYearStart
                   }
                 >

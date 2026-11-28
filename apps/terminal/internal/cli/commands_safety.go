@@ -2,6 +2,8 @@ package cli
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -40,6 +42,7 @@ func init() {
 	Register(Command{Name: "backup verify", Summary: "Verify the newest backup (or BACKUP_ID) on a copy: hash, integrity, a full replay; shows progress and takes longer for a bigger book", Run: runBackupVerify})
 	Register(Command{Name: "backup drill", Summary: "Restore the newest backup (or BACKUP_ID) to a temporary directory and compare it with the live book; the book is not changed", Run: runBackupDrill})
 	Register(Command{Name: "export create", Summary: "Write the open export (rastrata-export-v1) of the whole book and wait for it", Run: runExportCreate})
+	Register(Command{Name: "export download", Summary: "Download a completed open export archive (.zip): export download EXPORT_ID --out PATH.zip", Run: runExportDownload})
 	Register(Command{Name: "export verify", Summary: "Check an export folder against its manifest and hashes, offline: export verify DIR", Offline: true, Local: true, Run: runExportVerify})
 	Register(Command{Name: "restore", Summary: "Restore a backup to a database file, offline, after verifying it: restore BACKUP --to PATH [--replace] [--no-manifest] [--quick] [--backup-dir DIR]", Offline: true, Local: true, Run: runRestore})
 	Register(Command{Name: "import-export", Summary: "Rebuild a book from an export by replay, offline, and prove it by head hash: import-export DIR --to PATH", Offline: true, Local: true, Run: runImportExport})
@@ -182,6 +185,47 @@ func runExportCreate(r Runner, ctx context.Context, o Options, c *api.Client) in
 		return r.localError(o, "usage_error", "Use export create", 2)
 	}
 	return runJob(r, ctx, o, c, "export.create", map[string]any{})
+}
+
+func runExportDownload(r Runner, ctx context.Context, o Options, c *api.Client) int {
+	const usage = "export download EXPORT_ID --out PATH.zip"
+	if problem := safetyFlagProblem(o, []string{"out"}, []string{"out"}); problem != "" {
+		return r.localError(o, "usage_error", problem+". Use "+usage, 2)
+	}
+	destination := o.Flags["out"]
+	if len(o.Args) != 3 || destination == "" {
+		return r.localError(o, "usage_error", "Use "+usage, 2)
+	}
+	if _, err := os.Stat(destination); err == nil {
+		return r.localError(o, "usage_error", destination+" already exists; choose a new file name", 2)
+	}
+	exportID := o.Args[2]
+	data, err := c.DownloadExport(ctx, exportID)
+	if err != nil {
+		return r.result(o, api.Response{}, err, "")
+	}
+	out, err := os.OpenFile(destination, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600)
+	if err != nil {
+		return r.localError(o, "export_failed", err.Error(), 4)
+	}
+	if _, err := out.Write(data); err != nil {
+		_ = out.Close()
+		_ = os.Remove(destination)
+		return r.localError(o, "export_failed", err.Error(), 4)
+	}
+	if err := out.Close(); err != nil {
+		_ = os.Remove(destination)
+		return r.localError(o, "export_failed", err.Error(), 4)
+	}
+	digest := sha256.Sum256(data)
+	summary, _ := json.Marshal(map[string]any{
+		"id":      exportID,
+		"written": destination,
+		"bytes":   len(data),
+		"sha256":  hex.EncodeToString(digest[:]),
+	})
+	fmt.Fprintf(r.Diagnostics, "Downloaded export %s (%d bytes) to %s.\n", exportID, len(data), destination)
+	return r.result(o, api.Response{Version: api.Version, BookID: c.BookID, OK: true, Data: summary}, nil, "")
 }
 
 // toolCommand finds the command that runs the offline tool: RASTRATA_TOOL (a command line, split on
